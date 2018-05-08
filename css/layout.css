@@ -34,6 +34,19 @@ body { background: #0f0f0f; }
     color: #7A7A7A;
 }
 
+#thai_submit {
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: #1a1616;
+    background: #0D0D0D;
+    border: none;
+    cursor: pointer;
+    height: auto;
+    display: inline-block;
+    border-radius: 10px;
+    margin-left: 26%;
+}
+
 header {
    position: relative;
    height: 800px;
@@ -79,8 +92,7 @@ header .banner-text h3 {
 }
     header .banner-text h3 span,
     header .banner-text h3 a {
-        color: #c17474 /*#11ABB0*/;
-        font-weight: 600;
+        color: #F06000 /*#11ABB0*/;
     }
 header .banner-text hr {
    width: 60%;
@@ -847,19 +859,19 @@ call-to-action .button {
 	float: left;
    width: 26%;
 }
-#contact input,
-#contact textarea,
-#contact select {
-   padding: 18px 20px;
-	color: #eee;
-	background: #373233;
-	margin-bottom: 42px;
-	border: 0;
-	outline: none;
-   font-size: 15px;
-   line-height: 24px;
-   width: 65%;
-}
+    #contact input,
+    #contact textarea,
+    #contact select {
+        padding: 18px 20px;
+        color: #eee;
+        background: #797979;
+        margin-bottom: 42px;
+        border: 0;
+        outline: none;
+        font-size: 15px;
+        line-height: 24px;
+        width: 65%;
+    }
 #contact input:focus,
 #contact textarea:focus,
 #contact select:focus {
