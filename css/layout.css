@@ -159,7 +159,9 @@ header .scrolldown a:hover { color: #11ABB0; }
    left: 0;
    top: 0;
 }
-.opaque { background-color: #333; }
+.opaque {
+    background-color: rgba(0,27,70,0.9);
+}
 
 /* hide toggle button */
 #nav-wrap > a.mobile-btn { display: none; }
@@ -445,7 +447,11 @@ ul#nav li.current a { color: #F06000; }
 }
 
 /* Portfolio Content */
-#portfolio-wrapper .columns { margin-bottom: 36px; }
+#portfolio-wrapper .columns { 
+    margin-bottom: 45px;
+    margin-left:20px;
+    margin-right:40px;
+}
 .portfolio-item .item-wrap {
    background: #fff;
    overflow: hidden;
@@ -864,7 +870,7 @@ call-to-action .button {
     #contact select {
         padding: 18px 20px;
         color: #eee;
-        background: #797979;
+        background: #06050e;
         margin-bottom: 42px;
         border: 0;
         outline: none;
