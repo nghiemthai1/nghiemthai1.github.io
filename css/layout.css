@@ -71,7 +71,7 @@ header .banner {
    vertical-align: middle;
    margin: 0 auto;
    width: 85%;
-   padding-bottom: 30px;s
+   padding-bottom: 30px;
    text-align: center;
 }
 
@@ -96,7 +96,7 @@ header .banner-text h3 {
     }
 header .banner-text hr {
    width: 60%;
-   margin: 18px auto 24px auto;
+   margin: 10px auto 200px auto;
    border-color: #2F2D2E;
    border-color: rgba(150, 150, 150, .1);
 }
@@ -451,11 +451,13 @@ ul#nav li.current a { color: #F06000; }
     margin-bottom: 45px;
     margin-left:20px;
     margin-right:40px;
+    align-content: center;
 }
 .portfolio-item .item-wrap {
    background: #fff;
    overflow: hidden;
    position: relative;
+   
 
    -webkit-transition: all 0.3s ease-in-out;
 	-moz-transition: all 0.3s ease-in-out;
