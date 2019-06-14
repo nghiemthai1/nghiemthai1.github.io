@@ -334,7 +334,18 @@
       font-size: 18px;
       line-height: 54px;
    }
-
+    #thai_submit {
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        color: #1a1616;
+        background: #0D0D0D;
+        border: none;
+        cursor: pointer;
+        height: auto;
+        display: inline-block;
+        border-radius: 10px;
+        margin-left: auto;
+    }
 
 }
 
