@@ -222,10 +222,10 @@ ul#nav li.current a { color: #F06000; }
    color: #fff;
    margin-bottom: 12px;
 }
-#about p {
-   line-height: 30px;
+#about p, #about ul, #about li {
+   line-height: 1.3em;
    color: #7A7A7A;
-   font-size: 22px;
+   font-size: 1.7rem;
 }
 #about .profile-pic {
    position: relative;
@@ -457,6 +457,7 @@ ul#nav li.current a { color: #F06000; }
    background: #fff;
    overflow: hidden;
    position: relative;
+   border-radius: 5px;
    
 
    -webkit-transition: all 0.3s ease-in-out;
@@ -1046,6 +1047,9 @@ footer .social-links li:first-child { margin-left: 0; }
     margin-left: 5%;
     margin-right : 5%;
     height: 142px;
+    border-radius: 12px; /* Adjust the value as needed */
+    overflow: hidden;
+    display: inline-block;
 }
 .active, .collapsible:hover {
         transform: scale(1.1);

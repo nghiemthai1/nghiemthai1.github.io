@@ -494,6 +494,7 @@ input[type="reset"]:hover,
 input[type="button"]:hover {
    /*background: #3d4145;*/
    color: #fff;
+   transform: scale(1.2) !important;
 }
 
 .button:active,
@@ -801,7 +802,5 @@ properly.
 	margin-right: auto !important;
 	text-align: center !important;
 }
-
-
 
 

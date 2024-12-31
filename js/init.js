@@ -175,6 +175,20 @@
       });
       return false;
    });
+   /*----------------------------------------------------*/
+   /* Open Collapsible Sections by Default
+   ------------------------------------------------------*/
+
+   $('.collapsible').each(function() {
+      $(this).addClass('active'); // Optionally add an active class to style the open state
+      $(this).next('.content').slideDown(); // Ensure content is visible by default
+   });
+
+   $('.collapsible').on('click', function() {
+      $(this).toggleClass('active');
+      var content = $(this).next('.content');
+      content.slideToggle();
+   });
 
 
 });
