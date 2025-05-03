@@ -442,7 +442,6 @@ ul#nav li.current a { color: #F06000; }
    text-transform: uppercase;
    letter-spacing: 1px;
    text-align: center;
-   margin-bottom: 48px;
    color: #95A3A3;
 }
 
@@ -1034,6 +1033,103 @@ footer .social-links li:first-child { margin-left: 0; }
 #go-top a:hover { background-color: #0F9095; }
 
 /*Thai's*/
+h1.responsive-headline {
+    line-height: 1.2;
+}
+
+@media (max-width: 1200px) {
+    h1.responsive-headline {
+        font-size: 48px !important;
+    }
+}
+
+@media (max-width: 992px) {
+    h1.responsive-headline {
+        font-size: 36px !important;
+    }
+}
+
+@media (max-width: 768px) {
+    h1.responsive-headline {
+        font-size: 30px !important;
+    }
+}
+
+@media (max-width: 576px) {
+    h1.responsive-headline {
+        font-size: 24px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    h1.responsive-headline {
+        font-size: 20px !important;
+    }
+}
+
+h1.responsive-headline {
+    margin: 0 0 5px 0;
+    font-size: 24px;
+    line-height: 1.2;
+}
+
+.works-heading {
+    margin: 0 0 5px 0;
+    font-size: 24px;
+    line-height: 1.2;
+}
+
+.controls {
+    margin: 15px 0 25px auto;
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    font-size: 14px;
+}
+.control-btn {
+    padding: 4px 8px;
+    background: none;
+    color: #666;
+    border: none;
+    border-bottom: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    text-decoration: none;
+}
+.control-btn:hover {
+    color: #333;
+    border-bottom: 1px solid #333;
+    transform: none;
+}
+
+.collapsible {
+    background-color: #777;
+    color: white;
+    cursor: pointer;
+    padding: 18px;
+    width: 90%;
+    border: none;
+    text-align: center;
+    outline: none;
+    font-size: 22px;
+    margin-left: 5%;
+    margin-right : 5%;
+    height: 142px;
+    border-radius: 12px; /* Adjust the value as needed */
+    overflow: hidden;
+    display: inline-block;
+}
+.active, .collapsible:hover {
+    transform: scale(1.1);
+}
+
+.content {
+    padding: 0 18px;
+    display: none;
+    overflow: hidden;
+    background-color: #f1f1f1;
+}
 .collapsible {
     background-color: #777;
     color: white;

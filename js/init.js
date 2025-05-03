@@ -11,7 +11,7 @@
 ------------------------------------------------------ */
 
     setTimeout(function() {
-	   $('h1.responsive-headline').fitText(1, { minFontSize: '40px', maxFontSize: '90px' });
+	   $('h1.responsive-headline').fitText(1.4, { minFontSize: '16px', maxFontSize: '60px' });
 	 }, 100);
 
 
@@ -176,18 +176,34 @@
       return false;
    });
    /*----------------------------------------------------*/
-   /* Open Collapsible Sections by Default
+   /* Collapsible Sections with Collapse All/Expand All
    ------------------------------------------------------*/
 
+   // Initialize collapsible sections
    $('.collapsible').each(function() {
-      $(this).addClass('active'); // Optionally add an active class to style the open state
-      $(this).next('.content').slideDown(); // Ensure content is visible by default
+      $(this).addClass('active');
+      $(this).next('.content').slideDown();
    });
 
+   // Individual collapsible button functionality
    $('.collapsible').on('click', function() {
       $(this).toggleClass('active');
       var content = $(this).next('.content');
       content.slideToggle();
+   });
+
+   // Collapse All functionality
+   $('#collapseAll').on('click', function(e) {
+      e.preventDefault();
+      $('.collapsible').removeClass('active');
+      $('.collapsible').next('.content').slideUp();
+   });
+
+   // Expand All functionality
+   $('#expandAll').on('click', function(e) {
+      e.preventDefault();
+      $('.collapsible').addClass('active');
+      $('.collapsible').next('.content').slideDown();
    });
 
 
