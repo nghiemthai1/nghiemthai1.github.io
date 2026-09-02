@@ -1,0 +1,53 @@
+<section id="contact" aria-labelledby="contact-title">
+   <div class="row contact-shell">
+      <div class="contact-intro">
+         <p class="contact-eyebrow">Get in touch</p>
+         <h2 id="contact-title">Let’s turn a good idea into something useful.</h2>
+         <p class="contact-lead">Interested in working together, discussing a role, or exchanging ideas about AI and automation? Send me a note and I’ll get back to you.</p>
+
+         <div class="contact-direct" aria-label="Direct contact options">
+            <a href="mailto:nghiemthai1@gmail.com">
+               <span class="contact-direct__icon"><i class="fa fa-envelope" aria-hidden="true"></i></span>
+               <span><small>Email</small>nghiemthai1@gmail.com</span>
+            </a>
+            <a href="tel:+14699995138">
+               <span class="contact-direct__icon"><i class="fa fa-phone" aria-hidden="true"></i></span>
+               <span><small>Phone</small>(469) 999-5138</span>
+            </a>
+         </div>
+      </div>
+
+      <div class="contact-card">
+         <form action="https://formspree.io/f/mjyvrgqo" method="POST" id="contactForm" name="contactForm">
+            <fieldset>
+               <div class="contact-fields">
+                  <div class="contact-field">
+                     <label for="contactName">Name <span class="required">*</span></label>
+                     <input type="text" id="contactName" name="name" autocomplete="name" required>
+                  </div>
+                  <div class="contact-field">
+                     <label for="contactEmail">Email <span class="required">*</span></label>
+                     <input type="email" id="contactEmail" name="email" autocomplete="email" required>
+                  </div>
+                  <div class="contact-field contact-field--wide">
+                     <label for="contactSubject">Subject</label>
+                     <input type="text" id="contactSubject" name="subject">
+                  </div>
+                  <div class="contact-field contact-field--wide">
+                     <label for="contactMessage">Message <span class="required">*</span></label>
+                     <textarea rows="5" id="contactMessage" name="message" required></textarea>
+                  </div>
+               </div>
+
+               <div class="contact-actions">
+                  <input id="thai_submit" type="submit" value="Send message" name="sendButton">
+                  <span id="image-loader" aria-live="polite"><img alt="Sending" src="images/loader.gif"></span>
+               </div>
+            </fieldset>
+         </form>
+
+         <div id="message-warning" role="alert" aria-live="assertive"></div>
+         <div id="message-success" role="status" aria-live="polite"><i class="fa fa-check" aria-hidden="true"></i>Your message was sent. Thank you!</div>
+      </div>
+   </div>
+</section>

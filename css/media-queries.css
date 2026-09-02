@@ -49,11 +49,7 @@
 
    /* About Section
    ------------------------------------------------------------------- */
-   #about .profile-pic {
-      width: 114px;
-      height: 114px;
-      margin-left: 12px;
-   }
+   #about .about-shell { grid-template-columns: 210px minmax(0, 1fr); gap: 36px; }
    #about .contact-details { width: 50%; }
    #about .download { width: 50%; }
 
@@ -64,14 +60,8 @@
 
    /* Testimonials Section
    ------------------------------------------------------------------- */
-   #testimonials .header-col h1:before {
-      font-size: 66px;
-      line-height: 66px;
-   }
-   #testimonials blockquote p {
-      font-size: 22px;
-      line-height: 46px;      
-   }
+   #testimonials .testimonials-shell { gap: 42px; }
+   #testimonials .testimonial-card > p { font-size: 17px; line-height: 1.7; }
 
     /* Call to Action Section
    ------------------------------------------------------------------- */
@@ -215,13 +205,30 @@
 
    /* About Section
    -------------------------------------------------------------------- */
-   #about .profile-pic { display: none; }
-   #about .download .button {
-      width: 100%;
-      text-align: center;
-      padding: 15px 20px;
+   #about { padding: 72px 0; }
+   #about .about-shell { display: block; }
+   #about .about-profile {
+      position: relative;
+      top: auto;
+      display: grid;
+      grid-template-columns: 96px minmax(0, 1fr);
+      column-gap: 18px;
+      align-items: center;
+      margin: 0 30px 42px;
+      padding: 16px;
+      border-radius: 20px;
    }
-   #about .main-col { padding-right: 30px; }
+   #about .about-profile__image { grid-row: 1 / span 3; margin: 0; border-radius: 14px; }
+   #about .profile-pic { display: block; }
+   #about .about-profile__role { margin-top: 4px; }
+   #about .about-profile__specialty { margin-bottom: 2px; }
+   #about .about-profile__location { padding-top: 7px; border-top: 0; }
+   #about .about-content { padding: 0 30px; }
+   #about .about-strengths { grid-template-columns: 1fr; }
+   #about .about-strength { min-height: 0; }
+   #about .about-strength__number { margin-bottom: 20px; }
+   #about .about-connect { align-items: flex-start; flex-direction: column; }
+   #about .about-resume { width: 100%; text-align: center; }
 
 
    /* Resume Section
@@ -260,26 +267,16 @@
 
    /* Testimonials Section
    ----------------------------------------------------------------------- */
-   #testimonials .text-container { text-align: center; }
-   #testimonials h1 {
-      font: 16px/24px 'opensans-bold', sans-serif;
-      text-align: center;
-      margin-bottom: 30px;
-      text-shadow: 0px 1px 3px rgba(0, 0, 0, 1);
-   }
-   #testimonials h1 span { display: block; }
-   #testimonials .header-col h1:before { content: none; }
-   #testimonials blockquote { padding-bottom: 24px; }
-   #testimonials blockquote p {
-      font-size: 20px;
-      line-height: 42px;      
-   }
-
-   /* Control Nav */
-   .flex-control-nav {
-      text-align: center;
-      margin-left: -30px;
-   }
+   #testimonials { padding: 72px 0; }
+   #testimonials .testimonials-shell { display: block; }
+   #testimonials .testimonials-heading { position: relative; top: auto; margin: 0 30px 38px; padding: 0; text-align: left; }
+   #testimonials .testimonials-heading > p:not(.testimonials-eyebrow) { margin-bottom: 20px; }
+   #testimonials .testimonials-slider { margin: 0 30px; text-align: left; }
+   #testimonials .testimonial-card { min-height: 0; padding: 28px 24px; border-radius: 22px; }
+   #testimonials .testimonial-card > p { margin-bottom: 28px; font-size: 15px; line-height: 1.75; }
+   #testimonials .testimonial-quote-mark { height: 42px; font-size: 66px; }
+   #testimonials .testimonial-person { align-items: flex-start; }
+   #testimonials .flex-control-nav { margin-left: 0; justify-content: flex-start; }
 
 
    /* contact Section
@@ -381,6 +378,36 @@
    footer .social-links { font-size: 20px; }
    footer .social-links li { margin-left: 14px; }   
 
+}
+
+@media only screen and (max-width: 767px) {
+   #about {
+      display: block;
+      min-height: 0;
+   }
+
+   #contact {
+      display: block;
+      min-height: 0;
+      padding: 72px 0;
+   }
+   #contact .contact-shell {
+      display: block;
+      width: auto;
+      margin: 0 30px;
+   }
+   #contact .contact-intro { margin-bottom: 32px; }
+   #contact h2 { font-size: 36px; }
+   #contact .contact-lead { font-size: 15px; }
+   #contact .contact-card { padding: 22px; border-radius: 22px; }
+   #contact .contact-fields { grid-template-columns: 1fr; }
+   #contact .contact-field--wide { grid-column: auto; }
+   #contact .contact-field input,
+   #contact .contact-field textarea,
+   #contact .contact-field select { width: 100%; margin: 0; }
+   #contact #thai_submit { width: 100%; margin: 0; text-align: center; }
+   #contact #message-warning,
+   #contact #message-success { width: 100%; margin-left: 0; }
 }
 
 
