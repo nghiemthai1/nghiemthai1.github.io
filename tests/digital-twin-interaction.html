@@ -22,6 +22,7 @@
 
       postMessage(message) {
         if (message.type === 'load') {
+          window.lastModelConfiguration = message.configuration;
           this.emit({
             type: 'progress',
             progress: { status: 'progress', file: 'model_q4f16.onnx', loaded: 100, total: 100 },
@@ -64,6 +65,7 @@
 
     document.querySelector('[data-twin-download]').click();
     await new Promise((resolve) => setTimeout(resolve, 0));
+    check('WebGPU selects the smaller q4f16 graph', window.lastModelConfiguration?.dtype === 'q4f16');
     check(
       '100% download explains model setup',
       document.querySelector('[data-twin-status]').textContent.includes('Setting up the AI'),

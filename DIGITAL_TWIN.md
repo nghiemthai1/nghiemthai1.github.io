@@ -12,7 +12,7 @@ The portfolio chat uses `assets/data/experience.json` as a compact, public-only 
 6. Run `python scripts/check_local_references.py` before publishing.
 7. Test at least one supported, unsupported, and unrelated question in the chat widget.
 
-The browser downloads the pinned Qwen2.5 0.5B instruct `q4` model (about 800 MB including tokenizer/configuration files) from Hugging Face only after a visitor opts in. The same graph supports the user-approved WASM fallback. Prompts, answers, and conversation history stay in memory in the visitor's browser and are cleared on reload.
+The browser downloads the pinned Qwen2.5 0.5B instruct `q4f16` model for WebGPU (about 500 MB including tokenizer/configuration files) from Hugging Face only after a visitor opts in. The user-approved WASM fallback uses the more broadly compatible `q4` graph, which is about 800 MB including tokenizer/configuration files. Prompts, answers, and conversation history stay in memory in the visitor's browser and are cleared on reload.
 
 ## How question context is selected
 

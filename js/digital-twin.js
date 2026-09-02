@@ -357,9 +357,9 @@ export async function initializeDigitalTwin() {
     downloads.clear();
     const configuration = {
       device,
-      // q4 is the model's documented Transformers.js variant and is the graph
-      // that passes browser answer-quality checks on both supported backends.
-      dtype: 'q4',
+      // WebGPU can use the smaller mixed-precision graph. WASM keeps q4 for
+      // broader CPU compatibility.
+      dtype: device === 'webgpu' ? 'q4f16' : 'q4',
     };
     loadingConfiguration = configuration;
     elements.setupCopy.hidden = false;
