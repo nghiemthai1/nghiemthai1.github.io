@@ -52,7 +52,7 @@ header#home {
    height: 800px;
    min-height: 500px;
    width: 100%;
-   background: #161415 url(../images/airplane.jpg) no-repeat top center;
+   background: #161415 url(../assets/images/airplane.jpg) no-repeat top center;
    background-size: cover !important;
 	-webkit-background-size: cover !important;
    text-align: center;
@@ -623,7 +623,7 @@ ul#nav li.current a { color: #F06000; }
 /* ------------------------------------------------------------------ */
 
 #portfolio {
-    background: #ebeeee url(../images/playstation-pattern.png) repeat top center;
+    background: #ebeeee url(../assets/images/playstation-pattern.png) repeat top center;
     padding-top: 90px;
     padding-bottom: 60px;
 }
@@ -677,7 +677,7 @@ ul#nav li.current a { color: #F06000; }
 	-o-transition: opacity 0.3s ease-in-out;
 	transition: opacity 0.3s ease-in-out;
 
-   background: url(../images/overlay-bg.png) repeat;
+   background: url(../assets/images/overlay-bg.png) repeat;
 }
 .portfolio-item .item-wrap .link-icon {
    display: block;
@@ -857,7 +857,7 @@ call-to-action .button {
 /* ------------------------------------------------------------------ */
 
 #testimonials {
-   background: #1F1F1F url(../images/testimonials-bg.jpg) no-repeat center center;
+   background: #1F1F1F url(../assets/images/testimonials-bg.jpg) no-repeat center center;
    background-size: cover !important;
 	-webkit-background-size: cover !important;
    background-attachment: fixed;

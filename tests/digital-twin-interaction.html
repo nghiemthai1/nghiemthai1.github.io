@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Digital twin interaction checks</title>
+  <link rel="stylesheet" href="../css/digital-twin.css?v=interaction-test">
+</head>
+<body>
+  <h1>Digital twin interaction checks</h1>
+  <ul id="results"></ul>
+  <div id="fixture"></div>
+  <script type="module">
+    const fixture = document.querySelector('#fixture');
+    fixture.innerHTML = await fetch('../partials/digital-twin.html').then((response) => response.text());
+
+    class FakeWorker {
+      listeners = { message: [], error: [] };
+
+      addEventListener(type, listener) {
+        this.listeners[type].push(listener);
+      }
+
+      postMessage(message) {
+        if (message.type === 'load') {
+          this.emit({
+            type: 'progress',
+            progress: { status: 'progress', file: 'model_q4f16.onnx', loaded: 100, total: 100 },
+          });
+          setTimeout(() => this.emit({ type: 'ready', device: message.configuration.device }), 20);
+        }
+        if (message.type === 'generate') {
+          const answer = 'I built several machine-learning projects:\n1. **Face identification**: A MATLAB system using DCT features and KNN classification.\n2. **Early diagnosis**: A digital clock drawing analysis system.';
+          setTimeout(() => {
+            this.emit({ type: 'token', requestId: message.requestId, text: answer });
+            this.emit({ type: 'complete', requestId: message.requestId, answer });
+          }, 20);
+        }
+        if (message.type === 'cancel') this.emit({ type: 'cancelled', requestId: message.requestId });
+      }
+
+      emit(data) {
+        queueMicrotask(() => this.listeners.message.forEach((listener) => listener({ data })));
+      }
+    }
+
+    window.Worker = FakeWorker;
+    const { initializeDigitalTwin } = await import('../js/digital-twin.js?v=interaction-test');
+    const { countWords, dedupeNumberedItems, endsWithSentence, finalizeResponse } = await import('../js/digital-twin-response.js?v=interaction-test-2');
+    await initializeDigitalTwin();
+
+    const results = document.querySelector('#results');
+    let failures = 0;
+    function check(name, passed) {
+      failures += passed ? 0 : 1;
+      const item = document.createElement('li');
+      item.textContent = `${passed ? 'PASS' : 'FAIL'}: ${name}`;
+      results.append(item);
+    }
+
+    check(
+      'AI accuracy disclaimer is always present',
+      document.querySelector('.digital-twin__disclaimer')?.textContent === 'AI-generated responses might not be true.',
+    );
+
+    document.querySelector('[data-twin-download]').click();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    check(
+      '100% download explains model setup',
+      document.querySelector('[data-twin-status]').textContent.includes('Setting up the AI'),
+    );
+    await new Promise((resolve) => setTimeout(resolve, 25));
+    check('ready state is compact', document.querySelector('[data-twin-setup-copy]').hidden && document.querySelector('[data-twin-progress]').hidden);
+
+    const input = document.querySelector('[data-twin-input]');
+    input.value = 'What did you do at EY?';
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    check('Enter sends', document.querySelectorAll('.digital-twin__message--user').length === 1);
+
+    document.querySelector('[data-twin-clear]').click();
+    input.value = 'Keep editing';
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', shiftKey: true, bubbles: true, cancelable: true }));
+    check('Shift+Enter does not send', document.querySelectorAll('.digital-twin__message--user').length === 0);
+
+    document.querySelector('[data-twin-suggestion]').click();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    check('suggested question sends', document.querySelector('.digital-twin__message--user p')?.textContent.includes('EY'));
+    check(
+      'thinking indicator appears before the first token',
+      document.querySelector('.digital-twin__thinking')?.textContent === '...',
+    );
+    await new Promise((resolve) => setTimeout(resolve, 25));
+    check('thinking indicator is replaced by the answer', !document.querySelector('.digital-twin__thinking'));
+    const formattedAnswer = [...document.querySelectorAll('.digital-twin__message--assistant p')].at(-1);
+    check(
+      'completed answer renders clean list formatting',
+      formattedAnswer.querySelectorAll('.digital-twin__response-item').length === 2
+        && formattedAnswer.querySelector('strong')?.textContent === 'Face identification'
+        && !formattedAnswer.textContent.includes('**'),
+    );
+
+    input.value = 'What projects have you built?';
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    document.querySelector('[data-twin-cancel]').click();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    check(
+      'cancelling replaces the thinking indicator',
+      !document.querySelector('.digital-twin__thinking')
+        && [...document.querySelectorAll('.digital-twin__message--assistant p')].at(-1)?.textContent === 'Response stopped.',
+    );
+
+    const verbose = Array.from(
+      { length: 18 },
+      () => 'I delivered a focused automation solution with measurable operational results for the client team.',
+    ).join(' ');
+    const limited = finalizeResponse(verbose);
+    check('long answers stay within 180 words', countWords(limited) <= 180 && endsWithSentence(limited));
+
+    const repaired = finalizeResponse('I led automation delivery for clients. I also started an unfinished explanation about');
+    check('unfinished trailing text is removed', repaired === 'I led automation delivery for clients.');
+
+    const repeated = dedupeNumberedItems(
+      'Projects include: 1. A MATLAB face-identification system. 2. An Alzheimer\'s detection system. 3. A digital clock drawing test. 4. A digital clock drawing test. 5. A digital clock drawing test.',
+    );
+    check(
+      'duplicate numbered items are removed and renumbered',
+      repeated === 'Projects include:\n1. A MATLAB face-identification system.\n2. An Alzheimer\'s detection system.\n3. A digital clock drawing test.',
+    );
+    const datedProse = 'I started in 2021. I advanced in 2022. I continued growing.';
+    check('dates are not treated as numbered list items', dedupeNumberedItems(datedProse) === datedProse);
+
+    document.body.dataset.status = failures ? 'failed' : 'passed';
+    document.title = failures ? `${failures} interaction checks failed` : 'All interaction checks passed';
+  </script>
+</body>
+</html>

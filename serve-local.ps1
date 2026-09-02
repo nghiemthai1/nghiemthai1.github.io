@@ -67,6 +67,9 @@ try {
             $headerBytes = [Text.Encoding]::ASCII.GetBytes($headers)
             $stream.Write($headerBytes, 0, $headerBytes.Length)
             if ($method -ne 'HEAD') { $stream.Write($body, 0, $body.Length) }
+        } catch [IO.IOException] {
+            # Browsers may cancel large or superseded requests. Keep serving subsequent requests.
+            Write-Verbose "Client disconnected before the response completed."
         } finally {
             $client.Dispose()
         }

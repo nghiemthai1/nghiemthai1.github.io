@@ -1,0 +1,306 @@
+{
+  "schemaVersion": 1,
+  "lastUpdated": "2026-09-02",
+  "identity": {
+    "name": "Thai Nghiem",
+    "title": "Senior Technology Consultant",
+    "location": "United States",
+    "summary": "I am an engineer and senior technology consultant focused on AI-enabled automation, web application development, data, and practical digital systems.",
+    "careerInterests": [
+      "AI-enabled automation",
+      "business analytics",
+      "web application development",
+      "electrical and computer engineering",
+      "building reliable technology around real business needs"
+    ],
+    "professionalThemes": [
+      "turning business requirements into production automation",
+      "combining software engineering, analytics, and applied AI",
+      "building reusable standards and scalable delivery practices",
+      "working directly with stakeholders and delivery teams"
+    ],
+    "methodologies": ["Agile", "Scrum", "test-driven development", "Center of Excellence governance"],
+    "technologies": [
+      "UiPath", "Java", "JavaScript", "HTML", "CSS", "C", "C++", "C#", "VB.NET",
+      "Python", "Git", "MATLAB", "SQL", "PostgreSQL", "AWS", "AppDynamics", "Tableau",
+      "Postman", "OCR", "NLP", "Jupyter Notebook"
+    ],
+    "source": "index.html#about"
+  },
+  "experience": [
+    {
+      "id": "experience-ey-senior-technology-consultant",
+      "organization": "Ernst & Young LLP (EY)",
+      "title": "Senior Technology Consultant",
+      "dates": "August 2022-Present",
+      "location": "Philadelphia, Pennsylvania",
+      "summary": "I lead the design and delivery of UiPath-based intelligent automation at EY, combining solution architecture, development standards, NLP virtual agents, and intelligent document processing to improve client operations.",
+      "responsibilities": [
+        "Lead implementation of complex robotic process automation across multiple departments.",
+        "Serve as a solution architect and establish reusable automation blueprints.",
+        "Standardize code quality and delivery practices for a six-developer team.",
+        "Develop AI-enabled virtual-agent and document-processing solutions."
+      ],
+      "highlights": [
+        "Automated more than 20 complex processes.",
+        "Delivered millions of dollars in annual savings and roughly 30,000 hours of annual time savings.",
+        "Created scalable automation standards and reusable blueprints for delivery teams.",
+        "Built NLP virtual-agent and intelligent-document-processing document-redaction solutions.",
+        "One document-redaction initiative saved about 3,500 hours annually and created expansion opportunities across agencies."
+      ],
+      "skills": ["UiPath", "RPA", "C#", "VB.NET", "AI", "intelligent document processing", "virtual agents"],
+      "source": "index.html#modal-18"
+    },
+    {
+      "id": "experience-american-water-intelligent-automation-engineer",
+      "organization": "American Water",
+      "title": "Hyper/Intelligent Automation Engineer",
+      "dates": "June 2021-July 2022",
+      "location": "Camden, New Jersey",
+      "summary": "I helped establish a scalable automation Center of Excellence at American Water and used UiPath with VB.NET to automate business processes, improve employee experience, and reduce operating costs.",
+      "responsibilities": [
+        "Established coding standards, development best practices, and repeatable automation processes.",
+        "Designed and delivered UiPath automations for business teams.",
+        "Supported the growth of a sustainable automation Center of Excellence."
+      ],
+      "highlights": [
+        "Built reusable governance and delivery practices for automation work.",
+        "Improved employee satisfaction by reducing repetitive manual work.",
+        "Delivered meaningful operational cost reductions."
+      ],
+      "skills": ["UiPath", "VB.NET", "RPA", "Center of Excellence", "automation governance", "process improvement"],
+      "source": "index.html#modal-14"
+    },
+    {
+      "id": "experience-american-water-full-stack-developer",
+      "organization": "American Water",
+      "title": "Full-Stack Java Software Engineer I and II",
+      "dates": "January 2019-May 2021",
+      "location": "Camden, New Jersey",
+      "summary": "I developed and maintained a Java web application that streamlined water-quality work, including collection and management of approximately 6,000 bacteria samples every month.",
+      "responsibilities": [
+        "Built responsive web features with Java and JavaScript UI libraries.",
+        "Worked with PostgreSQL data and AWS microservices.",
+        "Led junior developers and served as Scrum Master for a three-person Agile team.",
+        "Gathered feedback from ten client stakeholders and coordinated feature decisions."
+      ],
+      "highlights": [
+        "Supported the collection and management of approximately 6,000 bacteria samples each month.",
+        "Automated reporting, scheduling, field-result entry, sample monitoring, and monthly progress.",
+        "Led a team of junior web developers using JavaScript UI libraries, PostgreSQL, and AWS microservices.",
+        "Coordinated a three-person Scrum team and engaged ten clients for feedback to support on-time delivery."
+      ],
+      "skills": ["Java", "JavaScript", "HTML", "CSS", "PostgreSQL", "Webix", "AWS microservices", "Spring Tool Suite", "Agile", "Scrum", "test-driven development"],
+      "source": "index.html#modal-14"
+    },
+    {
+      "id": "experience-ellenby-engineering-intern",
+      "organization": "Ellenby Technologies",
+      "title": "Engineering Intern",
+      "dates": "May 2018-August 2018",
+      "location": "Woodbury Heights, New Jersey",
+      "summary": "I engineered the optical scanning circuit board and supporting C++ firmware for a prototype coin-dispensing safe, then used MATLAB analysis to tune the scanner and improve recognition performance.",
+      "highlights": [
+        "Improved rolled-coin recognition precision for color and diameter by about 200% compared with the previous version.",
+        "Reduced anticipated production cost while improving recognition reliability.",
+        "Collected and analyzed scan data in MATLAB to optimize scan speed, light intensity, receiver gain, and board position.",
+        "Worked across hardware, firmware, PCB design, experimentation, and test analysis."
+      ],
+      "skills": ["C++", "MATLAB", "PCB design", "optical sensors", "product development"],
+      "source": "index.html#modal-02"
+    },
+    {
+      "id": "experience-fpt-software-intern",
+      "organization": "FPT Information System",
+      "title": "Software Engineering Intern",
+      "dates": "2017",
+      "location": "Hanoi, Vietnam",
+      "summary": "I built a student-management website and helped improve an active tax-revenue project's user interface in Hanoi.",
+      "highlights": [
+        "Built with Java Servlets, JSP, and MySQL.",
+        "Worked with Struts 2 and Ext JS."
+      ],
+      "skills": ["Java", "JavaScript", "MySQL", "JSP", "Servlets", "Struts 2", "Ext JS"],
+      "source": "index.html#modal-12"
+    }
+  ],
+  "education": [
+    {
+      "id": "education-ms-business-analytics",
+      "credential": "M.S. Business Analytics",
+      "institution": "Temple University",
+      "gpa": "4.0",
+      "summary": "I earned a Master of Science in Business Analytics from Temple University with a 4.0 GPA.",
+      "source": "index.html#about"
+    },
+    {
+      "id": "education-bs-electrical-computer-engineering",
+      "credential": "B.S. Electrical & Computer Engineering",
+      "institution": "Rowan University",
+      "graduation": "December 2019",
+      "gpa": "3.98",
+      "honors": [
+        "Summa Cum Laude",
+        "President's List",
+        "Tau Beta Pi Engineering Honor Society",
+        "Rowan Institute of Electrical and Electronics Engineers",
+        "First place in an IEEE robotics competition"
+      ],
+      "summary": "I earned a Bachelor of Science in Electrical and Computer Engineering from Rowan University in December 2019 with a 3.98 GPA and Summa Cum Laude honors.",
+      "source": "index.html#about"
+    }
+  ],
+  "certifications": [
+    {
+      "id": "certification-uipath-advanced-rpa-developer",
+      "credential": "UiPath Advanced RPA Developer",
+      "summary": "I earned the UiPath Advanced RPA Developer credential.",
+      "source": "index.html#about"
+    },
+    {
+      "id": "certification-aws-solutions-architect-associate",
+      "credential": "AWS Certified Solutions Architect - Associate",
+      "issuer": "Amazon Web Services",
+      "summary": "I earned the AWS Certified Solutions Architect - Associate credential.",
+      "source": "index.html#about"
+    },
+    {
+      "id": "certification-aws-cloud-practitioner",
+      "credential": "AWS Certified Cloud Practitioner",
+      "issuer": "Amazon Web Services",
+      "summary": "I earned the AWS Certified Cloud Practitioner credential.",
+      "source": "assets/documents/resumes/Resume.pdf"
+    },
+    {
+      "id": "certification-machine-learning-stanford-coursera",
+      "credential": "Machine Learning",
+      "issuer": "Stanford University via Coursera",
+      "summary": "I completed Stanford University's Machine Learning course through Coursera.",
+      "source": "assets/documents/resumes/Resume.pdf"
+    }
+  ],
+  "projects": [
+    {
+      "id": "project-object-follower",
+      "name": "Object Follower",
+      "dates": "2018",
+      "summary": "I built a PID-controlled object-following system using C++ and systems-control techniques.",
+      "skills": ["C++", "PID control", "systems and control"],
+      "source": "index.html#modal-01"
+    },
+    {
+      "id": "project-sumo-robot",
+      "name": "Sumo Robotics Competition",
+      "dates": "2016",
+      "summary": "I competed in Rowan IEEE's sumo robotics event, earning first place in the Kit Competition and third place in the Scratch Competition.",
+      "highlights": ["Designed a DipTrace PCB.", "Modeled and 3D-printed the chassis and shield.", "Contributed C code and resolved weight and reliability problems."],
+      "skills": ["robotics", "C", "MSP430", "PCB design", "SolidWorks", "3D printing"],
+      "source": "index.html#modal-03"
+    },
+    {
+      "id": "project-audio-equalizer",
+      "name": "Audio Equalizer",
+      "dates": "2017",
+      "summary": "I designed and tested an analog audio equalizer using second-order low-pass, high-pass, and band-pass filters.",
+      "skills": ["analog circuit design", "filters", "simulation", "bench testing"],
+      "source": "index.html#modal-05"
+    },
+    {
+      "id": "project-underwater-rov",
+      "name": "Underwater Remotely Operated Vehicle",
+      "dates": "2016",
+      "summary": "I helped design and build an underwater ROV prototype for placing a cap on a leaking oil well and retrieving debris.",
+      "skills": ["SolidWorks", "CAD", "multidisciplinary design", "construction", "testing"],
+      "source": "index.html#modal-06"
+    },
+    {
+      "id": "project-augmented-reality-structured-light",
+      "name": "Augmented Reality Structured Light",
+      "dates": "2017-2019",
+      "summary": "I helped turn a patented structured-light method for reconstructing 3D objects from 2D images into a product prototype.",
+      "highlights": ["Developed a MATLAB GUIDE interface.", "Applied image processing.", "Ported MATLAB code to C++ for Android support."],
+      "skills": ["augmented reality", "MATLAB", "C++", "Android", "image processing", "UI design"],
+      "source": "index.html#modal-07"
+    },
+    {
+      "id": "project-fpga-arcade-game",
+      "name": "FPGA Arcade Game",
+      "dates": "2017",
+      "summary": "I recreated a shoot-the-ship arcade game in Verilog HDL using an Altera DE0 board and an LED matrix display.",
+      "skills": ["Verilog HDL", "FPGA", "Altera DE0", "leadership"],
+      "source": "index.html#modal-08"
+    },
+    {
+      "id": "project-face-identification",
+      "name": "Face Identification System",
+      "dates": "2017",
+      "summary": "I developed a MATLAB face-identification system using two-dimensional DCT features and a k-nearest-neighbors classifier.",
+      "skills": ["MATLAB", "machine learning", "DCT", "k-nearest neighbors"],
+      "source": "index.html#modal-09"
+    },
+    {
+      "id": "project-bike-shop",
+      "name": "Bike Shop Java Application",
+      "dates": "2016",
+      "summary": "I designed a Java application for renting bicycles and accessories with a GUI and object-oriented architecture.",
+      "skills": ["Java", "OOP", "UML", "GUI", "MVC", "lambda expressions"],
+      "source": "index.html#modal-10"
+    },
+    {
+      "id": "project-fire-emblem-game",
+      "name": "Fire Emblem Game v1",
+      "dates": "2018",
+      "summary": "I collaborated on a four-person Java team to recreate a turn-based game with player-versus-player and player-versus-AI modes.",
+      "skills": ["Java", "OOP", "teamwork", "game development"],
+      "source": "index.html#modal-11"
+    },
+    {
+      "id": "project-memristor-emulator",
+      "name": "Memristor Hardware Emulator",
+      "dates": "2019",
+      "summary": "I designed and built a circuit that reproduces memristor threshold behavior and a pinched hysteresis V-I curve.",
+      "skills": ["NI Multisim", "Cadence", "circuit design", "bench instruments"],
+      "source": "index.html#modal-13"
+    },
+    {
+      "id": "project-pothole-recognition",
+      "name": "Road and Pothole Recognition",
+      "dates": "2018",
+      "summary": "I applied convolutional neural networks and data augmentation to classify road conditions from images.",
+      "highlights": ["Achieved 93% test accuracy for pothole detection.", "Achieved 77% test accuracy across potholes, cracks, and roads in good condition."],
+      "skills": ["Python", "convolutional neural networks", "computer vision", "data augmentation"],
+      "source": "index.html#modal-15"
+    },
+    {
+      "id": "project-alzheimers-diagnosis",
+      "name": "Alzheimer's Disease Early Diagnosis",
+      "dates": "2018-2019",
+      "role": "Machine Learning Student Researcher at Rowan University",
+      "location": "Glassboro, New Jersey",
+      "summary": "I researched machine-learning methods for a noninvasive Digital Clock Drawing Test designed to support early Alzheimer's disease diagnosis from a healthy-control comparison.",
+      "highlights": [
+        "Evaluated genetic-algorithm, wrapper, and information-theory feature-selection techniques.",
+        "Used feature selection to identify diagnostically important clock-drawing characteristics.",
+        "Trained neural-network and stacked-generalization classifiers with accuracy from the high 70s to the mid-80s."
+      ],
+      "skills": ["Python", "feature selection", "neural networks", "stacked generalization", "machine learning"],
+      "source": "index.html#modal-16"
+    },
+    {
+      "id": "project-smart-picture-frame",
+      "name": "Smart Picture Frame with Motion Detector",
+      "dates": "circa 2018",
+      "summary": "I built a Raspberry Pi photo frame that downloads and rotates images and uses motion detection to reduce power use.",
+      "skills": ["Raspberry Pi", "Python", "shell", "Linux", "PIR sensor"],
+      "source": "index.html#modal-17"
+    },
+    {
+      "id": "project-cad-models",
+      "name": "3D Models and CAD Parts",
+      "dates": "2016",
+      "summary": "I created and simulated SolidWorks and Onshape parts for robotics, engineering projects, and design exercises.",
+      "skills": ["CAD", "SolidWorks", "Onshape", "simulation"],
+      "source": "index.html#modal-04"
+    }
+  ]
+}

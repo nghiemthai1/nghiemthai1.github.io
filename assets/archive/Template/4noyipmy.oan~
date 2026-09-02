@@ -28,7 +28,7 @@
 
    <!-- Favicons
 	================================================== -->
-	<link rel="shortcut icon" href="assets/images/favicon.png" >
+	<link rel="shortcut icon" href="favicon.png" >
 
 </head>
 
@@ -86,7 +86,7 @@
 
          <div class="three columns">
 
-            <img class="profile-pic"  src="assets/images/profilepic.jpg" alt="" />
+            <img class="profile-pic"  src="images/profilepic.jpg" alt="" />
 
          </div>
 
@@ -122,7 +122,7 @@
 
                <div class="columns download">
                   <p>
-                     <a href="assets/documents/resumes/Intern_Thai Nghiem (EE).pdf" class="button" target="blank"><i class="fa fa-download"></i>Download Resume</a>
+                     <a href="Intern_Thai Nghiem (EE).pdf" class="button" target="blank"><i class="fa fa-download"></i>Download Resume</a>
                   </p>
                </div>
 
@@ -150,7 +150,7 @@
                   Electrical & Computer Engr.
                   <div class="item-wrap">
                      <a href="#modal-01" title="">
-                        <img alt="" src="assets/images/portfolio/PID.gif">
+                        <img alt="" src="images/portfolio/PID.gif">
                         <div class="overlay">
                            <div class="portfolio-item-meta">
           					      <h5>Object Follower</h5>
@@ -167,7 +167,7 @@
                    Internship Experience
                   <div class="item-wrap">
                      <a href="#modal-02" title="">
-                        <img alt="" src="assets/images/portfolio/Ellenby.jpg">
+                        <img alt="" src="images/portfolio/Ellenby.jpg">
                         <div class="overlay">
                            <div class="portfolio-item-meta">
           					      <h5>Coin Dispenser Optics Sensor</h5>
@@ -184,7 +184,7 @@
                    Electrical & Computer Engr.
                   <div class="item-wrap">
                      <a href="#modal-03" title="">
-                        <img alt="" src="assets/images/portfolio/Sumo.gif">
+                        <img alt="" src="images/portfolio/Sumo.gif">
                         <div class="overlay">
                            <div class="portfolio-item-meta">
           					      <h5>Sumo Robotic Competition</h5>
@@ -200,7 +200,7 @@
                    Mechanical Engr. Experience
                   <div class="item-wrap">
                      <a href="#modal-04" title="">
-                        <img alt="" src="assets/images/portfolio/3dPart.jpg">
+                        <img alt="" src="images/portfolio/3dPart.jpg">
                         <div class="overlay">
                            <div class="portfolio-item-meta">
           					      <h5>3D Parts</h5>
@@ -217,7 +217,7 @@
                     Mechanical Engr. Experience
                     <div class="item-wrap">
                         <a href="#modal-06" title="">
-                            <img alt="" src="assets/images/portfolio/ROV.jpg">
+                            <img alt="" src="images/portfolio/ROV.jpg">
                             <div class="overlay">
                                 <div class="portfolio-item-meta">
                                     <h5>Underwater Remote Control Vehicle</h5>
@@ -233,7 +233,7 @@
                 Electrical & Computer Engr.
                   <div class="item-wrap"
                      <a href="#modal-05" title="">
-                        <img alt="" src="assets/images/portfolio/Equalizer.jpg">
+                        <img alt="" src="images/portfolio/Equalizer.jpg">
                         <div class="overlay">
                            <div class="portfolio-item-meta">
           					      <h5>Audio Equalizer</h5>
@@ -253,7 +253,7 @@
                   <div class="item-wrap">
 
                      <a href="#modal-07" title="">
-                        <img alt="" src="assets/images/portfolio/ARSL.gif">
+                        <img alt="" src="images/portfolio/ARSL.gif">
                         <div class="overlay">
                            <div class="portfolio-item-meta">
           					      <h5>Augmented Reality Structred Light</h5>
@@ -270,7 +270,7 @@
                   <div class="item-wrap">
 
                      <a href="#modal-08" title="">
-                        <img alt="" src="assets/images/portfolio/FPGA.jpg">
+                        <img alt="" src="images/portfolio/FPGA.jpg">
                         <div class="overlay">
                            <div class="portfolio-item-meta">
           					      <h5>FPGA Game</h5>
@@ -287,7 +287,7 @@
                     Electrical & Computer Engr.
                     <div class="item-wrap">
                         <a href="#modal-08" title="">
-                            <img alt="" src="assets/images/portfolio/signal.jpg">
+                            <img alt="" src="images/portfolio/signal.jpg">
                             <div class="overlay">
                                 <div class="portfolio-item-meta">
                                     <h5>Facial Recognition</h5>
@@ -310,7 +310,7 @@
 
          <div id="modal-01" class="popup-modal mfp-hide">
 
-		      <img class="scale-with-grid" src="assets/images/portfolio/modals/m-PID.gif" alt="" />
+		      <img class="scale-with-grid" src="images/portfolio/modals/m-PID.gif" alt="" />
 
 		      <div class="description-box">
 			      <h4>Coffee Cup</h4>
@@ -327,7 +327,7 @@
 
          <div id="modal-02" class="popup-modal mfp-hide">
 
-		      <img class="scale-with-grid" src="assets/images/portfolio/modals/m-Ellenby.gif" alt="" />
+		      <img class="scale-with-grid" src="images/portfolio/modals/m-Ellenby.gif" alt="" />
 
 		      <div class="description-box">
 			      <h4>Console</h4>
@@ -344,7 +344,7 @@
 
          <div id="modal-03" class="popup-modal mfp-hide">
 
-		      <img class="scale-with-grid" src="assets/images/portfolio/modals/m-Sumo.gif" alt="" />
+		      <img class="scale-with-grid" src="images/portfolio/modals/m-Sumo.gif" alt="" />
 		      <div class="description-box">
 			      <h4>Judah</h4>
 			      <p>Proin gravida nibh vel velit auctor aliquet. Aenean sollicitudin, lorem quis bibendum auctor, nisi elit consequat ipsum, nec sagittis sem nibh id elit.</p>
@@ -360,7 +360,7 @@
 
          <div id="modal-04" class="popup-modal mfp-hide">
 
-		      <img class="scale-with-grid" src="assets/images/portfolio/modals/m-3dPart.gif" alt="" />
+		      <img class="scale-with-grid" src="images/portfolio/modals/m-3dPart.gif" alt="" />
 
 		      <div class="description-box">
 			      <h4>Into the Light</h4>
@@ -377,7 +377,7 @@
 
          <div id="modal-05" class="popup-modal mfp-hide">
 
-		      <img class="scale-with-grid" src="assets/images/portfolio/modals/m-Equalizer.jpg" alt="" />
+		      <img class="scale-with-grid" src="images/portfolio/modals/m-Equalizer.jpg" alt="" />
 
 		      <div class="description-box">
 			      <h4>Farmer Boy</h4>
@@ -394,7 +394,7 @@
 
          <div id="modal-06" class="popup-modal mfp-hide">
 
-		      <img class="scale-with-grid" src="assets/images/portfolio/modals/m-ROV.gif" alt="" />
+		      <img class="scale-with-grid" src="images/portfolio/modals/m-ROV.gif" alt="" />
 
 		      <div class="description-box">
 			      <h4>Girl</h4>
@@ -411,7 +411,7 @@
 
          <div id="modal-07" class="popup-modal mfp-hide">
 
-		      <img class="scale-with-grid" src="assets/images/portfolio/modals/m-ARSL.gif" alt="" />
+		      <img class="scale-with-grid" src="images/portfolio/modals/m-ARSL.gif" alt="" />
 
 		      <div class="description-box">
 			      <h4>Origami</h4>
@@ -428,7 +428,7 @@
 
          <div id="modal-08" class="popup-modal mfp-hide">
 
-		      <img class="scale-with-grid" src="assets/images/portfolio/modals/m-FPGA.gif" alt="" />
+		      <img class="scale-with-grid" src="images/portfolio/modals/m-FPGA.gif" alt="" />
 
 		      <div class="description-box">
 			      <h4>Retrocam</h4>
@@ -442,7 +442,7 @@
             </div>
 
              <div id="modal-9" class="popup-modal mfp-hide">
-                 <img class="scale-with-grid" src="assets/images/portfolio/modals/m-signals.gif" alt="" />
+                 <img class="scale-with-grid" src="images/portfolio/modals/m-signals.gif" alt="" />
                  <div class="description-box">
                      <h4>Retrocam</h4>
                      <p>Proin gravida nibh vel velit auctor aliquet. Aenean sollicitudin, lorem quis bibendum auctor, nisi elit consequat ipsum, nec sagittis sem nibh id elit.</p>
@@ -566,7 +566,7 @@
                      <!--<button class="submit">Submit</button>-->
                       <input id="thai_submit" type="submit" value="Send" name="sendButton" >
                      <span id="image-loader">
-                        <img alt="" src="assets/images/loader.gif">
+                        <img alt="" src="images/loader.gif">
                      </span>
                   </div>
 
@@ -632,7 +632,7 @@
    <script src="js/waypoints.js"></script>
    <script src="js/jquery.fittext.js"></script>
    <script src="js/magnific-popup.js"></script>
-   <script src="assets/archive/Template/js/init.js"></script>
+   <script src="js/init.js"></script>
 
 </body>
 
