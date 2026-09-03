@@ -36,6 +36,24 @@
       document.querySelector('#results').append(item);
     }
 
+    const eyResult = evaluateQuestion('What impact have you delivered at EY?', records);
+    const eyOnly = eyResult.action === 'generate'
+      && JSON.stringify(eyResult.recordIds) === JSON.stringify(['experience-ey-senior-technology-consultant']);
+    failures += eyOnly ? 0 : 1;
+    const eyItem = document.createElement('li');
+    eyItem.dataset.result = eyOnly ? 'pass' : 'fail';
+    eyItem.textContent = `${eyOnly ? 'PASS' : 'FAIL'}: named employer retrieval stays on EY facts`;
+    document.querySelector('#results').append(eyItem);
+
+    const followUp = evaluateQuestion('Can you tell me more', records, eyResult.recordIds);
+    const followsPreviousTopic = followUp.action === 'generate'
+      && JSON.stringify(followUp.recordIds) === JSON.stringify(eyResult.recordIds);
+    failures += followsPreviousTopic ? 0 : 1;
+    const followUpItem = document.createElement('li');
+    followUpItem.dataset.result = followsPreviousTopic ? 'pass' : 'fail';
+    followUpItem.textContent = `${followsPreviousTopic ? 'PASS' : 'FAIL'}: follow-up reuses previous professional topic`;
+    document.querySelector('#results').append(followUpItem);
+
     document.body.dataset.status = failures ? 'failed' : 'passed';
     document.title = failures ? `${failures} policy checks failed` : 'All policy checks passed';
   </script>

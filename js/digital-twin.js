@@ -1,4 +1,4 @@
-import { finalizeResponse } from './digital-twin-response.js?v=20260902-4';
+import { finalizeResponse } from './digital-twin-response.js?v=20260903-1';
 
 const MAX_HISTORY_MESSAGES = 8;
 const MAX_QUESTION_LENGTH = 500;
@@ -19,6 +19,7 @@ const GENERIC_SCOPE_TERMS = new Set([
   'responsibilities', 'interest', 'interests', 'accomplishment', 'accomplishments',
 ]);
 const IN_SCOPE_PATTERN = /\b(experience|work|career|job|role|project|build|built|develop|developed|skill|technology|education|degree|university|college|gpa|grade|major|minor|course|graduate|graduated|certification|credential|award|honor|uipath|automation|artificial intelligence|ai|java|python|aws|engineering|consultant|intern|employer|company|achievement|accomplish|lead|team|background|professional|resume|portfolio|strength|specialize|who are you|about yourself)\b/i;
+const FOLLOW_UP_PATTERN = /^(?:(?:can|could|would)\s+you\s+)?(?:tell|share|give)\s+me\s+more(?:\s+about\s+(?:that|this|it))?[.!?]*$|^(?:please\s+)?(?:elaborate|expand|go on|what else)(?:\s+on\s+(?:that|this|it))?[.!?]*$/i;
 const BLOCKED_PATTERNS = [
   /\b(ignore|override|forget|disregard)\b.{0,40}\b(instruction|prompt|rule|system|previous)\b/i,
   /\b(system prompt|developer message|hidden instruction|jailbreak|role[- ]?play|act as|pretend to be)\b/i,
@@ -80,6 +81,16 @@ export function retrieveKnowledge(question, records, limit = 4) {
     return { records: overview, supported: true };
   }
 
+  const namedMatches = records.filter((record) => {
+    const names = [record.organization, record.name, record.credential, record.institution]
+      .filter(Boolean)
+      .map((value) => value.toLowerCase());
+    if (names.some((name) => name.length >= 4 && normalizedQuestion.includes(name))) return true;
+    const aliases = names.flatMap((name) => [...name.matchAll(/\(([^)]+)\)/g)].flatMap((match) => tokenize(match[1])));
+    return aliases.some((alias) => tokens.includes(alias));
+  });
+  if (namedMatches.length) return { records: namedMatches.slice(0, limit), supported: true };
+
   const ranked = records
     .map((record) => ({ record, score: scoreRecord(record, subjectTokens, normalizedQuestion) }))
     .filter((result) => result.score > 0)
@@ -92,7 +103,7 @@ export function retrieveKnowledge(question, records, limit = 4) {
   };
 }
 
-export function evaluateQuestion(question, records) {
+export function evaluateQuestion(question, records, previousRecordIds = []) {
   const trimmed = question.trim();
   if (!trimmed) return { action: 'ignore' };
   if (trimmed.length > MAX_QUESTION_LENGTH) {
@@ -100,6 +111,11 @@ export function evaluateQuestion(question, records) {
   }
   if (BLOCKED_PATTERNS.some((pattern) => pattern.test(trimmed))) {
     return { action: 'reply', answer: REFUSAL };
+  }
+
+  if (FOLLOW_UP_PATTERN.test(trimmed) && previousRecordIds.length) {
+    const recordIds = previousRecordIds.filter((id) => records.some((record) => record.id === id)).slice(0, 4);
+    if (recordIds.length) return { action: 'generate', recordIds };
   }
 
   const retrieval = retrieveKnowledge(trimmed, records);
@@ -211,11 +227,13 @@ export async function initializeDigitalTwin() {
   let records = [];
   let profileReady = false;
   let turnstileToken = '';
+  let sessionToken = '';
   let turnstileWidgetId = null;
   let activeRequest = null;
   let activeController = null;
   let activeAnswer = null;
   let history = [];
+  let lastRecordIds = [];
 
   function setStatus(message, state = 'idle') {
     elements.status.textContent = message;
@@ -228,7 +246,7 @@ export async function initializeDigitalTwin() {
   }
 
   function isReady() {
-    return profileReady && Boolean(turnstileToken);
+    return profileReady && Boolean(sessionToken || turnstileToken);
   }
 
   function showReadyState() {
@@ -236,7 +254,7 @@ export async function initializeDigitalTwin() {
     setComposerEnabled(isReady());
     if (!profileReady) {
       setStatus('Loading experience profile...', 'loading');
-    } else if (!turnstileToken) {
+    } else if (!sessionToken && !turnstileToken) {
       setStatus('Complete the quick human check to chat.', 'loading');
     } else {
       setStatus('AI ready · Cloudflare hosted.', 'ready');
@@ -244,6 +262,7 @@ export async function initializeDigitalTwin() {
   }
 
   function resetVerification() {
+    sessionToken = '';
     turnstileToken = '';
     root.dataset.verified = 'false';
     elements.verification.hidden = false;
@@ -277,13 +296,13 @@ export async function initializeDigitalTwin() {
   function finishGeneration(cancelled = false) {
     elements.cancel.hidden = true;
     elements.send.hidden = false;
-    setComposerEnabled(isReady());
     clearThinkingState();
     if (cancelled && activeAnswer && !activeAnswer.textContent.trim()) activeAnswer.textContent = 'Response stopped.';
     activeRequest = null;
     activeController = null;
     activeAnswer = null;
-    if (profileReady) resetVerification();
+    if (profileReady && !sessionToken && !turnstileToken) resetVerification();
+    else showReadyState();
   }
 
   function consumeEvent(eventText, onToken) {
@@ -302,7 +321,7 @@ export async function initializeDigitalTwin() {
     }
   }
 
-  async function generateAnswer(payload, signal, onToken) {
+  async function generateAnswer(payload, signal, onToken, onSession) {
     const response = await fetch(API_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -315,6 +334,8 @@ export async function initializeDigitalTwin() {
       error.status = response.status;
       throw error;
     }
+    const issuedSessionToken = response.headers.get('X-Digital-Twin-Session');
+    if (issuedSessionToken) onSession(issuedSessionToken);
     if (!response.body) throw new Error('AI service returned no response stream');
 
     const reader = response.body.getReader();
@@ -348,7 +369,7 @@ export async function initializeDigitalTwin() {
   }
 
   async function submitQuestion(question) {
-    const evaluation = evaluateQuestion(question, records);
+    const evaluation = evaluateQuestion(question, records, lastRecordIds);
     if (evaluation.action === 'ignore') return;
 
     createMessage(elements.messages, 'user', question);
@@ -359,9 +380,12 @@ export async function initializeDigitalTwin() {
     history = history.slice(-MAX_HISTORY_MESSAGES);
 
     if (evaluation.action === 'reply') {
+      lastRecordIds = [];
       addImmediateReply(evaluation.answer);
       return;
     }
+
+    lastRecordIds = evaluation.recordIds;
 
     activeRequest = crypto.randomUUID();
     const requestId = activeRequest;
@@ -374,18 +398,25 @@ export async function initializeDigitalTwin() {
     elements.cancel.hidden = false;
     setComposerEnabled(false);
     setStatus('Thai AI is answering through Cloudflare.', 'loading');
+    const verificationToken = turnstileToken;
+    turnstileToken = '';
 
     try {
       const answer = await generateAnswer({
         question,
         recordIds: evaluation.recordIds,
-        turnstileToken,
+        turnstileToken: sessionToken ? '' : verificationToken,
+        sessionToken,
         history: history.slice(0, -1),
       }, activeController.signal, (token) => {
         if (activeRequest !== requestId || !activeAnswer) return;
         clearThinkingState();
         activeAnswer.textContent += token;
         elements.messages.scrollTop = elements.messages.scrollHeight;
+      }, (token) => {
+        sessionToken = token;
+        root.dataset.verified = 'true';
+        elements.verification.hidden = true;
       });
       if (activeRequest !== requestId) return;
       clearThinkingState();
@@ -401,6 +432,7 @@ export async function initializeDigitalTwin() {
         return;
       }
       console.error('Digital twin request failed.');
+      if (error.status === 403) sessionToken = '';
       clearThinkingState();
       if (activeAnswer) activeAnswer.textContent = error.message || 'I could not finish that response. Please try again.';
       finishGeneration();
@@ -419,6 +451,7 @@ export async function initializeDigitalTwin() {
     const wasGenerating = Boolean(activeRequest);
     if (activeController) activeController.abort();
     history = [];
+    lastRecordIds = [];
     elements.messages.replaceChildren();
     elements.suggestions.hidden = false;
     if (wasGenerating) {
@@ -482,12 +515,14 @@ export async function initializeDigitalTwin() {
       },
       'expired-callback'() {
         turnstileToken = '';
+        if (sessionToken) return;
         root.dataset.verified = 'false';
         elements.verification.hidden = false;
         showReadyState();
       },
       'error-callback'() {
         turnstileToken = '';
+        if (sessionToken) return;
         root.dataset.verified = 'false';
         elements.verification.hidden = false;
         setComposerEnabled(false);

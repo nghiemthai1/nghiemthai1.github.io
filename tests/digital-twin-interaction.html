@@ -49,7 +49,12 @@
             controller.error(new DOMException('Stopped', 'AbortError'));
           }, { once: true });
         },
-      }), { headers: { 'Content-Type': 'text/event-stream' } }));
+      }), {
+        headers: {
+          'Content-Type': 'text/event-stream',
+          'X-Digital-Twin-Session': 'test-session',
+        },
+      }));
     };
     const { initializeDigitalTwin } = await import('../js/digital-twin.js?v=interaction-test');
     const { countWords, dedupeNumberedItems, endsWithSentence, finalizeResponse } = await import('../js/digital-twin-response.js?v=interaction-test-2');
@@ -84,6 +89,28 @@
         && outboundBodies[0]?.recordIds?.length > 0
         && !Object.hasOwn(outboundBodies[0], 'facts'),
     );
+    check(
+      'thinking indicator appears before the first token',
+      document.querySelector('.digital-twin__thinking')?.textContent === '...',
+    );
+    await new Promise((resolve) => setTimeout(resolve, 25));
+    check('first answer completes', !document.querySelector('.digital-twin__thinking'));
+    check('human verification is not repeated after the first request', turnstileResets === 0 && !input.disabled);
+
+    input.value = 'Can you tell me more';
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    check(
+      'follow-up reuses the previous topic and verified session',
+      outboundBodies[1]?.sessionToken === 'test-session'
+        && outboundBodies[1]?.turnstileToken === ''
+        && JSON.stringify(outboundBodies[1]?.recordIds) === JSON.stringify(outboundBodies[0]?.recordIds),
+    );
+    await new Promise((resolve) => setTimeout(resolve, 25));
+    check(
+      'professional follow-up is answered instead of refused',
+      ![...document.querySelectorAll('.digital-twin__message--assistant p')].at(-1)?.textContent.includes('only answer'),
+    );
 
     document.querySelector('[data-twin-clear]').click();
     await new Promise((resolve) => setTimeout(resolve, 0));
@@ -94,13 +121,10 @@
     document.querySelector('[data-twin-suggestion]').click();
     await new Promise((resolve) => setTimeout(resolve, 0));
     check('suggested question sends', document.querySelector('.digital-twin__message--user p')?.textContent.includes('EY'));
-    check(
-      'thinking indicator appears before the first token',
-      document.querySelector('.digital-twin__thinking')?.textContent === '...',
-    );
+    check('thinking indicator appears for a later request', document.querySelector('.digital-twin__thinking')?.textContent === '...');
     await new Promise((resolve) => setTimeout(resolve, 25));
     check('thinking indicator is replaced by the answer', !document.querySelector('.digital-twin__thinking'));
-    check('human verification resets after a model request', turnstileResets >= 1);
+    check('verified session remains active for later requests', turnstileResets === 0 && !input.disabled);
     const formattedAnswer = [...document.querySelectorAll('.digital-twin__message--assistant p')].at(-1);
     check(
       'completed answer renders clean list formatting',
@@ -121,11 +145,11 @@
     );
 
     const verbose = Array.from(
-      { length: 18 },
+      { length: 28 },
       () => 'I delivered a focused automation solution with measurable operational results for the client team.',
     ).join(' ');
     const limited = finalizeResponse(verbose);
-    check('long answers stay within 180 words', countWords(limited) <= 180 && endsWithSentence(limited));
+    check('long answers stay within 260 words', countWords(limited) <= 260 && endsWithSentence(limited));
 
     const repaired = finalizeResponse('I led automation delivery for clients. I also started an unfinished explanation about');
     check('unfinished trailing text is removed', repaired === 'I led automation delivery for clients.');
