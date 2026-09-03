@@ -95,7 +95,8 @@ def validate_experience_data() -> None:
 
     for required_path in (
         ROOT / "js" / "digital-twin.js",
-        ROOT / "js" / "digital-twin-worker.js",
+        ROOT / "cloudflare-worker" / "index.js",
+        ROOT / "cloudflare-worker" / "wrangler.jsonc",
         ROOT / "partials" / "digital-twin.html",
         ROOT / "css" / "digital-twin.css",
     ):

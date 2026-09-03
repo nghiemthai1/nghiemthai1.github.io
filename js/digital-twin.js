@@ -1,5 +1,10 @@
+import { finalizeResponse } from './digital-twin-response.js?v=20260902-4';
+
 const MAX_HISTORY_MESSAGES = 8;
 const MAX_QUESTION_LENGTH = 500;
+const API_ENDPOINT = 'https://thai-digital-twin-api.nghiemthai1.workers.dev/chat';
+const TURNSTILE_SITE_KEY = '0x4AAAAAAEmC_OLXbTSMNe92';
+const TURNSTILE_ACTION = 'digital_twin_chat';
 const REFUSAL = 'I can only answer questions about my public professional experience, projects, education, skills, and credentials.';
 const UNKNOWN = 'That detail is not included in my public experience profile.';
 const STOP_WORDS = new Set([
@@ -62,29 +67,6 @@ function scoreRecord(record, tokens, normalizedQuestion) {
   return score;
 }
 
-function formatRecord(record) {
-  const preferredOrder = [
-    'kind', 'organization', 'title', 'dates', 'location', 'credential', 'issuer',
-    'institution', 'graduation', 'gpa', 'name', 'role', 'summary', 'responsibilities',
-    'highlights', 'skills', 'honors', 'careerInterests', 'professionalThemes',
-    'methodologies', 'technologies',
-  ];
-  const ignored = new Set(['id', 'source', 'searchText', 'searchTokens']);
-  const keys = [...preferredOrder, ...Object.keys(record).filter((key) => !preferredOrder.includes(key))];
-  const entries = [];
-
-  for (const key of keys) {
-    if (ignored.has(key) || record[key] == null || record[key] === '') continue;
-    const label = key.replace(/([a-z])([A-Z])/g, '$1 $2').toUpperCase();
-    if (Array.isArray(record[key])) {
-      entries.push(`${label}:\n${record[key].map((item) => `- ${item}`).join('\n')}`);
-    } else {
-      entries.push(`${label}: ${record[key]}`);
-    }
-  }
-  return entries.join('\n');
-}
-
 export function retrieveKnowledge(question, records, limit = 4) {
   const normalizedQuestion = question.toLowerCase();
   const tokens = tokenize(question);
@@ -127,8 +109,34 @@ export function evaluateQuestion(question, records) {
   if (!retrieval.supported) return { action: 'reply', answer: UNKNOWN };
   return {
     action: 'generate',
-    facts: retrieval.records.map(formatRecord).join('\n\n---\n\n'),
+    recordIds: retrieval.records.map((record) => record.id),
   };
+}
+
+function loadTurnstile() {
+  if (window.turnstile) return Promise.resolve(window.turnstile);
+  return new Promise((resolve, reject) => {
+    const existing = document.querySelector('script[data-digital-twin-turnstile]');
+    const script = existing || document.createElement('script');
+    const timeout = window.setTimeout(() => reject(new Error('Turnstile timed out')), 15_000);
+    const ready = () => {
+      window.clearTimeout(timeout);
+      if (window.turnstile) resolve(window.turnstile);
+      else reject(new Error('Turnstile did not initialize'));
+    };
+    script.addEventListener('load', ready, { once: true });
+    script.addEventListener('error', () => {
+      window.clearTimeout(timeout);
+      reject(new Error('Turnstile could not be loaded'));
+    }, { once: true });
+    if (!existing) {
+      script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+      script.async = true;
+      script.defer = true;
+      script.dataset.digitalTwinTurnstile = 'true';
+      document.head.append(script);
+    }
+  });
 }
 
 function createMessage(container, role, text = '') {
@@ -188,13 +196,8 @@ export async function initializeDigitalTwin() {
     launcher: root.querySelector('[data-twin-launcher]'),
     panel: root.querySelector('[data-twin-panel]'),
     close: root.querySelector('[data-twin-close]'),
-    download: root.querySelector('[data-twin-download]'),
-    cpu: root.querySelector('[data-twin-cpu]'),
-    retry: root.querySelector('[data-twin-retry]'),
-    progress: root.querySelector('[data-twin-progress]'),
-    progressBar: root.querySelector('[data-twin-progress-bar]'),
     status: root.querySelector('[data-twin-status]'),
-    setupCopy: root.querySelector('[data-twin-setup-copy]'),
+    verification: root.querySelector('[data-twin-turnstile]'),
     suggestions: root.querySelector('[data-twin-suggestions]'),
     suggestionButtons: [...root.querySelectorAll('[data-twin-suggestion]')],
     messages: root.querySelector('[data-twin-messages]'),
@@ -206,13 +209,13 @@ export async function initializeDigitalTwin() {
   };
 
   let records = [];
-  let worker = null;
-  let modelReady = false;
-  let loadingConfiguration = null;
+  let profileReady = false;
+  let turnstileToken = '';
+  let turnstileWidgetId = null;
   let activeRequest = null;
+  let activeController = null;
   let activeAnswer = null;
   let history = [];
-  const downloads = new Map();
 
   function setStatus(message, state = 'idle') {
     elements.status.textContent = message;
@@ -222,6 +225,32 @@ export async function initializeDigitalTwin() {
   function setComposerEnabled(enabled) {
     elements.input.disabled = !enabled;
     elements.send.disabled = !enabled;
+  }
+
+  function isReady() {
+    return profileReady && Boolean(turnstileToken);
+  }
+
+  function showReadyState() {
+    if (activeRequest) return;
+    setComposerEnabled(isReady());
+    if (!profileReady) {
+      setStatus('Loading experience profile...', 'loading');
+    } else if (!turnstileToken) {
+      setStatus('Complete the quick human check to chat.', 'loading');
+    } else {
+      setStatus('AI ready · Cloudflare hosted.', 'ready');
+    }
+  }
+
+  function resetVerification() {
+    turnstileToken = '';
+    root.dataset.verified = 'false';
+    elements.verification.hidden = false;
+    setComposerEnabled(false);
+    if (turnstileWidgetId !== null && window.turnstile) {
+      window.turnstile.reset(turnstileWidgetId);
+    }
   }
 
   function clearThinkingState(answer = activeAnswer) {
@@ -235,7 +264,7 @@ export async function initializeDigitalTwin() {
     elements.panel.hidden = false;
     elements.launcher.setAttribute('aria-expanded', 'true');
     requestAnimationFrame(() => {
-      (modelReady ? elements.input : elements.download).focus();
+      (isReady() ? elements.input : elements.verification).focus?.();
     });
   }
 
@@ -245,133 +274,71 @@ export async function initializeDigitalTwin() {
     elements.launcher.focus();
   }
 
-  function updateProgress(progress) {
-    if (progress.status === 'progress' && progress.file && Number.isFinite(progress.total)) {
-      downloads.set(progress.file, { loaded: progress.loaded || 0, total: progress.total || 0 });
-      const totals = [...downloads.values()].reduce(
-        (sum, file) => ({ loaded: sum.loaded + file.loaded, total: sum.total + file.total }),
-        { loaded: 0, total: 0 },
-      );
-      const percent = totals.total ? Math.min(100, Math.round((totals.loaded / totals.total) * 100)) : 0;
-      elements.progressBar.style.width = `${percent}%`;
-      elements.progress.setAttribute('aria-valuenow', String(percent));
-      setStatus(
-        percent >= 100
-          ? 'Download complete. Setting up the AI on this device...'
-          : `Downloading model: ${percent}%`,
-        'loading',
-      );
-      return;
-    }
-    if (progress.status === 'initiate') setStatus('Preparing model files...', 'loading');
-  }
-
   function finishGeneration(cancelled = false) {
     elements.cancel.hidden = true;
     elements.send.hidden = false;
-    setComposerEnabled(modelReady);
+    setComposerEnabled(isReady());
     clearThinkingState();
     if (cancelled && activeAnswer && !activeAnswer.textContent.trim()) activeAnswer.textContent = 'Response stopped.';
     activeRequest = null;
+    activeController = null;
     activeAnswer = null;
-    if (modelReady) elements.input.focus();
+    if (profileReady) resetVerification();
   }
 
-  function handleWorkerMessage(event) {
-    const message = event.data;
-    if (message.type === 'progress') {
-      updateProgress(message.progress);
-      return;
-    }
-    if (message.type === 'ready') {
-      modelReady = true;
-      loadingConfiguration = null;
-      root.dataset.modelReady = 'true';
-      elements.progressBar.style.width = '100%';
-      elements.progress.setAttribute('aria-valuenow', '100');
-      elements.progress.hidden = true;
-      elements.setupCopy.hidden = true;
-      elements.download.hidden = true;
-      elements.cpu.hidden = true;
-      elements.retry.hidden = true;
-      setStatus(message.device === 'webgpu' ? 'AI ready on this device.' : 'AI ready in CPU mode.', 'ready');
-      setComposerEnabled(true);
-      elements.input.focus();
-      return;
-    }
-    if (message.type === 'token' && activeRequest === message.requestId && activeAnswer) {
-      clearThinkingState();
-      activeAnswer.textContent += message.text;
-      elements.messages.scrollTop = elements.messages.scrollHeight;
-      return;
-    }
-    if (message.type === 'complete' && activeRequest === message.requestId) {
-      clearThinkingState();
-      const answer = message.answer || activeAnswer?.textContent.trim() || UNKNOWN;
-      if (activeAnswer) renderAnswer(activeAnswer, answer);
-      history.push({ role: 'assistant', content: answer });
-      history = history.slice(-MAX_HISTORY_MESSAGES);
-      finishGeneration();
-      return;
-    }
-    if (message.type === 'cancelled' && activeRequest === message.requestId) {
-      finishGeneration(true);
-      return;
-    }
-    if (message.type === 'error') {
-      console.error('Digital twin worker error:', message.code, message.message);
-      if (message.operation === 'load') {
-        modelReady = false;
-        loadingConfiguration = null;
-        elements.retry.hidden = false;
-        elements.cpu.hidden = false;
-        elements.download.hidden = true;
-        setStatus('The model could not start. Retry, or use slower CPU mode.', 'error');
-      } else {
-        clearThinkingState();
-        if (activeAnswer) activeAnswer.textContent = 'I could not finish that response. Please try again.';
-        setStatus('Generation failed. Your question was not sent anywhere.', 'error');
-        finishGeneration();
-      }
+  function consumeEvent(eventText, onToken) {
+    const data = eventText
+      .split(/\r?\n/)
+      .filter((line) => line.startsWith('data:'))
+      .map((line) => line.slice(5).trimStart())
+      .join('\n');
+    if (!data || data === '[DONE]') return;
+    try {
+      const message = JSON.parse(data);
+      const token = message.response || message.delta?.content || message.choices?.[0]?.delta?.content || '';
+      if (token) onToken(token);
+    } catch {
+      // Ignore non-JSON keepalive events from the upstream model stream.
     }
   }
 
-  function getWorker() {
-    if (worker) return worker;
-    worker = new Worker(new URL('./digital-twin-worker.js?v=20260902-10', import.meta.url), { type: 'module' });
-    worker.addEventListener('message', handleWorkerMessage);
-    worker.addEventListener('error', () => {
-      modelReady = false;
-      loadingConfiguration = null;
-      elements.retry.hidden = false;
-      elements.cpu.hidden = false;
-      setComposerEnabled(false);
-      setStatus('The local AI worker could not start. Retry, or use slower CPU mode.', 'error');
+  async function generateAnswer(payload, signal, onToken) {
+    const response = await fetch(API_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      signal,
     });
-    return worker;
-  }
+    if (!response.ok) {
+      const errorBody = await response.json().catch(() => null);
+      const error = new Error(errorBody?.error || `AI service returned ${response.status}`);
+      error.status = response.status;
+      throw error;
+    }
+    if (!response.body) throw new Error('AI service returned no response stream');
 
-  function loadModel(device) {
-    if (loadingConfiguration) return;
-    delete root.dataset.modelReady;
-    downloads.clear();
-    const configuration = {
-      device,
-      // WebGPU can use the smaller mixed-precision graph. WASM keeps q4 for
-      // broader CPU compatibility.
-      dtype: device === 'webgpu' ? 'q4f16' : 'q4',
-    };
-    loadingConfiguration = configuration;
-    elements.setupCopy.hidden = false;
-    elements.progress.hidden = false;
-    elements.download.hidden = true;
-    elements.cpu.hidden = true;
-    elements.retry.hidden = true;
-    elements.progressBar.style.width = '0%';
-    elements.progress.setAttribute('aria-valuenow', '0');
-    setComposerEnabled(false);
-    setStatus(device === 'webgpu' ? 'Starting private WebGPU download...' : 'Starting slower CPU download...', 'loading');
-    getWorker().postMessage({ type: 'load', configuration });
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+    let answer = '';
+    while (true) {
+      const { done, value } = await reader.read();
+      buffer += decoder.decode(value || new Uint8Array(), { stream: !done });
+      const events = buffer.split(/\r?\n\r?\n/);
+      buffer = events.pop() || '';
+      for (const eventText of events) {
+        consumeEvent(eventText, (token) => {
+          answer += token;
+          onToken(token);
+        });
+      }
+      if (done) break;
+    }
+    if (buffer) consumeEvent(buffer, (token) => {
+      answer += token;
+      onToken(token);
+    });
+    return answer;
   }
 
   function addImmediateReply(answer) {
@@ -380,7 +347,7 @@ export async function initializeDigitalTwin() {
     history = history.slice(-MAX_HISTORY_MESSAGES);
   }
 
-  function submitQuestion(question) {
+  async function submitQuestion(question) {
     const evaluation = evaluateQuestion(question, records);
     if (evaluation.action === 'ignore') return;
 
@@ -396,7 +363,9 @@ export async function initializeDigitalTwin() {
       return;
     }
 
-    activeRequest = crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`;
+    activeRequest = crypto.randomUUID();
+    const requestId = activeRequest;
+    activeController = new AbortController();
     activeAnswer = createMessage(elements.messages, 'assistant');
     activeAnswer.classList.add('digital-twin__thinking');
     activeAnswer.setAttribute('aria-label', 'Thai AI is thinking');
@@ -404,13 +373,38 @@ export async function initializeDigitalTwin() {
     elements.send.hidden = true;
     elements.cancel.hidden = false;
     setComposerEnabled(false);
-    getWorker().postMessage({
-      type: 'generate',
-      requestId: activeRequest,
-      question,
-      facts: evaluation.facts,
-      history: history.slice(0, -1),
-    });
+    setStatus('Thai AI is answering through Cloudflare.', 'loading');
+
+    try {
+      const answer = await generateAnswer({
+        question,
+        recordIds: evaluation.recordIds,
+        turnstileToken,
+        history: history.slice(0, -1),
+      }, activeController.signal, (token) => {
+        if (activeRequest !== requestId || !activeAnswer) return;
+        clearThinkingState();
+        activeAnswer.textContent += token;
+        elements.messages.scrollTop = elements.messages.scrollHeight;
+      });
+      if (activeRequest !== requestId) return;
+      clearThinkingState();
+      const finalAnswer = finalizeResponse(answer) || UNKNOWN;
+      if (activeAnswer) renderAnswer(activeAnswer, finalAnswer);
+      history.push({ role: 'assistant', content: finalAnswer });
+      history = history.slice(-MAX_HISTORY_MESSAGES);
+      finishGeneration();
+    } catch (error) {
+      if (activeRequest !== requestId) return;
+      if (error.name === 'AbortError') {
+        finishGeneration(true);
+        return;
+      }
+      console.error('Digital twin request failed.');
+      clearThinkingState();
+      if (activeAnswer) activeAnswer.textContent = error.message || 'I could not finish that response. Please try again.';
+      finishGeneration();
+    }
   }
 
   elements.launcher.addEventListener('click', () => {
@@ -418,31 +412,25 @@ export async function initializeDigitalTwin() {
     else closePanel();
   });
   elements.close.addEventListener('click', closePanel);
-  elements.download.addEventListener('click', async () => {
-    if (!('gpu' in navigator)) {
-      elements.download.hidden = true;
-      elements.cpu.hidden = false;
-      setStatus('WebGPU is unavailable. You can opt into slower CPU mode.', 'warning');
-      elements.cpu.focus();
-      return;
-    }
-    loadModel('webgpu');
-  });
-  elements.cpu.addEventListener('click', () => loadModel('wasm'));
-  elements.retry.addEventListener('click', () => loadModel('webgpu'));
   elements.cancel.addEventListener('click', () => {
-    if (activeRequest) getWorker().postMessage({ type: 'cancel', requestId: activeRequest });
+    if (activeController) activeController.abort();
   });
   elements.clear.addEventListener('click', () => {
-    if (activeRequest) getWorker().postMessage({ type: 'cancel', requestId: activeRequest });
+    const wasGenerating = Boolean(activeRequest);
+    if (activeController) activeController.abort();
     history = [];
     elements.messages.replaceChildren();
     elements.suggestions.hidden = false;
-    finishGeneration();
+    if (wasGenerating) {
+      finishGeneration(true);
+    } else {
+      setComposerEnabled(isReady());
+      if (isReady()) elements.input.focus();
+    }
   });
   elements.form.addEventListener('submit', (event) => {
     event.preventDefault();
-    if (!modelReady || activeRequest) return;
+    if (!isReady() || activeRequest) return;
     submitQuestion(elements.input.value);
   });
   elements.input.addEventListener('input', () => {
@@ -452,34 +440,67 @@ export async function initializeDigitalTwin() {
   elements.input.addEventListener('keydown', (event) => {
     if (event.key !== 'Enter' || event.shiftKey || event.isComposing) return;
     event.preventDefault();
-    if (!modelReady || activeRequest) return;
+    if (!isReady() || activeRequest) return;
     submitQuestion(elements.input.value);
   });
   for (const button of elements.suggestionButtons) {
     button.addEventListener('click', () => {
       const question = button.textContent.trim();
-      if (modelReady && !activeRequest) {
+      if (isReady() && !activeRequest) {
         submitQuestion(question);
         return;
       }
       elements.input.value = question;
-      setStatus('Download the private AI to ask this question.', 'idle');
-      elements.download.focus();
+      showReadyState();
     });
   }
   root.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && !elements.panel.hidden) closePanel();
   });
 
-  try {
+  const profilePromise = (async () => {
     const dataUrl = new URL('../assets/data/experience.json', import.meta.url);
     const response = await fetch(dataUrl, { cache: 'no-store' });
     if (!response.ok) throw new Error(`Unable to load experience data (${response.status})`);
     records = buildKnowledgeRecords(await response.json());
-    setStatus('Ready to download. The model is cached after first use.');
+    profileReady = true;
+    root.dataset.modelReady = 'true';
+    showReadyState();
+  })();
+
+  const verificationPromise = loadTurnstile().then((turnstile) => {
+    turnstileWidgetId = turnstile.render(elements.verification, {
+      sitekey: TURNSTILE_SITE_KEY,
+      action: TURNSTILE_ACTION,
+      theme: 'dark',
+      size: 'flexible',
+      callback(token) {
+        turnstileToken = token;
+        root.dataset.verified = 'true';
+        elements.verification.hidden = true;
+        showReadyState();
+      },
+      'expired-callback'() {
+        turnstileToken = '';
+        root.dataset.verified = 'false';
+        elements.verification.hidden = false;
+        showReadyState();
+      },
+      'error-callback'() {
+        turnstileToken = '';
+        root.dataset.verified = 'false';
+        elements.verification.hidden = false;
+        setComposerEnabled(false);
+        setStatus('Human verification could not load. Please refresh and try again.', 'error');
+      },
+    });
+  });
+
+  try {
+    await Promise.all([profilePromise, verificationPromise]);
   } catch (error) {
     console.error(error);
-    elements.download.disabled = true;
-    setStatus('Experience data could not be loaded. Please refresh the page.', 'error');
+    setComposerEnabled(false);
+    setStatus('Chat setup could not finish. Please refresh the page.', 'error');
   }
 }

@@ -1,15 +1,14 @@
 import { initializeContactForm } from './contact-form.js?v=20260902-18';
 import { initializeSite } from './site.js?v=20260902-18';
 import { initializeWorksShowcase } from './works-showcase.js?v=20260902-18';
-import { initializeDigitalTwin } from './digital-twin.js?v=20260902-13';
+import { initializeDigitalTwin } from './digital-twin.js?v=20260902-14';
 
 const partialNames = ['header', 'about', 'portfolio', 'testimonials', 'contact', 'footer', 'digital-twin'];
-const PARTIAL_REVISION = '20260902-2';
+const PARTIAL_REVISION = '20260902-19';
 
 async function loadPartial(name) {
   const url = new URL(`../partials/${name}.html`, import.meta.url);
   url.searchParams.set('v', PARTIAL_REVISION);
-  url.searchParams.set('v', '20260902-18');
   const response = await fetch(url, { cache: 'no-store' });
 
   if (!response.ok) {

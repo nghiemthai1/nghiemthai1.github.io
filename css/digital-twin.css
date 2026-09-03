@@ -200,6 +200,17 @@
 .digital-twin__status[data-state='warning'] { color: #ffd28c; }
 .digital-twin__status[data-state='error'] { color: #ffaaa0; }
 
+.digital-twin__verification {
+  display: flex;
+  min-height: 65px;
+  margin-top: 0.55rem;
+  justify-content: center;
+}
+
+.digital-twin__verification[hidden] {
+  display: none;
+}
+
 .digital-twin__setup-actions {
    display: flex;
    flex-wrap: wrap;

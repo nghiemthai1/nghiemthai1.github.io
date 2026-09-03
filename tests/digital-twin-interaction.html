@@ -13,38 +13,44 @@
     const fixture = document.querySelector('#fixture');
     fixture.innerHTML = await fetch('../partials/digital-twin.html').then((response) => response.text());
 
-    class FakeWorker {
-      listeners = { message: [], error: [] };
+    let turnstileOptions;
+    let turnstileResets = 0;
+    let tokenSequence = 0;
+    window.turnstile = {
+      render(container, options) {
+        turnstileOptions = options;
+        queueMicrotask(() => options.callback(`test-token-${++tokenSequence}`));
+        return 'test-widget';
+      },
+      reset() {
+        turnstileResets += 1;
+        queueMicrotask(() => turnstileOptions.callback(`test-token-${++tokenSequence}`));
+      },
+    };
 
-      addEventListener(type, listener) {
-        this.listeners[type].push(listener);
+    const realFetch = window.fetch.bind(window);
+    const outboundBodies = [];
+    window.fetch = (input, options = {}) => {
+      if (!String(input).includes('thai-digital-twin-api.nghiemthai1.workers.dev')) {
+        return realFetch(input, options);
       }
-
-      postMessage(message) {
-        if (message.type === 'load') {
-          window.lastModelConfiguration = message.configuration;
-          this.emit({
-            type: 'progress',
-            progress: { status: 'progress', file: 'model_q4f16.onnx', loaded: 100, total: 100 },
-          });
-          setTimeout(() => this.emit({ type: 'ready', device: message.configuration.device }), 20);
-        }
-        if (message.type === 'generate') {
-          const answer = 'I built several machine-learning projects:\n1. **Face identification**: A MATLAB system using DCT features and KNN classification.\n2. **Early diagnosis**: A digital clock drawing analysis system.';
-          setTimeout(() => {
-            this.emit({ type: 'token', requestId: message.requestId, text: answer });
-            this.emit({ type: 'complete', requestId: message.requestId, answer });
+      outboundBodies.push(JSON.parse(options.body));
+      const answer = 'I built several machine-learning projects:\n1. **Face identification**: A MATLAB system using DCT features and KNN classification.\n2. **Early diagnosis**: A digital clock drawing analysis system.';
+      const encoder = new TextEncoder();
+      return Promise.resolve(new Response(new ReadableStream({
+        start(controller) {
+          const timer = setTimeout(() => {
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ response: answer })}\n\n`));
+            controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+            controller.close();
           }, 20);
-        }
-        if (message.type === 'cancel') this.emit({ type: 'cancelled', requestId: message.requestId });
-      }
-
-      emit(data) {
-        queueMicrotask(() => this.listeners.message.forEach((listener) => listener({ data })));
-      }
-    }
-
-    window.Worker = FakeWorker;
+          options.signal?.addEventListener('abort', () => {
+            clearTimeout(timer);
+            controller.error(new DOMException('Stopped', 'AbortError'));
+          }, { once: true });
+        },
+      }), { headers: { 'Content-Type': 'text/event-stream' } }));
+    };
     const { initializeDigitalTwin } = await import('../js/digital-twin.js?v=interaction-test');
     const { countWords, dedupeNumberedItems, endsWithSentence, finalizeResponse } = await import('../js/digital-twin-response.js?v=interaction-test-2');
     await initializeDigitalTwin();
@@ -63,23 +69,24 @@
       document.querySelector('.digital-twin__disclaimer')?.textContent === 'AI-generated responses might not be true.',
     );
 
-    document.querySelector('[data-twin-download]').click();
-    await new Promise((resolve) => setTimeout(resolve, 0));
-    check('WebGPU selects the smaller q4f16 graph', window.lastModelConfiguration?.dtype === 'q4f16');
-    check(
-      '100% download explains model setup',
-      document.querySelector('[data-twin-status]').textContent.includes('Setting up the AI'),
-    );
-    await new Promise((resolve) => setTimeout(resolve, 25));
-    check('ready state is compact', document.querySelector('[data-twin-setup-copy]').hidden && document.querySelector('[data-twin-progress]').hidden);
+    check('Cloudflare AI is ready without a model download', !document.querySelector('[data-twin-download]') && !document.querySelector('[data-twin-input]').disabled);
+    check('Cloudflare processing is disclosed', document.querySelector('#digital-twin-disclosure').textContent.includes('Cloudflare'));
+    check('managed human verification completed', document.querySelector('[data-digital-twin]').dataset.verified === 'true');
 
     const input = document.querySelector('[data-twin-input]');
     input.value = 'What did you do at EY?';
     input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
     await new Promise((resolve) => setTimeout(resolve, 0));
     check('Enter sends', document.querySelectorAll('.digital-twin__message--user').length === 1);
+    check(
+      'request sends a one-time verification token and record IDs instead of facts',
+      outboundBodies[0]?.turnstileToken === 'test-token-1'
+        && outboundBodies[0]?.recordIds?.length > 0
+        && !Object.hasOwn(outboundBodies[0], 'facts'),
+    );
 
     document.querySelector('[data-twin-clear]').click();
+    await new Promise((resolve) => setTimeout(resolve, 0));
     input.value = 'Keep editing';
     input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', shiftKey: true, bubbles: true, cancelable: true }));
     check('Shift+Enter does not send', document.querySelectorAll('.digital-twin__message--user').length === 0);
@@ -93,6 +100,7 @@
     );
     await new Promise((resolve) => setTimeout(resolve, 25));
     check('thinking indicator is replaced by the answer', !document.querySelector('.digital-twin__thinking'));
+    check('human verification resets after a model request', turnstileResets >= 1);
     const formattedAnswer = [...document.querySelectorAll('.digital-twin__message--assistant p')].at(-1);
     check(
       'completed answer renders clean list formatting',
