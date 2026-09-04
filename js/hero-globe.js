@@ -22,7 +22,7 @@ const atmosphereFragmentShader = `
   varying vec3 vViewDirection;
   void main() {
     float rim = pow(1.0 - abs(dot(vViewNormal, vViewDirection)), 2.8);
-    gl_FragColor = vec4(0.34, 0.79, 1.0, rim * 0.23);
+    gl_FragColor = vec4(0.42, 0.86, 1.0, rim * 0.27);
   }
 `;
 
@@ -30,7 +30,7 @@ const headVertexShader = `
   void main() {
     vec4 viewPosition = modelViewMatrix * vec4(position, 1.0);
     gl_Position = projectionMatrix * viewPosition;
-    gl_PointSize = min(6.0, 36.0 / -viewPosition.z);
+    gl_PointSize = min(7.0, 42.0 / -viewPosition.z);
   }
 `;
 
@@ -54,6 +54,10 @@ const flightCoordinates = [
   [[52.5, 13.4], [28.6, 77.2]],
   [[43.7, -79.4], [19.1, 72.9]],
   [[-1.3, 36.8], [-26.2, 28.0]],
+  [[47.6, -122.3], [37.6, 127.0]],
+  [[41.0, 29.0], [13.8, 100.5]],
+  [[-33.4, -70.7], [-33.9, 18.4]],
+  [[41.9, -87.6], [49.3, -123.1]],
 ];
 
 function pointOnGlobe(latitude, longitude) {
@@ -190,7 +194,7 @@ export function initializeHeroGlobe() {
     flights.forEach(({ curve, head, phase }) => {
       const progress = (elapsed * 0.075 + phase) % 1;
       head.position.copy(curve.getPoint(progress));
-      head.material.uniforms.uOpacity.value = Math.sin(progress * Math.PI) * 0.78;
+      head.material.uniforms.uOpacity.value = Math.sin(progress * Math.PI) * 0.88;
     });
   };
 

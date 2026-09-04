@@ -53,8 +53,8 @@ header#home {
    min-height: 500px;
    width: 100%;
    background:
-      linear-gradient(90deg, rgba(2, 10, 24, .98) 0%, rgba(3, 16, 35, .93) 38%, rgba(3, 19, 40, .48) 67%, rgba(2, 11, 24, .12) 100%),
-      radial-gradient(circle at 82% 48%, #176aa0 0%, #0a3a62 28%, #061d37 56%, #020a16 100%);
+      linear-gradient(90deg, rgba(2, 10, 24, .94) 0%, rgba(3, 16, 35, .84) 38%, rgba(3, 19, 40, .4) 67%, rgba(2, 11, 24, .08) 100%),
+      radial-gradient(circle at 82% 48%, #2288c1 0%, #0e4c7a 28%, #082745 56%, #031022 100%);
    text-align: center;
    overflow: hidden;
 }
