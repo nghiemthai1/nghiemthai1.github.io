@@ -22,7 +22,7 @@ const atmosphereFragmentShader = `
   varying vec3 vViewDirection;
   void main() {
     float rim = pow(1.0 - abs(dot(vViewNormal, vViewDirection)), 2.8);
-    gl_FragColor = vec4(0.42, 0.86, 1.0, rim * 0.27);
+    gl_FragColor = vec4(0.58, 0.94, 1.0, rim * 0.48);
   }
 `;
 
@@ -104,7 +104,7 @@ function createFlights() {
     const lineMaterial = new THREE.LineBasicMaterial({
       color: 0x8be5ff,
       transparent: true,
-      opacity: 0.11,
+      opacity: 0.24,
       depthTest: false,
       depthWrite: false,
       blending: THREE.AdditiveBlending,
@@ -194,7 +194,7 @@ export function initializeHeroGlobe() {
     flights.forEach(({ curve, head, phase }) => {
       const progress = (elapsed * 0.075 + phase) % 1;
       head.position.copy(curve.getPoint(progress));
-      head.material.uniforms.uOpacity.value = Math.sin(progress * Math.PI) * 0.88;
+      head.material.uniforms.uOpacity.value = Math.sin(progress * Math.PI);
     });
   };
 

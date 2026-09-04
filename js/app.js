@@ -1,11 +1,11 @@
 import { initializeContactForm } from './contact-form.js?v=20260902-18';
 import { initializeSite } from './site.js?v=20260902-18';
 import { initializeWorksShowcase } from './works-showcase.js?v=20260902-18';
-import { initializeDigitalTwin } from './digital-twin.js?v=20260904-3';
-import { initializeHeroGlobe } from './hero-globe.js?v=20260904-4';
+import { initializeDigitalTwin } from './digital-twin.js?v=20260904-4';
+import { initializeHeroGlobe } from './hero-globe.js?v=20260904-5';
 
 const partialNames = ['header', 'about', 'portfolio', 'testimonials', 'contact', 'footer', 'digital-twin'];
-const PARTIAL_REVISION = '20260904-1';
+const PARTIAL_REVISION = '20260904-3';
 
 async function loadPartial(name) {
   const url = new URL(`../partials/${name}.html`, import.meta.url);

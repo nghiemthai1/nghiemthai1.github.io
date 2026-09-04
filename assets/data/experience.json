@@ -1,97 +1,111 @@
 {
   "schemaVersion": 1,
-  "lastUpdated": "2026-09-02",
+  "lastUpdated": "2026-09-04",
   "identity": {
     "name": "Thai Nghiem",
-    "title": "Senior Technology Consultant",
-    "location": "United States",
-    "summary": "I am an engineer and senior technology consultant focused on AI-enabled automation, web application development, data, and practical digital systems.",
+    "title": "Senior Consultant | GenAI & Agentic AI | AI Solution Architecture | Engineering Leadership",
+    "location": "New Jersey",
+    "summary": "I am a senior consultant in AI and data with seven years of experience across hardware and firmware, full-stack software, intelligent automation, and enterprise AI. I now lead GenAI and agentic AI strategy, governance, architecture, and delivery.",
     "careerInterests": [
-      "AI-enabled automation",
-      "business analytics",
-      "web application development",
-      "electrical and computer engineering",
-      "building reliable technology around real business needs"
+      "Agentic AI and Generative AI",
+      "AI solution architecture and governance",
+      "enterprise AI product delivery",
+      "intelligent automation",
+      "software and electrical and computer engineering"
     ],
     "professionalThemes": [
-      "turning business requirements into production automation",
-      "combining software engineering, analytics, and applied AI",
-      "building reusable standards and scalable delivery practices",
-      "working directly with stakeholders and delivery teams"
+      "progressing from hardware and embedded systems to software, automation, and enterprise AI",
+      "turning ambiguous business opportunities into secure and scalable AI products",
+      "connecting AI strategy and governance with hands-on engineering",
+      "building reusable architecture patterns and scalable delivery practices"
     ],
-    "methodologies": ["Agile", "Scrum", "test-driven development", "Center of Excellence governance"],
+    "methodologies": ["Agile", "Scrum", "test-driven development", "AI governance", "AIOps", "FinOps", "Center of Excellence governance", "NIST-aligned decision frameworks"],
     "technologies": [
       "UiPath", "Java", "JavaScript", "HTML", "CSS", "C", "C++", "C#", "VB.NET",
-      "Python", "Git", "MATLAB", "SQL", "PostgreSQL", "AWS", "AppDynamics", "Tableau",
-      "Postman", "OCR", "NLP", "Jupyter Notebook"
+      "Python", "React", "FastAPI", "LangChain", "Google ADK", "Gemini", "GCP", "Azure AI",
+      "Git", "MATLAB", "SQL", "PostgreSQL", "AWS", "AppDynamics", "Tableau", "Postman", "OCR",
+      "NLP", "Jupyter Notebook", "embedded systems", "firmware", "PCB design", "computer vision"
     ],
-    "source": "index.html#about"
+    "source": "assets/documents/resumes/Thai_Nghiem_Public_CV_2026.docx"
   },
   "experience": [
     {
       "id": "experience-ey-senior-technology-consultant",
       "organization": "Ernst & Young LLP (EY)",
-      "title": "Senior Technology Consultant",
-      "dates": "August 2022-Present",
-      "location": "Philadelphia, Pennsylvania",
-      "summary": "I lead the design and delivery of UiPath-based intelligent automation at EY, combining solution architecture, development standards, NLP virtual agents, and intelligent document processing to improve client operations.",
+      "title": "Senior Technology Consultant - GenAI Business Analyst / Technical Lead",
+      "dates": "August 2025-Present",
+      "summary": "I lead enterprise GenAI and agentic AI initiatives from discovery through solution design and delivery, bridging business strategy, AI governance, architecture, and hands-on technical execution.",
       "responsibilities": [
-        "Lead implementation of complex robotic process automation across multiple departments.",
-        "Serve as a solution architect and establish reusable automation blueprints.",
-        "Standardize code quality and delivery practices for a six-developer team.",
-        "Develop AI-enabled virtual-agent and document-processing solutions."
+        "Lead AI use-case discovery and value prioritization across Finance, Operations, IT, and Cloud Engineering.",
+        "Design AI governance and operating-model frameworks spanning AI Factory Governance, AIOps, and FinOps.",
+        "Architect and prototype agentic solutions using Python, FastAPI, React, GCP, Gemini, and Google ADK.",
+        "Develop wireframes, interactive demos, architecture designs, and reusable AI solution patterns."
       ],
       "highlights": [
-        "Automated more than 20 complex processes.",
-        "Delivered millions of dollars in annual savings and roughly 30,000 hours of annual time savings.",
-        "Created scalable automation standards and reusable blueprints for delivery teams.",
-        "Built NLP virtual-agent and intelligent-document-processing document-redaction solutions.",
-        "One document-redaction initiative saved about 3,500 hours annually and created expansion opportunities across agencies."
+        "Facilitated workshops across six business units.",
+        "Translated ambiguous opportunities into more than 18 prioritized use cases, structured requirements, and executable roadmaps.",
+        "Created practical AI decision tools aligned with NIST principles.",
+        "Provided technical direction across APIs, data design, debugging, and deployment."
       ],
-      "skills": ["UiPath", "RPA", "C#", "VB.NET", "AI", "intelligent document processing", "virtual agents"],
-      "source": "index.html#modal-18"
+      "skills": ["Agentic AI", "Generative AI", "AI governance", "AI solution architecture", "Python", "FastAPI", "React", "GCP", "Gemini", "Google ADK"],
+      "source": "assets/documents/resumes/Thai_Nghiem_Public_CV_2026.docx"
+    },
+    {
+      "id": "experience-ey-ai-intelligent-automation",
+      "organization": "Ernst & Young LLP (EY)",
+      "title": "Senior Technology Consultant - AI & Intelligent Automation",
+      "dates": "August 2022-August 2025",
+      "summary": "I architected and delivered enterprise AI-enabled automation across government, telecommunications, and utilities, owning solution architecture, technical delivery, development, and client engagement.",
+      "responsibilities": [
+        "Designed NLP-powered virtual agents and Intelligent Document Processing solutions using Azure AI.",
+        "Led cross-functional teams of six developers and two analysts across Finance, HR, and Operations.",
+        "Coached senior consultants, coordinated global delivery teams, and developed agentic AI prototypes and reusable accelerators."
+      ],
+      "highlights": [
+        "Helped scale a statewide intelligent automation program to more than 150 deployments.",
+        "Eliminated more than 110,000 hours of manual work and generated $14 million in value, including $6.9 million in annual savings.",
+        "Eliminated more than 3,500 manual hours annually through NLP and Intelligent Document Processing solutions.",
+        "Delivered solutions spanning 13 departments and trained more than 150 practitioners and leaders."
+      ],
+      "skills": ["Azure AI", "UiPath", "intelligent automation", "NLP", "Intelligent Document Processing", "Agentic AI", "solution architecture", "team leadership"],
+      "source": "assets/documents/resumes/Thai_Nghiem_Public_CV_2026.docx"
     },
     {
       "id": "experience-american-water-intelligent-automation-engineer",
       "organization": "American Water",
-      "title": "Hyper/Intelligent Automation Engineer",
-      "dates": "June 2021-July 2022",
-      "location": "Camden, New Jersey",
-      "summary": "I helped establish a scalable automation Center of Excellence at American Water and used UiPath with VB.NET to automate business processes, improve employee experience, and reduce operating costs.",
+      "title": "Intelligent Automation Engineer",
+      "dates": "March 2021-March 2022",
+      "summary": "I established a scalable automation Center of Excellence and delivered AI-enabled UiPath solutions for complex, high-volume business processes.",
       "responsibilities": [
-        "Established coding standards, development best practices, and repeatable automation processes.",
-        "Designed and delivered UiPath automations for business teams.",
-        "Supported the growth of a sustainable automation Center of Excellence."
+        "Defined development standards, reusable architecture patterns, governance, and delivery practices.",
+        "Designed and delivered AI-enabled UiPath solutions that reduced manual work and improved employee experience.",
+        "Partnered with application and infrastructure teams on secure, production-ready environments."
       ],
       "highlights": [
         "Built reusable governance and delivery practices for automation work.",
-        "Improved employee satisfaction by reducing repetitive manual work.",
-        "Delivered meaningful operational cost reductions."
+        "Connected automation delivery with enterprise application and infrastructure requirements."
       ],
-      "skills": ["UiPath", "VB.NET", "RPA", "Center of Excellence", "automation governance", "process improvement"],
-      "source": "index.html#modal-14"
+      "skills": ["UiPath", "intelligent automation", "Center of Excellence", "automation governance", "solution architecture", "process improvement"],
+      "source": "assets/documents/resumes/Thai_Nghiem_Public_CV_2026.docx"
     },
     {
       "id": "experience-american-water-full-stack-developer",
       "organization": "American Water",
       "title": "Full-Stack Java Software Engineer I and II",
-      "dates": "January 2019-May 2021",
-      "location": "Camden, New Jersey",
-      "summary": "I developed and maintained a Java web application that streamlined water-quality work, including collection and management of approximately 6,000 bacteria samples every month.",
+      "dates": "January 2019-August 2022",
+      "summary": "I developed enterprise web and notification applications with Java, JavaScript, Spring Boot, PostgreSQL, and AWS. The systems supported water-quality operations and communications to about 14 million customers.",
       "responsibilities": [
-        "Built responsive web features with Java and JavaScript UI libraries.",
-        "Worked with PostgreSQL data and AWS microservices.",
-        "Led junior developers and served as Scrum Master for a three-person Agile team.",
-        "Gathered feedback from ten client stakeholders and coordinated feature decisions."
+        "Led a distributed team delivering an enterprise notification application.",
+        "Designed backend and cloud integrations with Java Spring Boot, PostgreSQL, AWS microservices, and OnSolve CodeRED.",
+        "Built and maintained water-quality applications and integrated multiple data sources and reporting capabilities."
       ],
       "highlights": [
+        "Supported communications to about 14 million customers.",
         "Supported the collection and management of approximately 6,000 bacteria samples each month.",
-        "Automated reporting, scheduling, field-result entry, sample monitoring, and monthly progress.",
-        "Led a team of junior web developers using JavaScript UI libraries, PostgreSQL, and AWS microservices.",
-        "Coordinated a three-person Scrum team and engaged ten clients for feedback to support on-time delivery."
+        "Automated reporting, scheduling, field-result entry, and sample monitoring, saving about four to eight hours per user each week."
       ],
-      "skills": ["Java", "JavaScript", "HTML", "CSS", "PostgreSQL", "Webix", "AWS microservices", "Spring Tool Suite", "Agile", "Scrum", "test-driven development"],
-      "source": "index.html#modal-14"
+      "skills": ["Java", "Spring Boot", "JavaScript", "PostgreSQL", "AWS microservices", "APIs", "Agile", "Scrum"],
+      "source": "assets/documents/resumes/Thai_Nghiem_Public_CV_2026.docx"
     },
     {
       "id": "experience-ellenby-engineering-intern",
@@ -129,6 +143,7 @@
       "id": "education-ms-business-analytics",
       "credential": "M.S. Business Analytics",
       "institution": "Temple University",
+      "dates": "2020-2023",
       "gpa": "4.0",
       "summary": "I earned a Master of Science in Business Analytics from Temple University with a 4.0 GPA.",
       "source": "index.html#about"
@@ -137,7 +152,7 @@
       "id": "education-bs-electrical-computer-engineering",
       "credential": "B.S. Electrical & Computer Engineering",
       "institution": "Rowan University",
-      "graduation": "December 2019",
+      "dates": "2015-2019",
       "gpa": "3.98",
       "honors": [
         "Summa Cum Laude",
@@ -152,31 +167,36 @@
   ],
   "certifications": [
     {
-      "id": "certification-uipath-advanced-rpa-developer",
-      "credential": "UiPath Advanced RPA Developer",
-      "summary": "I earned the UiPath Advanced RPA Developer credential.",
-      "source": "index.html#about"
+      "id": "certification-snowflake-snowpro-core",
+      "credential": "Snowflake SnowPro Core",
+      "issuer": "Snowflake",
+      "year": "2026",
+      "summary": "I earned the Snowflake SnowPro Core certification in 2026.",
+      "source": "assets/documents/resumes/Thai_Nghiem_Public_CV_2026.docx"
+    },
+    {
+      "id": "certification-uipath-solution-architect-professional",
+      "credential": "UiPath Solution Architect Professional",
+      "issuer": "UiPath",
+      "year": "2025",
+      "summary": "I earned the UiPath Solution Architect Professional credential in 2025.",
+      "source": "assets/documents/resumes/Thai_Nghiem_Public_CV_2026.docx"
     },
     {
       "id": "certification-aws-solutions-architect-associate",
       "credential": "AWS Certified Solutions Architect - Associate",
       "issuer": "Amazon Web Services",
-      "summary": "I earned the AWS Certified Solutions Architect - Associate credential.",
-      "source": "index.html#about"
+      "year": "2024",
+      "summary": "I earned the AWS Certified Solutions Architect - Associate credential in 2024.",
+      "source": "assets/documents/resumes/Thai_Nghiem_Public_CV_2026.docx"
     },
     {
       "id": "certification-aws-cloud-practitioner",
       "credential": "AWS Certified Cloud Practitioner",
       "issuer": "Amazon Web Services",
-      "summary": "I earned the AWS Certified Cloud Practitioner credential.",
-      "source": "assets/documents/resumes/Resume.pdf"
-    },
-    {
-      "id": "certification-machine-learning-stanford-coursera",
-      "credential": "Machine Learning",
-      "issuer": "Stanford University via Coursera",
-      "summary": "I completed Stanford University's Machine Learning course through Coursera.",
-      "source": "assets/documents/resumes/Resume.pdf"
+      "year": "2024",
+      "summary": "I earned the AWS Certified Cloud Practitioner credential in 2024.",
+      "source": "assets/documents/resumes/Thai_Nghiem_Public_CV_2026.docx"
     }
   ],
   "projects": [
@@ -277,11 +297,11 @@
       "dates": "2018-2019",
       "role": "Machine Learning Student Researcher at Rowan University",
       "location": "Glassboro, New Jersey",
-      "summary": "I researched machine-learning methods for a noninvasive Digital Clock Drawing Test designed to support early Alzheimer's disease diagnosis from a healthy-control comparison.",
+      "summary": "I applied machine-learning and feature-selection techniques to Digital Clock Drawing Test data for early cognitive-impairment and Alzheimer's disease screening.",
       "highlights": [
-        "Evaluated genetic-algorithm, wrapper, and information-theory feature-selection techniques.",
-        "Used feature selection to identify diagnostically important clock-drawing characteristics.",
-        "Trained neural-network and stacked-generalization classifiers with accuracy from the high 70s to the mid-80s."
+        "Evaluated genetic algorithms, wrapper methods, and information-theory feature-selection techniques.",
+        "Used neural networks and ensemble learning to identify predictive clinical features.",
+        "Achieved diagnostic classification accuracy from roughly 70 percent to above 80 percent."
       ],
       "skills": ["Python", "feature selection", "neural networks", "stacked generalization", "machine learning"],
       "source": "index.html#modal-16"

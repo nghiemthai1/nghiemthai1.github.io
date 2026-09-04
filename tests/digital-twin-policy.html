@@ -38,7 +38,10 @@
 
     const eyResult = evaluateQuestion('What impact have you delivered at EY?', records);
     const eyOnly = eyResult.action === 'generate'
-      && JSON.stringify(eyResult.recordIds) === JSON.stringify(['experience-ey-senior-technology-consultant']);
+      && JSON.stringify(eyResult.recordIds) === JSON.stringify([
+        'experience-ey-senior-technology-consultant',
+        'experience-ey-ai-intelligent-automation',
+      ]);
     failures += eyOnly ? 0 : 1;
     const eyItem = document.createElement('li');
     eyItem.dataset.result = eyOnly ? 'pass' : 'fail';
@@ -58,7 +61,13 @@
       [
         'technology overview routes to comprehensive stack records',
         'What technologies do you use?',
-        ['identity', 'experience-ey-senior-technology-consultant', 'experience-american-water-full-stack-developer', 'experience-fpt-software-intern'],
+        ['identity', 'experience-ey-senior-technology-consultant', 'experience-american-water-full-stack-developer', 'experience-ellenby-engineering-intern'],
+        [],
+      ],
+      [
+        'career progression follows engineering through enterprise AI',
+        'How did your engineering background lead to enterprise AI?',
+        ['experience-ellenby-engineering-intern', 'experience-american-water-full-stack-developer', 'experience-ey-ai-intelligent-automation', 'experience-ey-senior-technology-consultant'],
         [],
       ],
       [

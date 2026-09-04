@@ -53,8 +53,8 @@ header#home {
    min-height: 500px;
    width: 100%;
    background:
-      linear-gradient(90deg, rgba(2, 10, 24, .94) 0%, rgba(3, 16, 35, .84) 38%, rgba(3, 19, 40, .4) 67%, rgba(2, 11, 24, .08) 100%),
-      radial-gradient(circle at 82% 48%, #2288c1 0%, #0e4c7a 28%, #082745 56%, #031022 100%);
+      linear-gradient(90deg, rgba(2, 12, 28, .86) 0%, rgba(3, 22, 47, .68) 38%, rgba(5, 43, 76, .22) 67%, rgba(4, 34, 62, .02) 100%),
+      radial-gradient(circle at 82% 48%, #55c8f4 0%, #218ec7 25%, #0e5688 52%, #062744 78%, #04182d 100%);
    text-align: center;
    overflow: hidden;
 }
@@ -64,8 +64,8 @@ header#home::after {
    z-index: 1;
    inset: 0;
    background:
-      linear-gradient(180deg, transparent 68%, rgba(3, 21, 36, .58) 88%, #031524 100%),
-      radial-gradient(ellipse at 50% 46%, rgba(1, 8, 20, .7) 0%, rgba(1, 8, 20, .3) 34%, transparent 66%);
+      linear-gradient(180deg, transparent 68%, rgba(3, 27, 46, .42) 88%, #031524 100%),
+      radial-gradient(ellipse at 44% 46%, rgba(1, 10, 24, .48) 0%, rgba(1, 12, 27, .16) 38%, transparent 68%);
    content: '';
    pointer-events: none;
 }
@@ -80,6 +80,7 @@ header#home::after {
    display: block;
    width: 100%;
    height: 100%;
+   filter: brightness(1.28) saturate(1.14) drop-shadow(0 0 38px rgba(90, 211, 255, .42));
 }
 
 /* vertically center banner section */
@@ -434,6 +435,12 @@ ul#nav li.current a { color: #F06000; }
    margin: 0 18px 4px 0;
    font-size: 13px;
 }
+#about .about-downloads {
+   display: flex;
+   flex: 0 0 auto;
+   gap: 10px;
+   margin: 0;
+}
 #about .about-resume,
 #about .about-resume:visited {
    flex: 0 0 auto;
@@ -448,6 +455,17 @@ ul#nav li.current a { color: #F06000; }
 #about .about-resume:focus {
    background: #7edadd;
    color: #031524;
+}
+#about .about-resume--secondary,
+#about .about-resume--secondary:visited {
+   background: transparent;
+   color: #d9f3f4;
+   box-shadow: none;
+}
+#about .about-resume--secondary:hover,
+#about .about-resume--secondary:focus {
+   background: rgba(126, 218, 221, .14);
+   color: #fff;
 }
 #about .about-resume i { margin-right: 10px; }
 
@@ -479,6 +497,7 @@ ul#nav li.current a { color: #F06000; }
    #about .about-connect { gap: 12px; padding-top: 10px; }
    #about .about-connect__label { margin-bottom: 2px; font-size: 14px; }
    #about .about-connect div a { margin-bottom: 0; font-size: 11px; }
+   #about .about-downloads { gap: 7px; }
    #about .about-resume,
    #about .about-resume:visited { padding: 10px 14px; font-size: 10px; }
 }
