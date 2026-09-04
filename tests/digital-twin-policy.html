@@ -56,26 +56,35 @@
 
     const routedQuestions = [
       [
+        'technology overview routes to comprehensive stack records',
+        'What technologies do you use?',
+        ['identity', 'experience-ey-senior-technology-consultant', 'experience-american-water-full-stack-developer', 'experience-fpt-software-intern'],
+        [],
+      ],
+      [
         'web application experience routes to web roles',
         'Do you have web app development?',
         ['experience-american-water-full-stack-developer', 'experience-fpt-software-intern', 'identity'],
+        [],
       ],
       [
         'Rowan question includes education and documented Rowan projects',
         'What did you do at Rowan?',
         ['education-bs-electrical-computer-engineering', 'project-alzheimers-diagnosis', 'project-sumo-robot'],
+        [],
       ],
       [
         'robotics routes to physical hardware and firmware instead of RPA',
         'Do you have robotic experience?',
         ['experience-ellenby-engineering-intern', 'project-sumo-robot', 'project-underwater-rov', 'project-object-follower'],
+        ['experience-ey-senior-technology-consultant'],
       ],
     ];
-    for (const [name, question, expectedIds] of routedQuestions) {
+    for (const [name, question, expectedIds, excludedIds] of routedQuestions) {
       const result = evaluateQuestion(question, records);
       const passed = result.action === 'generate'
         && JSON.stringify(result.recordIds) === JSON.stringify(expectedIds)
-        && !result.recordIds.includes('experience-ey-senior-technology-consultant');
+        && excludedIds.every((id) => !result.recordIds.includes(id));
       failures += passed ? 0 : 1;
       const item = document.createElement('li');
       item.dataset.result = passed ? 'pass' : 'fail';

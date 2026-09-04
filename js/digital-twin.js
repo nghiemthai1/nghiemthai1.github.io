@@ -18,8 +18,9 @@ const GENERIC_SCOPE_TERMS = new Set([
   'certification', 'certifications', 'background', 'achievement', 'achievements', 'responsibility',
   'responsibilities', 'interest', 'interests', 'accomplishment', 'accomplishments',
 ]);
-const IN_SCOPE_PATTERN = /\b(experience|work|career|job|role|project|build|built|develop|developed|development|web|website|app|application|software|skill|technology|education|degree|university|college|rowan|gpa|grade|major|minor|course|graduate|graduated|certification|credential|award|honor|uipath|automation|artificial intelligence|ai|robot|robotic|robotics|hardware|firmware|pcb|embedded|circuit|java|python|aws|engineering|consultant|intern|employer|company|achievement|accomplish|lead|team|background|professional|resume|portfolio|strength|specialize|who are you|about yourself)\b/i;
+const IN_SCOPE_PATTERN = /\b(experience|work|career|job|role|project|build|built|develop|developed|development|web|website|app|application|software|skill|technology|technologies|tech|tool|tools|framework|frameworks|language|languages|stack|database|databases|cloud|education|degree|university|college|rowan|gpa|grade|major|minor|course|graduate|graduated|certification|credential|award|honor|uipath|automation|artificial intelligence|ai|robot|robotic|robotics|hardware|firmware|pcb|embedded|circuit|java|python|aws|engineering|consultant|intern|employer|company|achievement|accomplish|lead|team|background|professional|resume|portfolio|strength|specialize|who are you|about yourself)\b/i;
 const FOLLOW_UP_PATTERN = /^(?:(?:can|could|would)\s+you\s+)?(?:tell|share|give)\s+me\s+more(?:\s+about\s+(?:that|this|it))?[.!?]*$|^(?:please\s+)?(?:elaborate|expand|go on|what else)(?:\s+on\s+(?:that|this|it))?[.!?]*$/i;
+const TECHNOLOGY_STACK_PATTERN = /\b(technolog(?:y|ies)|tech\s+stack|tools?|frameworks?|programming\s+languages?|languages?|databases?|cloud\s+(?:platforms?|technologies|services))\b/i;
 const WEB_DEVELOPMENT_PATTERN = /\b(web\s*(?:app|application|development)|website|full[- ]?stack(?:\s+development)?|software\s+development)\b/i;
 const PHYSICAL_ROBOTICS_PATTERN = /\b(robot|robotic|robotics|hardware|firmware|pcb|embedded)\b/i;
 const BLOCKED_PATTERNS = [
@@ -84,6 +85,17 @@ export function retrieveKnowledge(question, records, limit = 4) {
   }
 
   const selectRecords = (ids) => ids.map((id) => records.find((record) => record.id === id)).filter(Boolean);
+  if (TECHNOLOGY_STACK_PATTERN.test(question)) {
+    return {
+      records: selectRecords([
+        'identity',
+        'experience-ey-senior-technology-consultant',
+        'experience-american-water-full-stack-developer',
+        'experience-fpt-software-intern',
+      ]),
+      supported: true,
+    };
+  }
   if (WEB_DEVELOPMENT_PATTERN.test(question)) {
     return {
       records: selectRecords([
