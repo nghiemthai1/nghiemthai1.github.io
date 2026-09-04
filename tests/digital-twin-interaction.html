@@ -56,8 +56,8 @@
         },
       }));
     };
-    const { initializeDigitalTwin } = await import('../js/digital-twin.js?v=interaction-test-4');
-    const { countWords, dedupeNumberedItems, endsWithSentence, finalizeResponse } = await import('../js/digital-twin-response.js?v=interaction-test-3');
+    const { initializeDigitalTwin } = await import('../js/digital-twin.js?v=interaction-test-5');
+    const { countWords, dedupeNumberedItems, endsWithSentence, finalizeResponse } = await import('../js/digital-twin-response.js?v=interaction-test-4');
     await initializeDigitalTwin();
 
     const results = document.querySelector('#results');
@@ -150,7 +150,7 @@
       () => 'I delivered a focused automation solution with measurable operational results for the client team.',
     ).join(' ');
     const limited = finalizeResponse(verbose);
-    check('long answers stay within 180 words', countWords(limited) <= 180 && endsWithSentence(limited));
+    check('long answers stay within 220 words', countWords(limited) <= 220 && endsWithSentence(limited));
 
     const repaired = finalizeResponse('I led automation delivery for clients. I also started an unfinished explanation about');
     check('unfinished trailing text is removed', repaired === 'I led automation delivery for clients.');

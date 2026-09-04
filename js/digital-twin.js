@@ -1,4 +1,4 @@
-import { finalizeResponse } from './digital-twin-response.js?v=20260904-2';
+import { finalizeResponse } from './digital-twin-response.js?v=20260904-3';
 
 const MAX_HISTORY_MESSAGES = 8;
 const MAX_QUESTION_LENGTH = 500;
