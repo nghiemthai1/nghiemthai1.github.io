@@ -52,11 +52,23 @@ header#home {
    height: 800px;
    min-height: 500px;
    width: 100%;
-   background: #161415 url(../assets/images/airplane.jpg) no-repeat top center;
-   background-size: cover !important;
-	-webkit-background-size: cover !important;
+   background:
+      radial-gradient(circle at 50% 58%, rgba(24, 72, 111, .68) 0%, rgba(7, 29, 53, .88) 43%, #020a16 100%),
+      #020a16;
    text-align: center;
    overflow: hidden;
+}
+
+.hero-globe {
+   position: absolute;
+   z-index: 0;
+   inset: 0;
+   pointer-events: none;
+}
+.hero-globe canvas {
+   display: block;
+   width: 100%;
+   height: 100%;
 }
 
 /* vertically center banner section */
@@ -67,6 +79,8 @@ header#home:before {
    height: 100%;
 }
 header .banner {
+   position: relative;
+   z-index: 2;
    display: inline-block;
    vertical-align: middle;
    margin: 0 auto;
@@ -131,6 +145,7 @@ header .social .tableau-icon {
 /* scrolldown link */
 header .scrolldown a {
    position: absolute;
+   z-index: 2;
    bottom: 30px;
    left: 50%;
    margin-left: -29px;
