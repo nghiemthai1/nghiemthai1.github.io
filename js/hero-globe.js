@@ -22,7 +22,7 @@ const pointVertexShader = `
     vFacing = dot(viewNormal, viewDirection);
     vPhase = aPhase;
     gl_Position = projectionMatrix * viewPosition;
-    gl_PointSize = mix(2.15, 4.4, aAccent) * min(2.0, 12.0 / -viewPosition.z);
+    gl_PointSize = mix(1.7, 3.35, aAccent) * min(2.0, 12.0 / -viewPosition.z);
   }
 `;
 
@@ -36,12 +36,12 @@ const pointFragmentShader = `
   void main() {
     float distanceFromCenter = length(gl_PointCoord - vec2(0.5));
     float disc = 1.0 - smoothstep(0.34, 0.5, distanceFromCenter);
-    float hemisphere = mix(0.13, 1.0, smoothstep(-0.2, 0.42, vFacing));
-    float pulse = 0.78 + 0.22 * sin(uTime * 1.15 + vPhase);
-    vec3 paleBlue = vec3(0.66, 0.84, 1.0);
+    float hemisphere = mix(0.08, 0.82, smoothstep(-0.2, 0.42, vFacing));
+    float pulse = 0.84 + 0.16 * sin(uTime * 1.0 + vPhase);
+    vec3 paleBlue = vec3(0.72, 0.91, 1.0);
     vec3 accentOrange = uAccentColor * pulse;
     vec3 color = mix(paleBlue, accentOrange, vAccent);
-    float alpha = disc * hemisphere * mix(0.72, 1.0, vAccent);
+    float alpha = disc * hemisphere * mix(0.62, 0.94, vAccent);
     if (alpha < 0.01) discard;
     gl_FragColor = vec4(color, alpha);
   }
@@ -63,7 +63,7 @@ const atmosphereFragmentShader = `
   varying vec3 vViewDirection;
   void main() {
     float rim = pow(1.0 - abs(dot(vViewNormal, vViewDirection)), 2.8);
-    gl_FragColor = vec4(0.28, 0.67, 1.0, rim * 0.34);
+    gl_FragColor = vec4(0.34, 0.79, 1.0, rim * 0.23);
   }
 `;
 
@@ -71,7 +71,7 @@ const headVertexShader = `
   void main() {
     vec4 viewPosition = modelViewMatrix * vec4(position, 1.0);
     gl_Position = projectionMatrix * viewPosition;
-    gl_PointSize = min(8.0, 45.0 / -viewPosition.z);
+    gl_PointSize = min(6.0, 36.0 / -viewPosition.z);
   }
 `;
 
@@ -81,7 +81,7 @@ const headFragmentShader = `
     float distanceFromCenter = length(gl_PointCoord - vec2(0.5));
     float glow = 1.0 - smoothstep(0.08, 0.5, distanceFromCenter);
     if (glow < 0.01) discard;
-    gl_FragColor = vec4(1.0, 0.63, 0.28, glow * uOpacity);
+    gl_FragColor = vec4(1.0, 0.52, 0.24, glow * uOpacity);
   }
 `;
 
@@ -133,7 +133,7 @@ function createGlobePoints() {
   const material = new THREE.ShaderMaterial({
     uniforms: {
       uTime: { value: 0 },
-      uAccentColor: { value: new THREE.Color('#e8641e') },
+      uAccentColor: { value: new THREE.Color('#ff7a33') },
     },
     vertexShader: pointVertexShader,
     fragmentShader: pointFragmentShader,
@@ -179,9 +179,9 @@ function createFlights() {
     const curve = new THREE.QuadraticBezierCurve3(start, control, end);
     const lineGeometry = new THREE.BufferGeometry().setFromPoints(curve.getPoints(88));
     const lineMaterial = new THREE.LineBasicMaterial({
-      color: 0x9bdcff,
+      color: 0x8be5ff,
       transparent: true,
-      opacity: 0.2,
+      opacity: 0.11,
       depthTest: false,
       depthWrite: false,
       blending: THREE.AdditiveBlending,
@@ -237,7 +237,7 @@ export function initializeHeroGlobe() {
   camera.position.set(0, 0, 13.5);
 
   const globe = new THREE.Group();
-  globe.position.y = -4.2;
+  globe.position.set(4.25, -2.65, 0);
   globe.rotation.z = 0.36;
   scene.add(globe);
 
@@ -263,6 +263,8 @@ export function initializeHeroGlobe() {
     renderer.setSize(width, height, false);
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
+    globe.position.x = width < 768 ? 1.55 : width < 1050 ? 3.2 : 4.25;
+    globe.position.y = width < 768 ? -3.35 : -2.65;
     render();
   };
 
@@ -270,7 +272,7 @@ export function initializeHeroGlobe() {
     flights.forEach(({ curve, head, phase }) => {
       const progress = (elapsed * 0.075 + phase) % 1;
       head.position.copy(curve.getPoint(progress));
-      head.material.uniforms.uOpacity.value = Math.sin(progress * Math.PI);
+      head.material.uniforms.uOpacity.value = Math.sin(progress * Math.PI) * 0.78;
     });
   };
 

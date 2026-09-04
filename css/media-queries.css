@@ -381,6 +381,17 @@
 }
 
 @media only screen and (max-width: 767px) {
+   header#home::after {
+      background: linear-gradient(180deg, rgba(2, 10, 24, .84) 0%, rgba(2, 12, 27, .7) 52%, rgba(2, 12, 27, .18) 100%);
+   }
+   header#home .banner { width: 85%; text-align: center; }
+   header#home .banner-text { width: 100%; max-width: none; text-align: center; }
+   header#home .banner-text h1 { margin: 0 auto 18px; }
+   header#home .banner-text h3 { width: 88%; margin: 0 auto; }
+   header#home .social { text-align: center; }
+   header#home .social li { margin: 0 9px; }
+   header#home .banner-text hr { margin: 18px auto 0; }
+
    #about {
       display: block;
       min-height: 0;
