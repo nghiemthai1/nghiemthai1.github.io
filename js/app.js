@@ -1,7 +1,7 @@
 import { initializeContactForm } from './contact-form.js?v=20260902-18';
 import { initializeSite } from './site.js?v=20260902-18';
 import { initializeWorksShowcase } from './works-showcase.js?v=20260902-18';
-import { initializeDigitalTwin } from './digital-twin.js?v=20260903-1';
+import { initializeDigitalTwin } from './digital-twin.js?v=20260903-2';
 
 const partialNames = ['header', 'about', 'portfolio', 'testimonials', 'contact', 'footer', 'digital-twin'];
 const PARTIAL_REVISION = '20260902-19';

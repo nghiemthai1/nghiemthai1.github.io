@@ -18,8 +18,10 @@ const GENERIC_SCOPE_TERMS = new Set([
   'certification', 'certifications', 'background', 'achievement', 'achievements', 'responsibility',
   'responsibilities', 'interest', 'interests', 'accomplishment', 'accomplishments',
 ]);
-const IN_SCOPE_PATTERN = /\b(experience|work|career|job|role|project|build|built|develop|developed|skill|technology|education|degree|university|college|gpa|grade|major|minor|course|graduate|graduated|certification|credential|award|honor|uipath|automation|artificial intelligence|ai|java|python|aws|engineering|consultant|intern|employer|company|achievement|accomplish|lead|team|background|professional|resume|portfolio|strength|specialize|who are you|about yourself)\b/i;
+const IN_SCOPE_PATTERN = /\b(experience|work|career|job|role|project|build|built|develop|developed|development|web|website|app|application|software|skill|technology|education|degree|university|college|rowan|gpa|grade|major|minor|course|graduate|graduated|certification|credential|award|honor|uipath|automation|artificial intelligence|ai|robot|robotic|robotics|hardware|firmware|pcb|embedded|circuit|java|python|aws|engineering|consultant|intern|employer|company|achievement|accomplish|lead|team|background|professional|resume|portfolio|strength|specialize|who are you|about yourself)\b/i;
 const FOLLOW_UP_PATTERN = /^(?:(?:can|could|would)\s+you\s+)?(?:tell|share|give)\s+me\s+more(?:\s+about\s+(?:that|this|it))?[.!?]*$|^(?:please\s+)?(?:elaborate|expand|go on|what else)(?:\s+on\s+(?:that|this|it))?[.!?]*$/i;
+const WEB_DEVELOPMENT_PATTERN = /\b(web\s*(?:app|application|development)|website|full[- ]?stack(?:\s+development)?|software\s+development)\b/i;
+const PHYSICAL_ROBOTICS_PATTERN = /\b(robot|robotic|robotics|hardware|firmware|pcb|embedded)\b/i;
 const BLOCKED_PATTERNS = [
   /\b(ignore|override|forget|disregard)\b.{0,40}\b(instruction|prompt|rule|system|previous)\b/i,
   /\b(system prompt|developer message|hidden instruction|jailbreak|role[- ]?play|act as|pretend to be)\b/i,
@@ -81,14 +83,57 @@ export function retrieveKnowledge(question, records, limit = 4) {
     return { records: overview, supported: true };
   }
 
-  const namedMatches = records.filter((record) => {
+  const selectRecords = (ids) => ids.map((id) => records.find((record) => record.id === id)).filter(Boolean);
+  if (WEB_DEVELOPMENT_PATTERN.test(question)) {
+    return {
+      records: selectRecords([
+        'experience-american-water-full-stack-developer',
+        'experience-fpt-software-intern',
+        'identity',
+      ]),
+      supported: true,
+    };
+  }
+  if (/\browan\b/i.test(question)) {
+    return {
+      records: selectRecords([
+        'education-bs-electrical-computer-engineering',
+        'project-alzheimers-diagnosis',
+        'project-sumo-robot',
+      ]),
+      supported: true,
+    };
+  }
+  if (PHYSICAL_ROBOTICS_PATTERN.test(question) && !/\b(rpa|robotic process automation|process automation)\b/i.test(question)) {
+    return {
+      records: selectRecords([
+        'experience-ellenby-engineering-intern',
+        'project-sumo-robot',
+        'project-underwater-rov',
+        'project-object-follower',
+      ]),
+      supported: true,
+    };
+  }
+
+  const entityTokenGroups = [];
+  for (const record of records) {
     const names = [record.organization, record.name, record.credential, record.institution]
       .filter(Boolean)
       .map((value) => value.toLowerCase());
-    if (names.some((name) => name.length >= 4 && normalizedQuestion.includes(name))) return true;
-    const aliases = names.flatMap((name) => [...name.matchAll(/\(([^)]+)\)/g)].flatMap((match) => tokenize(match[1])));
-    return aliases.some((alias) => tokens.includes(alias));
-  });
+    for (const name of names) {
+      if (name.length >= 4 && normalizedQuestion.includes(name)) {
+        entityTokenGroups.push(tokenize(name).filter((token) => tokens.includes(token)));
+      }
+      for (const match of name.matchAll(/\(([^)]+)\)/g)) {
+        const aliasTokens = tokenize(match[1]);
+        if (aliasTokens.length && aliasTokens.every((token) => tokens.includes(token))) entityTokenGroups.push(aliasTokens);
+      }
+    }
+  }
+  const namedMatches = records.filter((record) => entityTokenGroups.some(
+    (group) => group.length && group.every((token) => record.searchTokens.has(token)),
+  ));
   if (namedMatches.length) return { records: namedMatches.slice(0, limit), supported: true };
 
   const ranked = records

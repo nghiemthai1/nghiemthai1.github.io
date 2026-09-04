@@ -54,6 +54,35 @@
     followUpItem.textContent = `${followsPreviousTopic ? 'PASS' : 'FAIL'}: follow-up reuses previous professional topic`;
     document.querySelector('#results').append(followUpItem);
 
+    const routedQuestions = [
+      [
+        'web application experience routes to web roles',
+        'Do you have web app development?',
+        ['experience-american-water-full-stack-developer', 'experience-fpt-software-intern', 'identity'],
+      ],
+      [
+        'Rowan question includes education and documented Rowan projects',
+        'What did you do at Rowan?',
+        ['education-bs-electrical-computer-engineering', 'project-alzheimers-diagnosis', 'project-sumo-robot'],
+      ],
+      [
+        'robotics routes to physical hardware and firmware instead of RPA',
+        'Do you have robotic experience?',
+        ['experience-ellenby-engineering-intern', 'project-sumo-robot', 'project-underwater-rov', 'project-object-follower'],
+      ],
+    ];
+    for (const [name, question, expectedIds] of routedQuestions) {
+      const result = evaluateQuestion(question, records);
+      const passed = result.action === 'generate'
+        && JSON.stringify(result.recordIds) === JSON.stringify(expectedIds)
+        && !result.recordIds.includes('experience-ey-senior-technology-consultant');
+      failures += passed ? 0 : 1;
+      const item = document.createElement('li');
+      item.dataset.result = passed ? 'pass' : 'fail';
+      item.textContent = `${passed ? 'PASS' : 'FAIL'}: ${name}`;
+      document.querySelector('#results').append(item);
+    }
+
     document.body.dataset.status = failures ? 'failed' : 'passed';
     document.title = failures ? `${failures} policy checks failed` : 'All policy checks passed';
   </script>
