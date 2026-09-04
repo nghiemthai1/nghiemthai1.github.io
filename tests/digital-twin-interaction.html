@@ -120,7 +120,7 @@
 
     document.querySelector('[data-twin-suggestion]').click();
     await new Promise((resolve) => setTimeout(resolve, 0));
-    check('suggested question sends', document.querySelector('.digital-twin__message--user p')?.textContent.includes('EY'));
+    check('suggested question sends', document.querySelector('.digital-twin__message--user p')?.textContent.includes('engineering background'));
     check('thinking indicator appears for a later request', document.querySelector('.digital-twin__thinking')?.textContent === '...');
     await new Promise((resolve) => setTimeout(resolve, 25));
     check('thinking indicator is replaced by the answer', !document.querySelector('.digital-twin__thinking'));
@@ -143,6 +143,24 @@
       'cancelling replaces the thinking indicator',
       !document.querySelector('.digital-twin__thinking')
         && [...document.querySelectorAll('.digital-twin__message--assistant p')].at(-1)?.textContent === 'Response stopped.',
+    );
+
+    const outboundCountBeforeDegreeQuestion = outboundBodies.length;
+    input.value = 'What degrees do you have?';
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    const degreeAnswer = [...document.querySelectorAll('.digital-twin__message--assistant p')].at(-1);
+    check(
+      'degree answer is deterministic and never sent to the model',
+      outboundBodies.length === outboundCountBeforeDegreeQuestion
+        && degreeAnswer.textContent.includes('M.S. in Business Analytics: Temple University, 2020-2023, GPA 4.0.')
+        && degreeAnswer.textContent.includes('B.S. in Electrical & Computer Engineering: Rowan University, 2015-2019, GPA 3.98.'),
+    );
+    check(
+      'degree answer renders as two clean labeled facts',
+      degreeAnswer.querySelectorAll('.digital-twin__response-item').length === 2
+        && degreeAnswer.querySelectorAll('strong').length === 2
+        && !degreeAnswer.textContent.includes('**'),
     );
 
     const verbose = Array.from(

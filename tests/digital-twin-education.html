@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Digital twin education checks</title>
+</head>
+<body>
+  <h1>Digital twin education checks</h1>
+  <ol id="results" aria-live="polite"></ol>
+  <script type="module">
+    import { buildKnowledgeRecords, evaluateQuestion } from '../js/digital-twin.js';
+
+    const data = await (await fetch('../assets/data/experience.json')).json();
+    const records = buildKnowledgeRecords(data);
+    const results = document.querySelector('#results');
+    let failures = 0;
+
+    function check(name, passed) {
+      failures += passed ? 0 : 1;
+      const item = document.createElement('li');
+      item.dataset.result = passed ? 'pass' : 'fail';
+      item.textContent = `${passed ? 'PASS' : 'FAIL'}: ${name}`;
+      results.append(item);
+    }
+
+    const degreeFacts = [
+      'M.S. in Business Analytics',
+      'Temple University',
+      '2020-2023',
+      'GPA 4.0',
+      'B.S. in Electrical & Computer Engineering',
+      'Rowan University',
+      '2015-2019',
+      'GPA 3.98',
+    ];
+    const allDegreeQuestions = [
+      'What degrees do you have?',
+      'Tell me about your education.',
+      'Where did you go to college?',
+      'What did you study?',
+      'What are your academic credentials?',
+      'How many degrees do you hold?',
+      'What were your GPAs?',
+      'Tell me about your masters and bachelors degrees.',
+    ];
+
+    for (const question of allDegreeQuestions) {
+      const result = evaluateQuestion(question, records);
+      check(
+        `complete and accurate answer: ${question}`,
+        result.action === 'reply'
+          && degreeFacts.every((fact) => result.answer.includes(fact))
+          && /\*\*M\.S\. in Business Analytics:\*\* Temple University, 2020-2023, GPA 4\.0\./.test(result.answer)
+          && /\*\*B\.S\. in Electrical & Computer Engineering:\*\* Rowan University, 2015-2019, GPA 3\.98\./.test(result.answer)
+          && !/Computer Science|\*\*B\.S\.[^\n]*:\*\* Temple University|\*\*M\.S\.[^\n]*:\*\* Rowan University/.test(result.answer),
+      );
+    }
+
+    const masters = evaluateQuestion("Where did you earn your master's degree?", records);
+    check(
+      'masters answer contains only the Temple M.S.',
+      /M\.S\. in Business Analytics.*Temple University.*2020-2023.*GPA 4\.0/s.test(masters.answer)
+        && !/Rowan University|B\.S\./.test(masters.answer),
+    );
+
+    const bachelors = evaluateQuestion("What is your bachelor's degree?", records);
+    check(
+      'bachelors answer contains only the Rowan B.S.',
+      /B\.S\. in Electrical & Computer Engineering.*Rowan University.*2015-2019.*GPA 3\.98/s.test(bachelors.answer)
+        && !/Temple University|M\.S\./.test(bachelors.answer),
+    );
+
+    const temple = evaluateQuestion('What degree did you earn at Temple University?', records);
+    check('Temple is mapped to the M.S. only', /M\.S\. in Business Analytics.*Temple University/s.test(temple.answer) && !/Rowan University|B\.S\./.test(temple.answer));
+
+    const rowan = evaluateQuestion('What degree did you earn at Rowan University?', records);
+    check('Rowan is mapped to the B.S. only', /B\.S\. in Electrical & Computer Engineering.*Rowan University/s.test(rowan.answer) && !/Temple University|M\.S\./.test(rowan.answer));
+
+    const unknownSchool = evaluateQuestion('Did you earn a degree from Harvard University?', records);
+    check('unlisted university is denied and corrected', /institution is not listed/i.test(unknownSchool.answer) && degreeFacts.every((fact) => unknownSchool.answer.includes(fact)));
+
+    for (const question of ['Do you have a Ph.D.?', 'Did you earn an MBA?', 'Do you have a doctorate?']) {
+      const result = evaluateQuestion(question, records);
+      check(
+        `unlisted degree is denied without inventing facts: ${question}`,
+        result.action === 'reply'
+          && /not listed in my public profile/i.test(result.answer)
+          && degreeFacts.every((fact) => result.answer.includes(fact)),
+      );
+    }
+
+    const honors = evaluateQuestion('What academic honors did you receive?', records);
+    check('honors come from the profile', /Summa Cum Laude/.test(honors.answer) && /Tau Beta Pi Engineering Honor Society/.test(honors.answer));
+
+    const unsupported = evaluateQuestion('What was your graduate thesis topic?', records);
+    check('unsupported thesis detail stays unknown', unsupported.action === 'reply' && /not included in my public experience profile/i.test(unsupported.answer));
+
+    const rowanProjects = evaluateQuestion('What did you do at Rowan?', records);
+    check(
+      'general Rowan question still retrieves documented projects',
+      rowanProjects.action === 'generate'
+        && JSON.stringify(rowanProjects.recordIds) === JSON.stringify([
+          'education-bs-electrical-computer-engineering',
+          'project-alzheimers-diagnosis',
+          'project-sumo-robot',
+        ]),
+    );
+
+    document.body.dataset.status = failures ? 'failed' : 'passed';
+    document.title = failures ? `${failures} education checks failed` : 'All education checks passed';
+  </script>
+</body>
+</html>

@@ -19,6 +19,8 @@ The chat calls `@cf/meta/llama-3.2-3b-instruct` through the `thai-digital-twin-a
 
 The full `experience.json` file is not placed in every prompt. On page load, the browser builds a small in-memory lexical index from the public records. For each question it removes common words, scores exact normalized token matches, gives extra weight to matching organizations, roles, projects, and credentials, and injects at most the four highest-ranked records. Broad overview questions receive the profile summary and three recent roles. The prompt also includes only the latest four conversation exchanges.
 
+Education and degree questions are answered deterministically from the structured education records in `experience.json`. These answers do not call the generative model, which keeps degree names, institutions, dates, GPAs, and honors exact and prevents unsupported degrees from being invented.
+
 This is a lightweight local retrieval step rather than vector search: it requires no embedding model, vector database, or persistent index. Only stable record IDs are sent to the inference Worker, which resolves those IDs against the published profile.
 
 ## Cloudflare deployment
