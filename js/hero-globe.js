@@ -1,51 +1,10 @@
 import * as THREE from './vendor/three.module.min.js';
 
 const GLOBE_RADIUS = 5;
-const POINT_COUNT = 2600;
 const AUTO_ROTATION_SPEED = 0.055;
 const PARALLAX_LERP = 0.035;
 const MAX_TILT = 0.16;
 const MAX_CAMERA_X = 1.1;
-
-const pointVertexShader = `
-  attribute float aAccent;
-  attribute float aPhase;
-  varying float vAccent;
-  varying float vFacing;
-  varying float vPhase;
-
-  void main() {
-    vec4 viewPosition = modelViewMatrix * vec4(position, 1.0);
-    vec3 viewNormal = normalize(normalMatrix * normalize(position));
-    vec3 viewDirection = normalize(-viewPosition.xyz);
-    vAccent = aAccent;
-    vFacing = dot(viewNormal, viewDirection);
-    vPhase = aPhase;
-    gl_Position = projectionMatrix * viewPosition;
-    gl_PointSize = mix(1.7, 3.35, aAccent) * min(2.0, 12.0 / -viewPosition.z);
-  }
-`;
-
-const pointFragmentShader = `
-  uniform float uTime;
-  uniform vec3 uAccentColor;
-  varying float vAccent;
-  varying float vFacing;
-  varying float vPhase;
-
-  void main() {
-    float distanceFromCenter = length(gl_PointCoord - vec2(0.5));
-    float disc = 1.0 - smoothstep(0.34, 0.5, distanceFromCenter);
-    float hemisphere = mix(0.08, 0.82, smoothstep(-0.2, 0.42, vFacing));
-    float pulse = 0.84 + 0.16 * sin(uTime * 1.0 + vPhase);
-    vec3 paleBlue = vec3(0.72, 0.91, 1.0);
-    vec3 accentOrange = uAccentColor * pulse;
-    vec3 color = mix(paleBlue, accentOrange, vAccent);
-    float alpha = disc * hemisphere * mix(0.62, 0.94, vAccent);
-    if (alpha < 0.01) discard;
-    gl_FragColor = vec4(color, alpha);
-  }
-`;
 
 const atmosphereVertexShader = `
   varying vec3 vViewNormal;
@@ -105,46 +64,6 @@ function pointOnGlobe(latitude, longitude) {
     GLOBE_RADIUS * Math.cos(phi),
     GLOBE_RADIUS * Math.sin(phi) * Math.sin(theta),
   );
-}
-
-function createGlobePoints() {
-  const positions = new Float32Array(POINT_COUNT * 3);
-  const accents = new Float32Array(POINT_COUNT);
-  const phases = new Float32Array(POINT_COUNT);
-  const goldenAngle = Math.PI * (3 - Math.sqrt(5));
-
-  for (let index = 0; index < POINT_COUNT; index += 1) {
-    const y = 1 - (index / (POINT_COUNT - 1)) * 2;
-    const ringRadius = Math.sqrt(1 - y * y);
-    const theta = goldenAngle * index;
-    const offset = index * 3;
-    positions[offset] = Math.cos(theta) * ringRadius * GLOBE_RADIUS;
-    positions[offset + 1] = y * GLOBE_RADIUS;
-    positions[offset + 2] = Math.sin(theta) * ringRadius * GLOBE_RADIUS;
-    accents[index] = index % 33 === 0 ? 1 : 0;
-    phases[index] = (index * 2.399963) % (Math.PI * 2);
-  }
-
-  const geometry = new THREE.BufferGeometry();
-  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-  geometry.setAttribute('aAccent', new THREE.BufferAttribute(accents, 1));
-  geometry.setAttribute('aPhase', new THREE.BufferAttribute(phases, 1));
-
-  const material = new THREE.ShaderMaterial({
-    uniforms: {
-      uTime: { value: 0 },
-      uAccentColor: { value: new THREE.Color('#ff7a33') },
-    },
-    vertexShader: pointVertexShader,
-    fragmentShader: pointFragmentShader,
-    transparent: true,
-    depthTest: false,
-    depthWrite: false,
-  });
-
-  const points = new THREE.Points(geometry, material);
-  points.renderOrder = 2;
-  return points;
 }
 
 function createAtmosphere() {
@@ -241,8 +160,7 @@ export function initializeHeroGlobe() {
   globe.rotation.z = 0.36;
   scene.add(globe);
 
-  const globePoints = createGlobePoints();
-  globe.add(createAtmosphere(), globePoints);
+  globe.add(createAtmosphere());
   const { group: flightGroup, flights } = createFlights();
   globe.add(flightGroup);
 
@@ -288,7 +206,6 @@ export function initializeHeroGlobe() {
     globe.rotation.y = elapsed * AUTO_ROTATION_SPEED + easedPointer.x * MAX_TILT;
     camera.position.x = easedPointer.x * MAX_CAMERA_X;
     camera.lookAt(0, 0, 0);
-    globePoints.material.uniforms.uTime.value = elapsed;
     updateFlights();
     render();
     frameId = requestAnimationFrame(tick);

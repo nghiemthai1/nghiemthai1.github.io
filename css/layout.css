@@ -63,7 +63,9 @@ header#home::after {
    position: absolute;
    z-index: 1;
    inset: 0;
-   background: linear-gradient(90deg, rgba(1, 8, 19, .34), transparent 72%);
+   background:
+      linear-gradient(180deg, transparent 68%, rgba(3, 21, 36, .58) 88%, #031524 100%),
+      radial-gradient(ellipse at 50% 46%, rgba(1, 8, 20, .7) 0%, rgba(1, 8, 20, .3) 34%, transparent 66%);
    content: '';
    pointer-events: none;
 }
@@ -95,26 +97,26 @@ header#home .banner {
    margin: 0 auto;
    width: 86%;
    padding-bottom: 30px;
-   text-align: left;
+   text-align: center;
 }
 
 header#home .banner-text {
-   width: 48%;
-   max-width: 620px;
-   text-align: left;
+   width: 100%;
+   max-width: none;
+   text-align: center;
 }
 header#home .banner-text h1 {
    font: clamp(54px, 6vw, 78px)/1.08 'opensans-bold', sans-serif;
    color: #fff;
    letter-spacing: -1.8px;
-   margin: 0 0 20px;
+   margin: 0 auto 20px;
    text-shadow: 0 3px 18px rgba(0, 6, 18, .9);
 }
 header#home .banner-text h3 {
    font: 18px/1.9em 'librebaskerville-regular', serif;
    color: #f7fbff;
-   margin: 0;
-   width: 100%;
+   margin: 0 auto;
+   width: 70%;
    text-shadow: 0 2px 10px rgba(0, 7, 20, 1);
 }
     header#home .banner-text h3 span,
@@ -123,7 +125,7 @@ header#home .banner-text h3 {
     }
 header#home .banner-text hr {
    width: 72px;
-   margin: 18px 0 0;
+   margin: 18px auto 0;
    border-color: rgba(124, 221, 255, .54);
 }
 
@@ -132,11 +134,12 @@ header#home .social {
    margin: 28px 0 0;
    padding: 0;
    font-size: 30px;
+   text-align: center;
    text-shadow: 0px 1px 2px rgba(0, 0, 0, .8);
 }
 header#home .social li {
    display: inline-block;
-   margin: 0 20px 0 0;
+   margin: 0 15px;
    padding: 0;
 }
 header .social li a { color: #fff; }
@@ -260,6 +263,17 @@ ul#nav li.current a { color: #F06000; }
    inset: 0;
    background-image: linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
    background-size: 48px 48px;
+   content: '';
+   pointer-events: none;
+}
+#about::after {
+   position: absolute;
+   z-index: 0;
+   top: 0;
+   right: 0;
+   left: 0;
+   height: clamp(96px, 14vh, 150px);
+   background: linear-gradient(180deg, #031524 0%, rgba(3, 21, 36, .7) 24%, transparent 100%);
    content: '';
    pointer-events: none;
 }

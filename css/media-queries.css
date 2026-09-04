@@ -382,7 +382,9 @@
 
 @media only screen and (max-width: 767px) {
    header#home::after {
-      background: linear-gradient(180deg, rgba(2, 10, 24, .84) 0%, rgba(2, 12, 27, .7) 52%, rgba(2, 12, 27, .18) 100%);
+      background:
+         linear-gradient(180deg, transparent 68%, rgba(3, 21, 36, .7) 88%, #031524 100%),
+         linear-gradient(180deg, rgba(2, 10, 24, .84) 0%, rgba(2, 12, 27, .7) 52%, rgba(2, 12, 27, .18) 100%);
    }
    header#home .banner { width: 85%; text-align: center; }
    header#home .banner-text { width: 100%; max-width: none; text-align: center; }
