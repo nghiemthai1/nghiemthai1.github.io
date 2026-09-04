@@ -1,4 +1,4 @@
-import { finalizeResponse } from './digital-twin-response.js?v=20260903-1';
+import { finalizeResponse } from './digital-twin-response.js?v=20260904-2';
 
 const MAX_HISTORY_MESSAGES = 8;
 const MAX_QUESTION_LENGTH = 500;
@@ -247,7 +247,16 @@ function renderAnswer(container, answer) {
     const row = document.createElement('span');
     row.className = 'digital-twin__response-line';
     const numberedItem = line.match(/^([1-9]|1\d)\.\s+(.+)$/);
-    if (numberedItem) {
+    const bulletItem = line.match(/^[-•]\s+(.+)$/);
+    if (bulletItem) {
+      row.classList.add('digital-twin__response-item');
+      const bullet = document.createElement('span');
+      bullet.className = 'digital-twin__response-bullet';
+      bullet.setAttribute('aria-hidden', 'true');
+      bullet.textContent = '•';
+      row.append(bullet);
+      appendInlineFormatting(row, bulletItem[1]);
+    } else if (numberedItem) {
       row.classList.add('digital-twin__response-item');
       const number = document.createElement('span');
       number.className = 'digital-twin__response-number';

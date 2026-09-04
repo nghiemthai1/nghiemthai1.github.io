@@ -35,7 +35,7 @@
         return realFetch(input, options);
       }
       outboundBodies.push(JSON.parse(options.body));
-      const answer = 'I built several machine-learning projects:\n1. **Face identification**: A MATLAB system using DCT features and KNN classification.\n2. **Early diagnosis**: A digital clock drawing analysis system.';
+      const answer = 'I built several machine-learning projects:\n- **Face identification:** A MATLAB system using DCT features and KNN classification.\n- **Early diagnosis:** A digital clock drawing analysis system.';
       const encoder = new TextEncoder();
       return Promise.resolve(new Response(new ReadableStream({
         start(controller) {
@@ -56,8 +56,8 @@
         },
       }));
     };
-    const { initializeDigitalTwin } = await import('../js/digital-twin.js?v=interaction-test-3');
-    const { countWords, dedupeNumberedItems, endsWithSentence, finalizeResponse } = await import('../js/digital-twin-response.js?v=interaction-test-2');
+    const { initializeDigitalTwin } = await import('../js/digital-twin.js?v=interaction-test-4');
+    const { countWords, dedupeNumberedItems, endsWithSentence, finalizeResponse } = await import('../js/digital-twin-response.js?v=interaction-test-3');
     await initializeDigitalTwin();
 
     const results = document.querySelector('#results');
@@ -127,9 +127,10 @@
     check('verified session remains active for later requests', turnstileResets === 0 && !input.disabled);
     const formattedAnswer = [...document.querySelectorAll('.digital-twin__message--assistant p')].at(-1);
     check(
-      'completed answer renders clean list formatting',
+      'completed answer renders clean bullet and bold formatting',
       formattedAnswer.querySelectorAll('.digital-twin__response-item').length === 2
-        && formattedAnswer.querySelector('strong')?.textContent === 'Face identification'
+        && formattedAnswer.querySelector('strong')?.textContent === 'Face identification:'
+        && formattedAnswer.querySelectorAll('.digital-twin__response-bullet').length === 2
         && !formattedAnswer.textContent.includes('**'),
     );
 
@@ -149,7 +150,7 @@
       () => 'I delivered a focused automation solution with measurable operational results for the client team.',
     ).join(' ');
     const limited = finalizeResponse(verbose);
-    check('long answers stay within 260 words', countWords(limited) <= 260 && endsWithSentence(limited));
+    check('long answers stay within 180 words', countWords(limited) <= 180 && endsWithSentence(limited));
 
     const repaired = finalizeResponse('I led automation delivery for clients. I also started an unfinished explanation about');
     check('unfinished trailing text is removed', repaired === 'I led automation delivery for clients.');

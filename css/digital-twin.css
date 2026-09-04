@@ -373,6 +373,19 @@
    font-weight: 700;
 }
 
+.digital-twin__response-bullet {
+   display: inline-block;
+   width: 1.45em;
+   margin-left: -1.45em;
+   color: var(--twin-teal);
+   font-weight: 700;
+}
+
+.digital-twin__response-line strong {
+   color: #fff;
+   font-family: 'opensans-semibold', sans-serif;
+}
+
 .digital-twin__response-line strong {
    color: #fff;
    font-weight: 700;
