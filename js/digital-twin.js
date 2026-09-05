@@ -5,6 +5,7 @@ const MAX_QUESTION_LENGTH = 500;
 const API_ENDPOINT = 'https://thai-digital-twin-api.nghiemthai1.workers.dev/chat';
 const TURNSTILE_SITE_KEY = '0x4AAAAAAEmC_OLXbTSMNe92';
 const TURNSTILE_ACTION = 'digital_twin_chat';
+const LEGACY_UNKNOWN = 'That detail is not included in my public experience profile.';
 const UNKNOWN = "Thanks for asking. That detail is not included in my public experience profile, so I don't want to guess.";
 const STOP_WORDS = new Set([
   'a', 'an', 'and', 'are', 'as', 'at', 'be', 'did', 'do', 'for', 'from', 'have', 'how', 'i',
@@ -53,6 +54,13 @@ export function buildScopeFallback(question) {
     .slice(0, 5);
   const topic = matchedTopic?.[1] || topicWords.join(' ') || 'that topic';
   return `Thank you for your interest in ${topic}. I can only answer questions about my public professional experience, projects, education, skills, and credentials.`;
+}
+
+export function humanizeResponse(value) {
+  const answer = finalizeResponse(value);
+  if (!answer || answer === LEGACY_UNKNOWN) return UNKNOWN;
+  if (/^(thanks|thank you|happy to|i(?:'|’)m glad|glad you asked)\b/i.test(answer)) return answer;
+  return `Thanks for asking. ${answer}`;
 }
 
 function tokenize(value) {
@@ -590,7 +598,7 @@ export async function initializeDigitalTwin() {
       });
       if (activeRequest !== requestId) return;
       clearThinkingState();
-      const finalAnswer = finalizeResponse(answer) || UNKNOWN;
+      const finalAnswer = humanizeResponse(answer);
       if (activeAnswer) renderAnswer(activeAnswer, finalAnswer);
       history.push({ role: 'assistant', content: finalAnswer });
       history = history.slice(-MAX_HISTORY_MESSAGES);
