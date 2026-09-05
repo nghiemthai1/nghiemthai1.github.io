@@ -17,13 +17,14 @@ The chat runs entirely through the `thai-digital-twin-api` Cloudflare Worker. Vi
 
 ## Grounded answer pipeline
 
-The Worker uses three fail-closed inference steps:
+The Worker uses a fail-closed pipeline:
 
-1. `@cf/meta/llama-3.2-1b-instruct` classifies the question as answerable, unknown, or unrelated and selects up to six supporting public record IDs. It receives explicit rules that a broad platform does not prove a named product or service—for example, AWS does not prove AWS CodePipeline.
-2. `@cf/meta/llama-3.2-3b-instruct` answers using only the selected records, with temperature zero. Conversation history can clarify a follow-up but is never treated as factual evidence.
-3. The 1B model checks every claim in the completed draft against the selected facts. If routing output is malformed, evidence is missing, the verifier is uncertain, or any claim is unsupported, the Worker replaces the draft with: “That detail is not included in my public experience profile.”
+1. `@cf/meta/llama-3.2-1b-instruct` classifies the question's intent and professional facet. It never receives the profile and does not answer the question.
+2. The Worker searches only fields relevant to that facet, using terms derived from the current public profile rather than a hardcoded question taxonomy. Every meaningful named term must occur in eligible evidence: AWS can match AWS, but it cannot satisfy AWS CodePipeline, and Google ADK cannot satisfy an employment question about Google.
+3. `@cf/meta/llama-3.2-3b-instruct` answers using only the selected records, with temperature zero. Conversation history can clarify a follow-up but is never treated as factual evidence.
+4. The 3B model checks every claim in the completed draft against the selected facts. If intent output is malformed, evidence is missing, the verifier is uncertain, or any claim is unsupported, the Worker replaces the draft with: “That detail is not included in my public experience profile.”
 
-This design uses no browser-side intent keywords, embedding model, vector database, or persistent index. Stable record IDs remain internal to the Worker. Degree answers, named technologies, employers, credentials, dates, and results are subject to the same evidence selection and post-generation grounding check.
+This design uses no browser-side intent keywords, embedding model, vector database, or persistent index. Stable record IDs remain internal to the Worker. Degree answers, named technologies, employers, credentials, dates, and results are subject to the same field-aware evidence selection and post-generation grounding check.
 
 ## Cloudflare deployment
 

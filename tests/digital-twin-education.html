@@ -60,7 +60,7 @@
           && text.includes(record.dates) && text.includes(record.gpa);
       }));
 
-    const route = `{"decision":"answer","record_ids":["${educationIds.join('","')}"]}`;
+    const route = '{"intent":"professional","facet":"education"}';
     const degreeAI = scriptedAI([route, exactAnswer, '{"grounded":true}']);
     const degreeResult = await answerGroundedQuestion(degreeAI, 'What degrees do you have?', [], records);
     check('grounded degree response preserves every exact CV fact',
