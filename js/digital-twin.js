@@ -59,8 +59,7 @@ export function buildScopeFallback(question) {
 export function humanizeResponse(value) {
   const answer = finalizeResponse(value);
   if (!answer || answer === LEGACY_UNKNOWN) return UNKNOWN;
-  if (/^(thanks|thank you|happy to|i(?:'|’)m glad|glad you asked)\b/i.test(answer)) return answer;
-  return `Thanks for asking. ${answer}`;
+  return answer;
 }
 
 function tokenize(value) {

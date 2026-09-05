@@ -7,11 +7,11 @@ export function initializeWorksShowcase() {
   const viewport = scene.querySelector('[data-works-viewport]');
   const track = scene.querySelector('[data-works-track]');
   const preferredOrder = [
-    'Work Experience',
-    'Electrical & Computer Engineering Projects',
-    'Artificial Intelligence Projects',
-    'Software Engineering Projects',
-    'Multidisciplinary Projects',
+    'Professional Experience',
+    'Electrical & Computer Engineering',
+    'Software Development',
+    'Machine Learning & Computer Vision',
+    'Multidisciplinary Systems Design',
   ];
   const panelLookup = new Map(
     [...track.querySelectorAll('[data-work-panel]')].map((panel) => [panel.dataset.category, panel]),
