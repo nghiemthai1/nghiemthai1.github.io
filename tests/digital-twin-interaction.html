@@ -35,7 +35,10 @@
         return realFetch(input, options);
       }
       outboundBodies.push(JSON.parse(options.body));
-      const answer = 'I built several machine-learning projects:\n- **Face identification:** A MATLAB system using DCT features and KNN classification.\n- **Early diagnosis:** A digital clock drawing analysis system.';
+      const question = outboundBodies.at(-1).question;
+      const answer = question.includes('degrees')
+        ? 'I hold two degrees:\n- **M.S. in Business Analytics:** Temple University, 2020-2023, GPA 4.0.\n- **B.S. in Electrical & Computer Engineering:** Rowan University, 2015-2019, GPA 3.98.'
+        : 'I built several machine-learning projects:\n- **Face identification:** A MATLAB system using DCT features and KNN classification.\n- **Early diagnosis:** A digital clock drawing analysis system.';
       const encoder = new TextEncoder();
       return Promise.resolve(new Response(new ReadableStream({
         start(controller) {
@@ -84,9 +87,9 @@
     await new Promise((resolve) => setTimeout(resolve, 0));
     check('Enter sends', document.querySelectorAll('.digital-twin__message--user').length === 1);
     check(
-      'request sends a one-time verification token and record IDs instead of facts',
+      'request sends only conversation data and a one-time verification token',
       outboundBodies[0]?.turnstileToken === 'test-token-1'
-        && outboundBodies[0]?.recordIds?.length > 0
+        && !Object.hasOwn(outboundBodies[0], 'recordIds')
         && !Object.hasOwn(outboundBodies[0], 'facts'),
     );
     check(
@@ -101,10 +104,10 @@
     input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
     await new Promise((resolve) => setTimeout(resolve, 0));
     check(
-      'follow-up reuses the previous topic and verified session',
+      'follow-up sends prior conversation and the verified session',
       outboundBodies[1]?.sessionToken === 'test-session'
         && outboundBodies[1]?.turnstileToken === ''
-        && JSON.stringify(outboundBodies[1]?.recordIds) === JSON.stringify(outboundBodies[0]?.recordIds),
+        && outboundBodies[1]?.history?.some((message) => message.content === 'What did you do at EY?'),
     );
     await new Promise((resolve) => setTimeout(resolve, 25));
     check(
@@ -120,7 +123,7 @@
 
     document.querySelector('[data-twin-suggestion]').click();
     await new Promise((resolve) => setTimeout(resolve, 0));
-    check('suggested question sends', document.querySelector('.digital-twin__message--user p')?.textContent.includes('engineering background'));
+    check('previous EY starter question is restored', document.querySelector('.digital-twin__message--user p')?.textContent.includes('impact have you delivered at EY'));
     check('thinking indicator appears for a later request', document.querySelector('.digital-twin__thinking')?.textContent === '...');
     await new Promise((resolve) => setTimeout(resolve, 25));
     check('thinking indicator is replaced by the answer', !document.querySelector('.digital-twin__thinking'));
@@ -145,14 +148,14 @@
         && [...document.querySelectorAll('.digital-twin__message--assistant p')].at(-1)?.textContent === 'Response stopped.',
     );
 
-    const outboundCountBeforeDegreeQuestion = outboundBodies.length;
     input.value = 'What degrees do you have?';
     input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
-    await new Promise((resolve) => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 25));
     const degreeAnswer = [...document.querySelectorAll('.digital-twin__message--assistant p')].at(-1);
     check(
-      'degree answer is deterministic and never sent to the model',
-      outboundBodies.length === outboundCountBeforeDegreeQuestion
+      'degree question is routed through the grounded Worker',
+      outboundBodies.at(-1)?.question === 'What degrees do you have?'
+        && !Object.hasOwn(outboundBodies.at(-1), 'recordIds')
         && degreeAnswer.textContent.includes('M.S. in Business Analytics: Temple University, 2020-2023, GPA 4.0.')
         && degreeAnswer.textContent.includes('B.S. in Electrical & Computer Engineering: Rowan University, 2015-2019, GPA 3.98.'),
     );
