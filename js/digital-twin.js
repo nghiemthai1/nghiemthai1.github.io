@@ -5,8 +5,7 @@ const MAX_QUESTION_LENGTH = 500;
 const API_ENDPOINT = 'https://thai-digital-twin-api.nghiemthai1.workers.dev/chat';
 const TURNSTILE_SITE_KEY = '0x4AAAAAAEmC_OLXbTSMNe92';
 const TURNSTILE_ACTION = 'digital_twin_chat';
-const REFUSAL = 'I can only answer questions about my public professional experience, projects, education, skills, and credentials.';
-const UNKNOWN = 'That detail is not included in my public experience profile.';
+const UNKNOWN = "Thanks for asking. That detail is not included in my public experience profile, so I don't want to guess.";
 const STOP_WORDS = new Set([
   'a', 'an', 'and', 'are', 'as', 'at', 'be', 'did', 'do', 'for', 'from', 'have', 'how', 'i',
   'in', 'is', 'it', 'me', 'my', 'of', 'on', 'or', 'the', 'to', 'was', 'what', 'when', 'where',
@@ -33,6 +32,28 @@ const BLOCKED_PATTERNS = [
   /\b(write|generate|debug|fix|review)\b.{0,30}\b(code|program|script|essay|email)\b/i,
   /\b(home address|street address|phone number|email address|birthday|age|salary|religion|married|family)\b/i,
 ];
+
+const OUT_OF_SCOPE_TOPICS = [
+  [/\b(weather|forecast)\b/i, 'the weather'],
+  [/\b(election|politic|president)\b/i, 'politics and current events'],
+  [/\b(recipe)\b/i, 'recipes'],
+  [/\b(sports score)\b/i, 'sports'],
+  [/\b(stock price)\b/i, 'stock prices'],
+  [/\bmedical advice\b/i, 'medical advice'],
+  [/\blegal advice\b/i, 'legal advice'],
+  [/\b(home address|street address|phone number|email address|birthday|age|salary|religion|married|family)\b/i, 'that personal detail'],
+  [/\b(ignore|override|forget|disregard|system prompt|developer message|hidden instruction|jailbreak|role[- ]?play|act as|pretend to be)\b/i, 'that request'],
+  [/\b(write|generate|debug|fix|review)\b.{0,30}\b(code|program|script|essay|email)\b/i, 'that request'],
+];
+
+export function buildScopeFallback(question) {
+  const matchedTopic = OUT_OF_SCOPE_TOPICS.find(([pattern]) => pattern.test(question));
+  const topicWords = tokenize(question)
+    .filter((word) => !['today', 'current', 'latest', 'won', 'know'].includes(word))
+    .slice(0, 5);
+  const topic = matchedTopic?.[1] || topicWords.join(' ') || 'that topic';
+  return `Thank you for your interest in ${topic}. I can only answer questions about my public professional experience, projects, education, skills, and credentials.`;
+}
 
 function tokenize(value) {
   return (value.toLowerCase().match(/[a-z0-9+#.]+/g) || [])
@@ -245,7 +266,7 @@ export function evaluateQuestion(question, records, previousRecordIds = []) {
     return { action: 'reply', answer: 'Please shorten your question to 500 characters or fewer.' };
   }
   if (BLOCKED_PATTERNS.some((pattern) => pattern.test(trimmed))) {
-    return { action: 'reply', answer: REFUSAL };
+    return { action: 'reply', answer: buildScopeFallback(trimmed) };
   }
 
   const educationAnswer = buildEducationAnswer(trimmed, records);
@@ -259,7 +280,7 @@ export function evaluateQuestion(question, records, previousRecordIds = []) {
 
   const retrieval = retrieveKnowledge(trimmed, records);
   if (!IN_SCOPE_PATTERN.test(trimmed) && !retrieval.supported) {
-    return { action: 'reply', answer: REFUSAL };
+    return { action: 'reply', answer: buildScopeFallback(trimmed) };
   }
   if (!retrieval.supported) return { action: 'reply', answer: UNKNOWN };
   return {
