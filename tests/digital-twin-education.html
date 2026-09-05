@@ -8,17 +8,11 @@
   <h1>Digital twin education checks</h1>
   <ol id="results" aria-live="polite"></ol>
   <script type="module">
-    import { answerGroundedQuestion, buildProfileRecords, formatRecord } from '../cloudflare-worker/index.js';
+    import { buildKnowledgeRecords, evaluateQuestion } from '../js/digital-twin.js';
 
     const data = await (await fetch('../assets/data/experience.json')).json();
-    const records = buildProfileRecords(data);
+    const records = buildKnowledgeRecords(data);
     const results = document.querySelector('#results');
-    const UNKNOWN = 'That detail is not included in my public experience profile.';
-    const educationIds = [
-      'education-ms-business-analytics',
-      'education-bs-electrical-computer-engineering',
-    ];
-    const exactAnswer = 'I hold two degrees:\n- **M.S. in Business Analytics:** Temple University, 2020-2023, GPA 4.0.\n- **B.S. in Electrical & Computer Engineering:** Rowan University, 2015-2019, GPA 3.98, Summa Cum Laude.';
     let failures = 0;
 
     function check(name, passed) {
@@ -29,67 +23,88 @@
       results.append(item);
     }
 
-    function scriptedAI(responses) {
-      return {
-        async run() {
-          if (!responses.length) throw new Error('Unexpected model call');
-          return { response: responses.shift() };
-        },
-      };
+    const degreeFacts = [
+      'M.S. in Business Analytics',
+      'Temple University',
+      '2020-2023',
+      'GPA 4.0',
+      'B.S. in Electrical & Computer Engineering',
+      'Rowan University',
+      '2015-2019',
+      'GPA 3.98',
+    ];
+    const allDegreeQuestions = [
+      'What degrees do you have?',
+      'Tell me about your education.',
+      'Where did you go to college?',
+      'What did you study?',
+      'What are your academic credentials?',
+      'How many degrees do you hold?',
+      'What were your GPAs?',
+      'Tell me about your masters and bachelors degrees.',
+    ];
+
+    for (const question of allDegreeQuestions) {
+      const result = evaluateQuestion(question, records);
+      check(
+        `complete and accurate answer: ${question}`,
+        result.action === 'reply'
+          && degreeFacts.every((fact) => result.answer.includes(fact))
+          && /\*\*M\.S\. in Business Analytics:\*\* Temple University, 2020-2023, GPA 4\.0\./.test(result.answer)
+          && /\*\*B\.S\. in Electrical & Computer Engineering:\*\* Rowan University, 2015-2019, GPA 3\.98\./.test(result.answer)
+          && !/Computer Science|\*\*B\.S\.[^\n]*:\*\* Temple University|\*\*M\.S\.[^\n]*:\*\* Rowan University/.test(result.answer),
+      );
     }
 
-    const education = records.filter((record) => record.kind === 'education');
-    check('exactly two public education records exist', education.length === 2);
-    check('Temple is the M.S. in Business Analytics',
-      education.some((record) => record.id === educationIds[0]
-        && record.credential === 'M.S. Business Analytics'
-        && record.institution === 'Temple University'
-        && record.dates === '2020-2023'
-        && record.gpa === '4.0'));
-    check('Rowan is the B.S. in Electrical & Computer Engineering',
-      education.some((record) => record.id === educationIds[1]
-        && record.credential === 'B.S. Electrical & Computer Engineering'
-        && record.institution === 'Rowan University'
-        && record.dates === '2015-2019'
-        && record.gpa === '3.98'
-        && record.honors.includes('Summa Cum Laude')));
-    check('formatted evidence preserves institutions, degrees, dates, and GPAs',
-      education.every((record) => {
-        const text = formatRecord(record);
-        return text.includes(record.credential) && text.includes(record.institution)
-          && text.includes(record.dates) && text.includes(record.gpa);
-      }));
+    const masters = evaluateQuestion("Where did you earn your master's degree?", records);
+    check(
+      'masters answer contains only the Temple M.S.',
+      /M\.S\. in Business Analytics.*Temple University.*2020-2023.*GPA 4\.0/s.test(masters.answer)
+        && !/Rowan University|B\.S\./.test(masters.answer),
+    );
 
-    const route = '{"intent":"professional","facet":"education"}';
-    const degreeAI = scriptedAI([route, exactAnswer, '{"grounded":true}']);
-    const degreeResult = await answerGroundedQuestion(degreeAI, 'What degrees do you have?', [], records);
-    check('grounded degree response preserves every exact CV fact',
-      degreeResult.answer === exactAnswer
-        && degreeResult.route.recordIds.join(',') === educationIds.join(',')
-        && !/Computer Science|Ph\.?D\.?|MBA/.test(degreeResult.answer));
+    const bachelors = evaluateQuestion("What is your bachelor's degree?", records);
+    check(
+      'bachelors answer contains only the Rowan B.S.',
+      /B\.S\. in Electrical & Computer Engineering.*Rowan University.*2015-2019.*GPA 3\.98/s.test(bachelors.answer)
+        && !/Temple University|M\.S\./.test(bachelors.answer),
+    );
 
-    const unsupportedDegreeQuestions = ['Do you have a Ph.D.?', 'Did you earn an MBA?', 'Did you study at Harvard?'];
-    for (const question of unsupportedDegreeQuestions) {
-      const ai = scriptedAI(['{"decision":"unknown","record_ids":[]}']);
-      check(`unlisted education is not answered: ${question}`,
-        (await answerGroundedQuestion(ai, question, [], records)).answer === UNKNOWN);
+    const temple = evaluateQuestion('What degree did you earn at Temple University?', records);
+    check('Temple is mapped to the M.S. only', /M\.S\. in Business Analytics.*Temple University/s.test(temple.answer) && !/Rowan University|B\.S\./.test(temple.answer));
+
+    const rowan = evaluateQuestion('What degree did you earn at Rowan University?', records);
+    check('Rowan is mapped to the B.S. only', /B\.S\. in Electrical & Computer Engineering.*Rowan University/s.test(rowan.answer) && !/Temple University|M\.S\./.test(rowan.answer));
+
+    const unknownSchool = evaluateQuestion('Did you earn a degree from Harvard University?', records);
+    check('unlisted university is denied and corrected', /institution is not listed/i.test(unknownSchool.answer) && degreeFacts.every((fact) => unknownSchool.answer.includes(fact)));
+
+    for (const question of ['Do you have a Ph.D.?', 'Did you earn an MBA?', 'Do you have a doctorate?']) {
+      const result = evaluateQuestion(question, records);
+      check(
+        `unlisted degree is denied without inventing facts: ${question}`,
+        result.action === 'reply'
+          && /not listed in my public profile/i.test(result.answer)
+          && degreeFacts.every((fact) => result.answer.includes(fact)),
+      );
     }
 
-    const wrongDegreeAI = scriptedAI([
-      route,
-      'I earned a B.S. in Computer Science from Temple University and an MBA from Rowan University.',
-      '{"grounded":false}',
-    ]);
-    check('degree mismatch is suppressed by the grounding verifier',
-      (await answerGroundedQuestion(wrongDegreeAI, 'What degrees do you have?', [], records)).answer === UNKNOWN);
+    const honors = evaluateQuestion('What academic honors did you receive?', records);
+    check('honors come from the profile', /Summa Cum Laude/.test(honors.answer) && /Tau Beta Pi Engineering Honor Society/.test(honors.answer));
 
-    const wrongGpaAI = scriptedAI([
-      route,
-      'I earned a 3.9 GPA at Temple University.',
-      '{"grounded":false}',
-    ]);
-    check('incorrect GPA is suppressed by the grounding verifier',
-      (await answerGroundedQuestion(wrongGpaAI, 'What was your GPA?', [], records)).answer === UNKNOWN);
+    const unsupported = evaluateQuestion('What was your graduate thesis topic?', records);
+    check('unsupported thesis detail stays unknown', unsupported.action === 'reply' && /not included in my public experience profile/i.test(unsupported.answer));
+
+    const rowanProjects = evaluateQuestion('What did you do at Rowan?', records);
+    check(
+      'general Rowan question still retrieves documented projects',
+      rowanProjects.action === 'generate'
+        && JSON.stringify(rowanProjects.recordIds) === JSON.stringify([
+          'education-bs-electrical-computer-engineering',
+          'project-alzheimers-diagnosis',
+          'project-sumo-robot',
+        ]),
+    );
 
     document.body.dataset.status = failures ? 'failed' : 'passed';
     document.title = failures ? `${failures} education checks failed` : 'All education checks passed';
