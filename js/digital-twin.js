@@ -155,6 +155,15 @@ export function retrieveKnowledge(question, records, limit = 4) {
     };
   }
   if (CAREER_PROGRESSION_PATTERN.test(question)) {
+    if (/\bamerican water\b/i.test(question)) {
+      return {
+        records: selectRecords([
+          'experience-american-water-full-stack-developer',
+          'experience-american-water-intelligent-automation-engineer',
+        ]),
+        supported: true,
+      };
+    }
     return {
       records: selectRecords([
         'experience-ellenby-engineering-intern',
@@ -571,7 +580,7 @@ export async function initializeDigitalTwin() {
         finishGeneration(true);
         return;
       }
-      console.error('Digital twin request failed.');
+      console.error('Professional AI Assistant request failed.');
       if (error.status === 403) sessionToken = '';
       clearThinkingState();
       if (activeAnswer) activeAnswer.textContent = error.message || 'I could not finish that response. Please try again.';

@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Digital twin policy checks</title>
+  <title>Professional AI Assistant policy checks</title>
 </head>
 <body>
-  <h1>Digital twin policy checks</h1>
+  <h1>Professional AI Assistant policy checks</h1>
   <ol id="results" aria-live="polite"></ol>
   <script type="module">
     import { buildKnowledgeRecords, evaluateQuestion } from '../js/digital-twin.js';
@@ -62,6 +62,30 @@
     followUpItem.dataset.result = followsPreviousTopic ? 'pass' : 'fail';
     followUpItem.textContent = `${followsPreviousTopic ? 'PASS' : 'FAIL'}: follow-up reuses previous professional topic`;
     document.querySelector('#results').append(followUpItem);
+
+    const americanWaterStarter = evaluateQuestion('How did your role evolve at American Water?', records);
+    const americanWaterStarterWorks = americanWaterStarter.action === 'generate'
+      && JSON.stringify(americanWaterStarter.recordIds) === JSON.stringify([
+        'experience-american-water-full-stack-developer',
+        'experience-american-water-intelligent-automation-engineer',
+      ]);
+    failures += americanWaterStarterWorks ? 0 : 1;
+    const americanWaterItem = document.createElement('li');
+    americanWaterItem.dataset.result = americanWaterStarterWorks ? 'pass' : 'fail';
+    americanWaterItem.textContent = `${americanWaterStarterWorks ? 'PASS' : 'FAIL'}: American Water starter stays on the two American Water roles`;
+    document.querySelector('#results').append(americanWaterItem);
+
+    const machineLearningStarter = evaluateQuestion('Which machine-learning projects have you built?', records);
+    const machineLearningStarterWorks = machineLearningStarter.action === 'generate'
+      && machineLearningStarter.recordIds.some((id) => [
+        'project-face-identification',
+        'project-alzheimers-diagnosis',
+      ].includes(id));
+    failures += machineLearningStarterWorks ? 0 : 1;
+    const machineLearningItem = document.createElement('li');
+    machineLearningItem.dataset.result = machineLearningStarterWorks ? 'pass' : 'fail';
+    machineLearningItem.textContent = `${machineLearningStarterWorks ? 'PASS' : 'FAIL'}: machine-learning starter retrieves documented projects`;
+    document.querySelector('#results').append(machineLearningItem);
 
     const routedQuestions = [
       [

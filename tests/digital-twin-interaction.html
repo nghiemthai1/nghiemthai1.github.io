@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Digital twin interaction checks</title>
+  <title>Professional AI Assistant interaction checks</title>
   <link rel="stylesheet" href="../css/digital-twin.css?v=interaction-test">
 </head>
 <body>
-  <h1>Digital twin interaction checks</h1>
+  <h1>Professional AI Assistant interaction checks</h1>
   <ul id="results"></ul>
   <div id="fixture"></div>
   <script type="module">
@@ -76,6 +76,15 @@
 
     check('Cloudflare AI is ready without a model download', !document.querySelector('[data-twin-download]') && !document.querySelector('[data-twin-input]').disabled);
     check('Cloudflare processing is disclosed', document.querySelector('#digital-twin-disclosure').textContent.includes('Cloudflare'));
+    check(
+      'feature is named Professional AI Assistant',
+      document.querySelector('#digital-twin-title').textContent === "Thai's Professional AI Assistant",
+    );
+    check(
+      'original suggested questions are restored',
+      [...document.querySelectorAll('[data-twin-suggestion]')].map((button) => button.textContent.trim()).join('|')
+        === 'What impact have you delivered at EY?|How did your role evolve at American Water?|Which machine-learning projects have you built?|What technologies do you use?',
+    );
     check('managed human verification completed', document.querySelector('[data-digital-twin]').dataset.verified === 'true');
 
     const input = document.querySelector('[data-twin-input]');
@@ -120,7 +129,7 @@
 
     document.querySelector('[data-twin-suggestion]').click();
     await new Promise((resolve) => setTimeout(resolve, 0));
-    check('suggested question sends', document.querySelector('.digital-twin__message--user p')?.textContent.includes('engineering background'));
+    check('suggested question sends', document.querySelector('.digital-twin__message--user p')?.textContent.includes('impact have you delivered at EY'));
     check('thinking indicator appears for a later request', document.querySelector('.digital-twin__thinking')?.textContent === '...');
     await new Promise((resolve) => setTimeout(resolve, 25));
     check('thinking indicator is replaced by the answer', !document.querySelector('.digital-twin__thinking'));

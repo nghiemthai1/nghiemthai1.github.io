@@ -1,6 +1,6 @@
-# Digital twin maintenance
+# Professional AI Assistant maintenance
 
-The portfolio chat uses `assets/data/experience.json` as a compact, public-only companion to the website and resume. It is prompt context, not model training data, so updates do not require retraining or replacing the model.
+The Professional AI Assistant uses `assets/data/experience.json` as a compact, public-only companion to the website and resume. It is prompt context, not model training data, so updates do not require retraining or replacing the model.
 
 ## Publishing checklist
 

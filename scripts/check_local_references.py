@@ -101,7 +101,7 @@ def validate_experience_data() -> None:
         ROOT / "css" / "digital-twin.css",
     ):
         if not exists_with_exact_case(required_path):
-            errors.append(f"required digital twin file is missing: {required_path.relative_to(ROOT)}")
+            errors.append(f"required Professional AI Assistant file is missing: {required_path.relative_to(ROOT)}")
 
     if errors:
         print(f"Invalid experience data ({len(errors)}):")
