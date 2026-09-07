@@ -1,4 +1,31 @@
 export function initializeSite($) {
+  const updateHomeState = () => {
+    const home = document.querySelector('#home');
+    document.body.classList.toggle('home-in-view', Boolean(home && home.getBoundingClientRect().bottom > 80));
+  };
+  updateHomeState();
+  $(window).on('scroll resize', updateHomeState);
+
+  const about = document.querySelector('#about');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let aboutParallaxFrame = 0;
+  const updateAboutParallax = () => {
+    aboutParallaxFrame = 0;
+    if (!about || reduceMotion.matches) {
+      about?.style.setProperty('--about-parallax-y', '0px');
+      return;
+    }
+    const rect = about.getBoundingClientRect();
+    const rise = Math.max(0, Math.min(window.innerWidth < 768 ? 34 : 64, (window.innerHeight - rect.top) * .11));
+    about.style.setProperty('--about-parallax-y', `${-rise.toFixed(2)}px`);
+  };
+  const requestAboutParallax = () => {
+    if (!aboutParallaxFrame) aboutParallaxFrame = window.requestAnimationFrame(updateAboutParallax);
+  };
+  updateAboutParallax();
+  $(window).on('scroll resize', requestAboutParallax);
+  reduceMotion.addEventListener?.('change', requestAboutParallax);
+
   setTimeout(() => {
     $('h1.responsive-headline').fitText(1.4, { minFontSize: '16px', maxFontSize: '60px' });
   }, 100);
@@ -7,43 +34,35 @@ export function initializeSite($) {
     event.preventDefault();
     const target = this.hash;
     const $target = $(target);
-    $('html, body').stop().animate({ scrollTop: $target.offset().top }, 800, 'swing', () => {
-      window.location.hash = target;
-    });
+    const navigationHeight = Math.min(document.querySelector('#nav-wrap')?.getBoundingClientRect().height ?? 0, 56);
+    const targetTop = Math.max(0, $target.offset().top - navigationHeight);
+    window.location.hash = target;
+    $('html, body').stop().animate({ scrollTop: targetTop }, 800, 'swing');
   });
 
-  const sections = $('section');
-  const navigationLinks = $('#nav-wrap a');
-  sections.waypoint({
-    handler(event, direction) {
-      let activeSection = $(this);
-      if (direction === 'up') activeSection = activeSection.prev();
-      const activeLink = $(`#nav-wrap a[href="#${activeSection.attr('id')}"]`);
-      navigationLinks.parent().removeClass('current');
-      activeLink.parent().addClass('current');
-    },
-    offset: '35%',
-  });
-
-  const sizeHeader = () => {
-    $('header').css({ height: $(window).height() });
-    $('body').css({ width: $(window).width() });
-  };
-  sizeHeader();
-  $(window).on('resize', sizeHeader);
-
-  $(window).on('scroll', () => {
-    const headerHeight = $('header').height();
-    const scrollTop = $(window).scrollTop();
-    const nav = $('#nav-wrap');
-    if (scrollTop > headerHeight * 0.2 && scrollTop < headerHeight && $(window).outerWidth() > 768) {
-      nav.fadeOut('fast');
-    } else if (scrollTop < headerHeight * 0.2) {
-      nav.removeClass('opaque').fadeIn('fast');
-    } else {
-      nav.addClass('opaque').fadeIn('fast');
+  const navigationLinks = [...document.querySelectorAll('#nav a[href^="#"]')];
+  const navigationSections = navigationLinks.map(link => ({ link, section: document.querySelector(link.hash) })).filter(item => item.section);
+  const updateActiveNavigation = () => {
+    const threshold = Math.min(window.innerHeight * .35, 240);
+    let active = navigationSections[0];
+    for (const item of navigationSections) {
+      if (item.section.getBoundingClientRect().top <= threshold) active = item;
     }
-  });
+    for (const item of navigationSections) {
+      const current = item === active;
+      item.link.parentElement.classList.toggle('current', current);
+      if (current) item.link.setAttribute('aria-current', 'location');
+      else item.link.removeAttribute('aria-current');
+    }
+  };
+  updateActiveNavigation();
+  $(window).on('scroll resize', updateActiveNavigation);
+
+  const updateNavigationSurface = () => {
+    document.querySelector('#nav-wrap').classList.toggle('opaque', window.scrollY > 32);
+  };
+  updateNavigationSurface();
+  $(window).on('scroll', updateNavigationSurface);
 
   $('.item-wrap a').magnificPopup({
     type: 'inline',

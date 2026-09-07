@@ -1,11 +1,27 @@
 import { initializeContactForm } from './contact-form.js?v=20260902-18';
-import { initializeSite } from './site.js?v=20260902-18';
+import { initializeSite } from './site.js?v=20260907-30';
 import { initializeWorksShowcase } from './works-showcase.js?v=20260905-1';
 import { initializeDigitalTwin } from './digital-twin.js?v=20260905-3';
-import { initializeHeroGlobe } from './hero-globe.js?v=20260904-5';
+import { initializeHeroGlobe } from './hero-globe.js?v=20260907-27';
 
 const partialNames = ['header', 'about', 'portfolio', 'testimonials', 'contact', 'footer', 'digital-twin'];
-const PARTIAL_REVISION = '20260905-2';
+const PARTIAL_REVISION = '20260907-34';
+
+function createHomeAboutScene() {
+  const home = document.querySelector('#home');
+  const about = document.querySelector('#about');
+  const backdrop = home?.querySelector('.home-about-backdrop');
+  const monogram = home?.querySelector('.home-monogram');
+  const navigation = home?.querySelector('#nav-wrap');
+
+  if (!home || !about || !backdrop || !monogram || !navigation) return;
+
+  const scene = document.createElement('div');
+  scene.className = 'home-about-scene';
+  home.before(monogram, navigation);
+  home.before(scene);
+  scene.append(backdrop, home, about);
+}
 
 async function loadPartial(name) {
   const url = new URL(`../partials/${name}.html`, import.meta.url);
@@ -26,6 +42,7 @@ async function start() {
     const partials = await Promise.all(partialNames.map(loadPartial));
     mountPoint.replaceChildren();
     mountPoint.insertAdjacentHTML('beforeend', partials.join('\n'));
+    createHomeAboutScene();
 
     initializeContactForm();
     initializeWorksShowcase();

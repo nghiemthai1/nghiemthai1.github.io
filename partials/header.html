@@ -1,6 +1,16 @@
 <header id="home">
 
-      <div class="hero-globe" aria-hidden="true"></div>
+      <div class="home-about-backdrop" aria-hidden="true">
+         <div class="hero-globe"></div>
+         <div class="home-waves"></div>
+      </div>
+      <p class="home-globe-caption" aria-hidden="true"><span>AI</span><span>Automation</span><span>Enterprise Impact</span></p>
+      <a class="home-monogram smoothscroll" href="#home" aria-label="Thai Nghiem home">
+         <svg viewBox="0 0 72 52" fill="none" aria-hidden="true">
+            <path d="M8 10H36M22 10V42" stroke="#eef9ff" stroke-width="3" stroke-linecap="square" />
+            <path d="M37 42V10L62 42V10" stroke="#36d9f5" stroke-width="3" stroke-linejoin="round" />
+         </svg>
+      </a>
 
       <nav id="nav-wrap">
 
@@ -18,13 +28,14 @@
       </nav> <!-- end #nav-wrap -->
 
       <div class="row banner">
-         <div class="banner-text">
-            <h1 class="responsive-headline">I'm Thai Nghiem.</h1>
-            <h3>I build <span>enterprise AI</span> on a foundation in <span>electrical and computer engineering</span>. My path runs from hardware and firmware to full-stack software, intelligent automation, and now <span>GenAI and agentic AI</span>.</h3>
-
+         <aside class="home-profile" aria-label="Meet Thai Nghiem">
+            <div class="home-portrait-frame">
+               <img class="hero-portrait" src="assets/images/profilepic.jpg" alt="Thai Nghiem" width="400" height="400" fetchpriority="high" />
+            </div>
+            <h2>Thai Nghiem</h2>
+            <p class="home-profile-role">AI Product Manager<br>Solutions Architect<br>Forever Curious</p>
             <ul class="social">
                <li><a href="https://github.com/nghiemthai1" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><i class="fa fa-github" aria-hidden="true"></i></a></li>
-               <li><a href="https://plus.google.com/u/0/117291138198614843904" target="_blank" rel="noopener noreferrer" aria-label="Google Plus"><i class="fa fa-google-plus" aria-hidden="true"></i></a></li>
                <li><a href="https://www.linkedin.com/in/thai-nghiem-392277105/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
                <li><a href="https://www.instagram.com/thainghiem1/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="fa fa-instagram" aria-hidden="true"></i></a></li>
                <li>
@@ -41,12 +52,24 @@
                   </a>
                </li>
             </ul>
-             <hr />
+         </aside>
+         <div class="banner-text">
+            <h1><span class="home-greeting">Hi, I&rsquo;m Thai.</span>I turn messy business problems into <span>practical AI solutions.</span></h1>
+            <p class="home-intro">I work between business and engineering, finding the right problems to solve, shaping requirements and product direction, and helping teams turn AI and automation ideas into deployed solutions that reduce manual work and improve day-to-day operations.</p>
+            <p class="home-career-path">Engineering roots &rarr; Software &rarr; Automation &rarr; Enterprise AI</p>
+            <div class="home-actions">
+               <a class="home-button home-button-primary smoothscroll" href="#portfolio">See What I&rsquo;ve Built <span aria-hidden="true">&rarr;</span></a>
+               <a class="home-button home-button-secondary smoothscroll" href="#contact">Say Hello</a>
+            </div>
+
+
          </div>
       </div>
 
       <p class="scrolldown">
-         <a class="smoothscroll" href="#about"><i class="icon-down-circle"></i></a>
+         <a class="smoothscroll" href="#about" aria-label="Continue to About">
+            <span class="home-scroll-arrow" aria-hidden="true"></span>
+         </a>
       </p>
 
    </header> <!-- Header End -->

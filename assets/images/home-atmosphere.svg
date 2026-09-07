@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 400" preserveAspectRatio="none" fill="none">
+  <defs>
+    <linearGradient id="ribbon" x1="0" y1="170" x2="1600" y2="280" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#43b7f5" stop-opacity=".52"/>
+      <stop offset=".2" stop-color="#168bd4" stop-opacity=".7"/>
+      <stop offset=".46" stop-color="#116ba7" stop-opacity=".28"/>
+      <stop offset=".7" stop-color="#2089cb" stop-opacity=".32"/>
+      <stop offset="1" stop-color="#2a96d6" stop-opacity=".08"/>
+    </linearGradient>
+    <linearGradient id="crest" x1="0" y1="180" x2="1250" y2="275" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#41a8e9" stop-opacity=".55"/>
+      <stop offset=".26" stop-color="#2c9ee8" stop-opacity=".28"/>
+      <stop offset=".52" stop-color="#1b7dbc" stop-opacity=".04"/>
+      <stop offset=".72" stop-color="#247cad" stop-opacity=".18"/>
+      <stop offset="1" stop-color="#176da1" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="haze" x="-20%" y="-100%" width="140%" height="300%"><feGaussianBlur stdDeviation="24"/></filter>
+    <filter id="soft" x="-10%" y="-100%" width="120%" height="300%"><feGaussianBlur stdDeviation="8"/></filter>
+    <filter id="edge" x="-10%" y="-100%" width="120%" height="300%"><feGaussianBlur stdDeviation="2"/></filter>
+    <path id="wave" d="M-100 142C140 112 226 333 548 280S824 176 1028 242S1340 356 1700 166"/>
+  </defs>
+  <use href="#wave" stroke="url(#ribbon)" stroke-width="68" opacity=".5" filter="url(#haze)"/>
+  <use href="#wave" stroke="url(#ribbon)" stroke-width="20" opacity=".48" filter="url(#soft)"/>
+  <use href="#wave" stroke="url(#crest)" stroke-width="2" filter="url(#edge)"/>
+  <path d="M-80 210C124 183 266 346 583 299S926 212 1129 288S1402 314 1660 224" stroke="url(#ribbon)" stroke-width="24" opacity=".19" filter="url(#soft)"/>
+</svg>

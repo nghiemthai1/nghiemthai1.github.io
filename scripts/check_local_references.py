@@ -7,7 +7,7 @@ from urllib.parse import unquote
 
 
 ROOT = Path(__file__).resolve().parent.parent
-SOURCE_SUFFIXES = {".html", ".css", ".oan~"}
+SOURCE_SUFFIXES = {".html", ".css", ".js", ".oan~"}
 IGNORED_DIRECTORIES = {".git", "node_modules"}
 ASSET_SUFFIXES = {".pdf", ".jpg", ".jpeg", ".png", ".gif", ".webp"}
 ATTRIBUTE_PATTERN = re.compile(
@@ -15,6 +15,7 @@ ATTRIBUTE_PATTERN = re.compile(
     re.IGNORECASE,
 )
 CSS_URL_PATTERN = re.compile(r"url\(\s*['\"]?([^'\")]+)['\"]?\s*\)", re.IGNORECASE)
+JS_URL_PATTERN = re.compile(r"new\s+URL\(\s*['\"]([^'\"]+)['\"]\s*,\s*import\.meta\.url\s*\)")
 EXPERIENCE_DATA = ROOT / "assets" / "data" / "experience.json"
 
 
@@ -131,14 +132,14 @@ for source in ROOT.rglob("*"):
 
     contents = source.read_text(encoding="utf-8-sig", errors="replace")
     searchable_contents = contents
-    if source.suffix.lower() != ".css":
+    if source.suffix.lower() not in {".css", ".js"}:
         searchable_contents = re.sub(
             r"(<script\b[^>]*>).*?(</script>)",
             r"\1\2",
             contents,
             flags=re.IGNORECASE | re.DOTALL,
         )
-    pattern = CSS_URL_PATTERN if source.suffix.lower() == ".css" else ATTRIBUTE_PATTERN
+    pattern = {".css": CSS_URL_PATTERN, ".js": JS_URL_PATTERN}.get(source.suffix.lower(), ATTRIBUTE_PATTERN)
     for match in pattern.finditer(searchable_contents):
         reference = next((group for group in match.groups() if group is not None), "").strip()
         if not reference or re.match(r"^(?:#|[a-z]+:|//)", reference, re.IGNORECASE):
@@ -160,5 +161,5 @@ if missing:
     raise SystemExit(1)
 
 print("All raster/PDF assets are grouped under assets/.")
-print("All local HTML and CSS references resolve with exact filename casing.")
+print("All local HTML, CSS, and static JavaScript asset URLs resolve with exact filename casing.")
 print("Experience data has a valid schema, unique IDs, and working source references.")

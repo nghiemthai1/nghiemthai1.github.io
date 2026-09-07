@@ -7,6 +7,24 @@
 /* ================================================================== */
 
 
+/* Portrait-led introduction: allow content to set the height on small screens. */
+@media only screen and (max-width: 767px) {
+   header#home { min-height: 0; height: auto !important; }
+   header#home .banner {
+      flex-direction: column;
+      gap: 24px;
+      width: 86%;
+      padding: 88px 0 56px;
+   }
+   .hero-portrait { width: 176px; height: 176px; }
+   header#home .banner-text { width: 100%; text-align: center; }
+   header#home .banner-text h1 { font-size: clamp(36px, 8vw, 52px); letter-spacing: -1px; }
+   header#home .banner-text h3 { font-size: 16px; line-height: 1.7; }
+   header#home .social { text-align: center; font-size: 26px; margin-top: 24px; }
+   header#home .social li { margin: 0 10px; }
+   header#home .banner-text hr { margin: 24px auto 0; }
+}
+
 /* screenwidth less than 1024px
 --------------------------------------------------------------------- */
 @media only screen and (max-width: 1024px) {
@@ -33,7 +51,7 @@
       letter-spacing: -1px;      
    }
    header .banner-text h3 {
-      font: 17px/1.9em 'librebaskerville-regular', serif;
+      font: 17px/1.9em 'opensans-regular', sans-serif;
       width: 80%;
    }
    header .banner-text hr {
@@ -183,7 +201,7 @@
    }
    header .banner-text h1 { font: 68px/1.1em 'opensans-bold', sans-serif; }
    header .banner-text h3 {
-      font: 16px/1.9em 'librebaskerville-regular', serif;
+      font: 16px/1.9em 'opensans-regular', sans-serif;
       width: 85%;
    }
    header .banner-text hr {
@@ -364,7 +382,7 @@
       margin: 0 auto 24px auto;
    }
    header .banner-text h3 {
-      font: 14px/1.9em 'librebaskerville-regular', sans-serif;
+      font: 14px/1.9em 'opensans-regular', sans-serif;
       width: 90%;
    }
   

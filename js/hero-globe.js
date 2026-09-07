@@ -1,10 +1,11 @@
 import * as THREE from './vendor/three.module.min.js';
 
 const GLOBE_RADIUS = 5;
-const AUTO_ROTATION_SPEED = 0.055;
+// Radians per second: one unhurried revolution in about seven minutes.
+const AUTO_ROTATION_SPEED = 0.015;
 const PARALLAX_LERP = 0.035;
-const MAX_TILT = 0.16;
-const MAX_CAMERA_X = 1.1;
+const MAX_TILT = 0.045;
+const MAX_CAMERA_X = 0.25;
 
 const atmosphereVertexShader = `
   varying vec3 vViewNormal;
@@ -21,8 +22,9 @@ const atmosphereFragmentShader = `
   varying vec3 vViewNormal;
   varying vec3 vViewDirection;
   void main() {
-    float rim = pow(1.0 - abs(dot(vViewNormal, vViewDirection)), 2.8);
-    gl_FragColor = vec4(0.58, 0.94, 1.0, rim * 0.48);
+    float rim = pow(1.0 - abs(dot(normalize(vViewNormal), normalize(vViewDirection))), 3.5);
+    float key = max(dot(normalize(vViewNormal), normalize(vec3(-.45, .85, .2))), 0.0);
+    gl_FragColor = vec4(0.06, 0.48, 0.95, rim * (.012 + .26 * pow(key, 2.0)));
   }
 `;
 
@@ -30,7 +32,7 @@ const headVertexShader = `
   void main() {
     vec4 viewPosition = modelViewMatrix * vec4(position, 1.0);
     gl_Position = projectionMatrix * viewPosition;
-    gl_PointSize = min(7.0, 42.0 / -viewPosition.z);
+    gl_PointSize = min(10.0, 64.0 / -viewPosition.z);
   }
 `;
 
@@ -40,7 +42,7 @@ const headFragmentShader = `
     float distanceFromCenter = length(gl_PointCoord - vec2(0.5));
     float glow = 1.0 - smoothstep(0.08, 0.5, distanceFromCenter);
     if (glow < 0.01) discard;
-    gl_FragColor = vec4(1.0, 0.52, 0.24, glow * uOpacity);
+    gl_FragColor = vec4(0.48, 0.88, 1.0, glow * uOpacity * .65);
   }
 `;
 
@@ -58,6 +60,14 @@ const flightCoordinates = [
   [[41.0, 29.0], [13.8, 100.5]],
   [[-33.4, -70.7], [-33.9, 18.4]],
   [[41.9, -87.6], [49.3, -123.1]],
+  [[40.7, -74.0], [25.8, -80.2]],
+  [[40.7, -74.0], [41.9, -87.6]],
+  [[41.9, -87.6], [34.1, -118.2]],
+  [[37.8, -122.4], [47.6, -122.3]],
+  [[25.8, -80.2], [4.7, -74.1]],
+  [[4.7, -74.1], [-23.6, -46.6]],
+  [[-23.6, -46.6], [-34.6, -58.4]],
+  [[19.4, -99.1], [32.8, -96.8]],
 ];
 
 function pointOnGlobe(latitude, longitude) {
@@ -81,7 +91,7 @@ function createAtmosphere() {
     blending: THREE.AdditiveBlending,
   });
   const shell = new THREE.Mesh(
-    new THREE.SphereGeometry(GLOBE_RADIUS * 1.14, 64, 40),
+    new THREE.SphereGeometry(GLOBE_RADIUS * 1.012, 96, 64),
     material,
   );
   shell.renderOrder = 1;
@@ -95,17 +105,16 @@ function createFlights() {
   flightCoordinates.forEach(([from, to], index) => {
     const start = pointOnGlobe(from[0], from[1]);
     const end = pointOnGlobe(to[0], to[1]);
-    const angle = start.angleTo(end);
-    const control = start.clone().add(end).normalize().multiplyScalar(
-      GLOBE_RADIUS * (1.17 + angle * 0.24),
-    );
-    const curve = new THREE.QuadraticBezierCurve3(start, control, end);
+    // Lift an interpolated great-circle direction above the opaque surface.
+    const curve = new THREE.Curve();
+    curve.getPoint = (t, target = new THREE.Vector3()) => target.copy(start)
+      .lerp(end, t).normalize().multiplyScalar(GLOBE_RADIUS * (1.006 + Math.sin(t * Math.PI) * (.035 + start.angleTo(end) * .10)));
     const lineGeometry = new THREE.BufferGeometry().setFromPoints(curve.getPoints(88));
     const lineMaterial = new THREE.LineBasicMaterial({
       color: 0x8be5ff,
       transparent: true,
-      opacity: 0.24,
-      depthTest: false,
+      opacity: 0.085,
+      depthTest: true,
       depthWrite: false,
       blending: THREE.AdditiveBlending,
     });
@@ -120,7 +129,7 @@ function createFlights() {
       vertexShader: headVertexShader,
       fragmentShader: headFragmentShader,
       transparent: true,
-      depthTest: false,
+      depthTest: true,
       depthWrite: false,
       blending: THREE.AdditiveBlending,
     });
@@ -128,6 +137,16 @@ function createFlights() {
     head.renderOrder = 4;
     group.add(head);
     flights.push({ curve, head, phase: index / flightCoordinates.length });
+    const nodes = new THREE.Points(
+      new THREE.BufferGeometry().setFromPoints([start.clone().multiplyScalar(1.008), end.clone().multiplyScalar(1.008)]),
+      new THREE.ShaderMaterial({
+        uniforms: { uOpacity: { value: .45 } },
+        vertexShader: headVertexShader,
+        fragmentShader: headFragmentShader,
+        transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+      }),
+    );
+    group.add(nodes);
   });
 
   return { group, flights };
@@ -160,11 +179,123 @@ export function initializeHeroGlobe() {
   camera.position.set(0, 0, 13.5);
 
   const globe = new THREE.Group();
+  // Never display a featureless sphere if a required geographic texture is missing.
+  globe.visible = false;
+  mount.dataset.textureState = 'loading';
   globe.position.set(4.25, -2.65, 0);
-  globe.rotation.z = 0.36;
+  globe.scale.setScalar(1.08);
+  globe.rotation.z = -0.32;
   scene.add(globe);
 
   globe.add(createAtmosphere());
+  // Local Earth imagery from the official Three.js planet example assets.
+  // Keep the surface opaque so far-side routes are correctly occluded.
+  let pendingTextures = 3;
+  const onTextureLoaded = () => {
+    if (destroyed) return;
+    pendingTextures -= 1;
+    if (pendingTextures === 0) {
+      globe.visible = true;
+      mount.dataset.textureState = 'ready';
+      render();
+    }
+  };
+  const onTextureError = (error) => {
+    if (destroyed) return;
+    mount.dataset.textureState = 'error';
+    console.warn('Earth texture failed to load; the decorative globe is hidden.', error);
+  };
+  const earthTexture = new THREE.TextureLoader().load(
+    new URL('../assets/images/earth-surface.jpg', import.meta.url).href,
+    onTextureLoaded, undefined, onTextureError,
+  );
+  const lightsTexture = new THREE.TextureLoader().load(
+    new URL('../assets/images/earth-lights.png', import.meta.url).href,
+    onTextureLoaded, undefined, onTextureError,
+  );
+  const oceanTexture = new THREE.TextureLoader().load(
+    new URL('../assets/images/earth-ocean-mask.jpg', import.meta.url).href,
+    onTextureLoaded, undefined, onTextureError,
+  );
+  [earthTexture, lightsTexture, oceanTexture].forEach((texture) => {
+    texture.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+  });
+  const surface = new THREE.Mesh(
+    new THREE.SphereGeometry(GLOBE_RADIUS, 96, 64),
+    new THREE.ShaderMaterial({
+      uniforms: {
+        earthMap: { value: earthTexture },
+        lightsMap: { value: lightsTexture },
+        oceanMap: { value: oceanTexture },
+      },
+      vertexShader: `
+        varying vec2 vUv;
+        varying vec3 vNormal;
+        varying vec3 vView;
+        void main() {
+          vUv = uv;
+          vec4 p = modelViewMatrix * vec4(position, 1.0);
+          vNormal = normalize(normalMatrix * normal);
+          vView = normalize(-p.xyz);
+          gl_Position = projectionMatrix * p;
+        }
+      `,
+      fragmentShader: `
+        uniform sampler2D earthMap;
+        uniform sampler2D lightsMap;
+        uniform sampler2D oceanMap;
+        varying vec2 vUv;
+        varying vec3 vNormal;
+        varying vec3 vView;
+        void main() {
+          vec3 tex = texture2D(earthMap, vUv).rgb;
+          // A dedicated geographic mask preserves deserts, ice, and coastlines.
+          float ocean = texture2D(oceanMap, vUv).r;
+          float land = 1.0 - smoothstep(.35, .75, ocean);
+          float detail = dot(tex, vec3(.3, .5, .2));
+          vec3 n = normalize(vNormal);
+          vec3 view = normalize(vView);
+          vec3 keyDirection = normalize(vec3(-.45, .85, .3));
+          float light = max(dot(n, keyDirection), 0.0);
+          vec3 sea = vec3(.004, .017, .033);
+          vec3 continent = vec3(.018, .065, .11) + detail * vec3(.035, .10, .16);
+          vec3 color = mix(sea, continent, land) * (.52 + light * .85) * .24;
+          // Restrained sky reflection and a small ocean highlight preserve surface detail.
+          vec3 halfDirection = normalize(keyDirection + view);
+          float reflection = max(dot(n, halfDirection), 0.0);
+          float oceanGlint = pow(reflection, 100.0) * ocean;
+          float skyReflection = pow(reflection, 12.0);
+          color += vec3(.012, .05, .10) * skyReflection * mix(.12, .23, ocean);
+          color += vec3(.18, .38, .60) * oceanGlint * .09;
+          float bounce = max(dot(n, normalize(vec3(-.8, -.35, .6))), 0.0);
+          color += vec3(.002, .007, .014) * bounce;
+          // Real night-light geography, recolored cyan rather than a uniform dot grid.
+          vec3 night = texture2D(lightsMap, vUv).rgb;
+          float cities = smoothstep(.10, .72, max(night.r, night.g));
+          color += pow(cities, 1.2) * vec3(.012, .065, .14) * land;
+          vec2 texel = vec2(1.0 / 2048.0, 1.0 / 1024.0);
+          float nearby = texture2D(lightsMap, vUv + texel).r
+            + texture2D(lightsMap, vUv - texel).r
+            + texture2D(lightsMap, vUv + vec2(texel.x, -texel.y)).r
+            + texture2D(lightsMap, vUv + vec2(-texel.x, texel.y)).r;
+          color += smoothstep(.45, 1.9, nearby) * vec3(.0015, .009, .018) * land;
+          // Faint geographic graticule leaves the continents visually dominant.
+          vec2 grid = abs(fract(vUv * vec2(24., 12.)) - .5);
+          float lines = smoothstep(.491, .499, max(grid.x, grid.y));
+          color += lines * vec3(.001, .004, .008);
+          float rim = pow(1.0 - max(dot(n, view), 0.0), 4.5);
+          color += rim * vec3(.035, .29, .62) * (.035 + pow(light, 2.0) * .85);
+          // Let the lower hemisphere fall into shadow while the upper limb catches the key light.
+          float falloff = smoothstep(-.65, .65, n.y);
+          color *= .28 + .72 * falloff;
+          gl_FragColor = vec4(color, 1.0);
+          #include <tonemapping_fragment>
+          #include <colorspace_fragment>
+        }
+      `,
+    }),
+  );
+  globe.add(surface);
   const { group: flightGroup, flights } = createFlights();
   globe.add(flightGroup);
 
@@ -185,8 +316,11 @@ export function initializeHeroGlobe() {
     renderer.setSize(width, height, false);
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
-    globe.position.x = width < 768 ? 1.55 : width < 1050 ? 3.2 : 4.25;
-    globe.position.y = width < 768 ? -3.35 : -2.65;
+    const viewHeight = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.position.z;
+    // Keep the Earth spherical; crop its center beyond the right edge for a slender limb.
+    globe.position.x = viewHeight * camera.aspect * (width < 768 ? .85 : .46);
+    globe.scale.setScalar(width < 768 ? .76 : 1.08);
+    globe.position.y = -1.65;
     render();
   };
 
@@ -206,8 +340,8 @@ export function initializeHeroGlobe() {
     lastTime = time;
     elapsed += delta;
     easedPointer.lerp(pointer, PARALLAX_LERP);
-    globe.rotation.x = easedPointer.y * MAX_TILT;
-    globe.rotation.y = elapsed * AUTO_ROTATION_SPEED + easedPointer.x * MAX_TILT;
+    globe.rotation.x = .12 + easedPointer.y * MAX_TILT;
+    globe.rotation.y = -1.12 - elapsed * AUTO_ROTATION_SPEED + easedPointer.x * MAX_TILT;
     camera.position.x = easedPointer.x * MAX_CAMERA_X;
     camera.lookAt(0, 0, 0);
     updateFlights();
@@ -259,6 +393,8 @@ export function initializeHeroGlobe() {
   document.addEventListener('visibilitychange', handleVisibility);
   motionQuery.addEventListener?.('change', handleMotionPreference);
 
+  globe.rotation.y = -1.12;
+  globe.rotation.x = .12;
   resize();
   updateFlights();
   render();
@@ -281,8 +417,12 @@ export function initializeHeroGlobe() {
         object.material?.dispose();
       }
     });
+    earthTexture.dispose();
+    lightsTexture.dispose();
+    oceanTexture.dispose();
     renderer.dispose();
     renderer.domElement.remove();
     delete mount.dataset.initialized;
+    delete mount.dataset.textureState;
   };
 }
