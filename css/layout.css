@@ -1366,16 +1366,16 @@ call-to-action .button {
    overflow: hidden;
    padding: clamp(48px, 7vh, 76px) 0;
    background:
-      radial-gradient(circle at 12% 18%, rgba(17, 171, 176, .09), transparent 30%),
-      radial-gradient(circle at 92% 82%, rgba(240, 96, 0, .07), transparent 28%),
-      #fff;
+      radial-gradient(circle at 12% 18%, rgba(32, 207, 233, .1), transparent 30%),
+      radial-gradient(circle at 92% 82%, rgba(30, 108, 173, .08), transparent 28%),
+      #f4f7f6;
    color: #243f4d;
 }
 #contact::before {
    position: absolute;
    inset: 0;
    background-image: linear-gradient(rgba(16,42,58,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(16,42,58,.035) 1px, transparent 1px);
-   background-size: 48px 48px;
+   background-size: 52px 52px;
    content: '';
    pointer-events: none;
 }
@@ -1386,6 +1386,8 @@ call-to-action .button {
    grid-template-columns: minmax(0, .85fr) minmax(480px, 1.15fr);
    gap: clamp(44px, 6vw, 86px);
    align-items: center;
+   width: min(90%, 1360px);
+   max-width: none;
 }
 #contact .contact-shell::before,
 #contact .contact-shell::after {
@@ -1393,24 +1395,34 @@ call-to-action .button {
    content: none;
 }
 #contact .contact-eyebrow {
-   margin: 0 0 14px;
-   color: #7edadd;
-   font: 12px/1.4 'opensans-bold', sans-serif;
-   letter-spacing: .2em;
+   display: flex;
+   align-items: center;
+   gap: 12px;
+   margin: 0 0 11px;
+   color: #087d91;
+   font: 10px/1.3 'opensans-bold', sans-serif;
+   letter-spacing: 2px;
    text-transform: uppercase;
 }
+#contact .contact-eyebrow::after {
+   width: 18px;
+   height: 1px;
+   background: #0c5368;
+   content: '';
+}
 #contact h2 {
-   margin: 0 0 20px;
+   margin: 0 0 16px;
    color: #102a3a;
-   font: clamp(38px, 4.2vw, 58px)/1.07 'opensans-bold', sans-serif;
+   font: clamp(34px, 4.2vw, 54px)/1.07 'opensans-bold', sans-serif;
    letter-spacing: -.035em;
 }
+#contact h2 span { color: #078da4; }
 #contact .contact-lead {
    max-width: 520px;
    margin: 0 0 28px;
    padding: 0;
    color: #607580;
-   font: 16px/1.7 'opensans-regular', sans-serif;
+   font: 15px/1.55 'opensans-regular', sans-serif;
 }
 #contact .contact-direct {
    display: grid;
@@ -1426,7 +1438,7 @@ call-to-action .button {
    font: 13px/1.45 'opensans-semibold', sans-serif;
 }
 #contact .contact-direct a:hover,
-#contact .contact-direct a:focus { color: #7edadd; }
+#contact .contact-direct a:focus { color: #078da4; }
 #contact .contact-direct small {
    display: block;
    margin-bottom: 2px;
@@ -1441,16 +1453,16 @@ call-to-action .button {
    height: 38px;
    align-items: center;
    justify-content: center;
-   border: 1px solid rgba(15, 142, 146, .25);
-   border-radius: 12px;
-   background: rgba(17, 171, 176, .08);
-   color: #0d7f83;
+   border: 1px solid rgba(32, 207, 233, .3);
+   border-radius: 10px;
+   background: rgba(32, 207, 233, .09);
+   color: #078da4;
 }
 #contact .contact-card {
    padding: clamp(24px, 3vw, 38px);
-   border: 1px solid rgba(255, 255, 255, .11);
-   border-radius: 26px;
-   background: #112838;
+   border: 1px solid rgba(32, 207, 233, .28);
+   border-radius: 18px;
+   background: linear-gradient(145deg, #09273a, #061b2b);
    box-shadow: 0 28px 65px rgba(16, 42, 58, .22);
    backdrop-filter: blur(12px);
 }
@@ -1478,8 +1490,8 @@ call-to-action .button {
    width: 100%;
    margin: 0;
    padding: 12px 14px;
-   border: 1px solid rgba(255, 255, 255, .12);
-   border-radius: 11px;
+   border: 1px solid rgba(32, 207, 233, .2);
+   border-radius: 10px;
    outline: none;
    background: #061522;
    color: #fff;
@@ -1494,9 +1506,9 @@ call-to-action .button {
 #contact .contact-field input:focus,
 #contact .contact-field textarea:focus,
 #contact .contact-field select:focus {
-   border-color: #7edadd;
+   border-color: #20cfe9;
    background: #0a2030;
-   box-shadow: 0 0 0 3px rgba(126, 218, 221, .13);
+   box-shadow: 0 0 0 3px rgba(32, 207, 233, .13);
 }
 #contact .contact-actions {
    display: flex;
@@ -1509,8 +1521,8 @@ call-to-action .button {
    padding: 13px 22px;
    border: 0;
    border-radius: 999px;
-   background: #0f9296;
-   color: #fff;
+   background: #20cfe9;
+   color: #041927;
    cursor: pointer;
    font: 11px/1.2 'opensans-bold', sans-serif;
    letter-spacing: .1em;
@@ -1519,7 +1531,7 @@ call-to-action .button {
 }
 #contact #thai_submit:hover,
 #contact #thai_submit:focus {
-   background: #7edadd;
+   background: #b8f2ff;
    color: #031524;
    transform: translateY(-2px);
 }
@@ -1528,7 +1540,7 @@ call-to-action .button {
    opacity: .62;
    transform: none;
 }
-#contact span.required { color: #0d7f83; font-size: inherit; }
+#contact span.required { color: #20cfe9; font-size: inherit; }
 #contact #image-loader { position: static; margin-left: 14px; }
 #contact #message-warning,
 #contact #message-success {
