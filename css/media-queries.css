@@ -421,23 +421,49 @@
    #contact {
       display: block;
       min-height: 0;
-      padding: 72px 0;
+      padding: 68px 0 52px;
    }
    #contact .contact-shell {
       display: block;
       width: auto;
-      margin: 0 30px;
+      margin: 0 24px;
    }
-   #contact .contact-intro { margin-bottom: 32px; }
-   #contact h2 { font-size: 36px; }
-   #contact .contact-lead { font-size: 15px; }
-   #contact .contact-card { padding: 22px; border-radius: 22px; }
-   #contact .contact-fields { grid-template-columns: 1fr; }
+   #contact .contact-shell::before { display: none; }
+   #contact .contact-shell::after {
+      top: -40px;
+      right: 0;
+   }
+   #contact::after {
+      top: 4%;
+      right: -42%;
+      width: 94vw;
+   }
+   #contact .contact-intro { margin-bottom: 18px; }
+   #contact .contact-eyebrow { margin-bottom: 14px; }
+   #contact h2 { max-width: 360px; margin-bottom: 14px; font-size: 34px; }
+   #contact .contact-lead { margin-bottom: 18px; font-size: 14px; line-height: 1.5; }
+   #contact .contact-direct { width: 100%; }
+   #contact .contact-direct a,
+   #contact .contact-direct a:visited { width: 100%; }
+   #contact .contact-card { padding: 20px; }
+   #contact .contact-card__head { margin-bottom: 12px; }
+   #contact .contact-card__head h3 { font-size: 19px; }
+   #contact .contact-card__head p { font-size: 7px; }
+   #contact .contact-fields { grid-template-columns: 1fr; gap: 8px; }
    #contact .contact-field--wide { grid-column: auto; }
+   #contact .contact-field label { margin-bottom: 3px; }
    #contact .contact-field input,
    #contact .contact-field textarea,
-   #contact .contact-field select { width: 100%; margin: 0; }
-   #contact #thai_submit { width: 100%; margin: 0; text-align: center; }
+   #contact .contact-field select { width: 100%; margin: 0; padding: 7px 11px; }
+   #contact .contact-field textarea { height: 82px; min-height: 82px; }
+   #contact .contact-actions { display: grid; gap: 10px; margin-top: 12px; }
+   #contact #thai_submit { width: 100%; max-width: none; margin: 0; padding: 11px 15px; text-align: center; }
+   #contact .contact-card__note {
+      justify-self: center;
+      padding-left: 0;
+      border-left: 0;
+   }
+   #contact #image-loader { position: absolute; right: 0; bottom: 10px; }
    #contact #message-warning,
    #contact #message-success { width: 100%; margin-left: 0; }
 }

@@ -6,7 +6,13 @@ export function initializeContactForm() {
   const loader = document.querySelector('#image-loader');
   const warning = document.querySelector('#message-warning');
   const success = document.querySelector('#message-success');
-  const originalButtonLabel = submitButton.value;
+  const submitLabel = submitButton.querySelector('[data-submit-label]');
+  const originalButtonLabel = submitLabel?.textContent || submitButton.value;
+
+  function setButtonLabel(label) {
+    if (submitLabel) submitLabel.textContent = label;
+    else submitButton.value = label;
+  }
 
   function hideMessages() {
     warning.classList.remove('is-visible');
@@ -30,7 +36,7 @@ export function initializeContactForm() {
     }
 
     submitButton.disabled = true;
-    submitButton.value = 'Sending...';
+    setButtonLabel('Sending...');
     loader.classList.add('is-visible');
 
     try {
@@ -59,7 +65,7 @@ export function initializeContactForm() {
     } finally {
       loader.classList.remove('is-visible');
       submitButton.disabled = false;
-      submitButton.value = originalButtonLabel;
+      setButtonLabel(originalButtonLabel);
     }
   });
 }

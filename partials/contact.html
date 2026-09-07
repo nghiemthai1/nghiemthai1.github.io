@@ -2,45 +2,61 @@
    <div class="row contact-shell">
       <div class="contact-intro">
          <p class="contact-eyebrow">Get in touch</p>
-         <h2 id="contact-title">Let&rsquo;s turn a good idea into <span>something useful.</span></h2>
+         <h2 id="contact-title">
+            <span class="contact-title__line">Let&rsquo;s turn a good idea</span>
+            <span class="contact-title__line">into something</span>
+            <span class="contact-title__line">useful<span class="contact-title__dot">.</span></span>
+         </h2>
          <p class="contact-lead">Interested in working together, discussing a role, or exchanging ideas about AI and automation? Send me a note and I&rsquo;ll get back to you.</p>
 
          <div class="contact-direct" aria-label="Direct contact options">
             <a href="mailto:nghiemthai1@gmail.com">
                <span class="contact-direct__icon"><i class="fa fa-envelope" aria-hidden="true"></i></span>
                <span><small>Email</small>nghiemthai1@gmail.com</span>
+               <i class="fa fa-long-arrow-right contact-direct__arrow" aria-hidden="true"></i>
             </a>
             <a href="tel:+14699995138">
                <span class="contact-direct__icon"><i class="fa fa-phone" aria-hidden="true"></i></span>
                <span><small>Phone</small>(469) 999-5138</span>
+               <i class="fa fa-long-arrow-right contact-direct__arrow" aria-hidden="true"></i>
             </a>
          </div>
       </div>
 
       <div class="contact-card">
+         <div class="contact-card__head">
+            <h3>Send a message</h3>
+            <p>Same ideas.<br>Bigger possibilities.</p>
+         </div>
+
          <form action="https://formspree.io/f/mjyvrgqo" method="POST" id="contactForm" name="contactForm">
             <fieldset>
                <div class="contact-fields">
                   <div class="contact-field">
                      <label for="contactName">Name <span class="required">*</span></label>
-                     <input type="text" id="contactName" name="name" autocomplete="name" required>
+                     <input type="text" id="contactName" name="name" autocomplete="name" placeholder="Your name" required>
                   </div>
                   <div class="contact-field">
                      <label for="contactEmail">Email <span class="required">*</span></label>
-                     <input type="email" id="contactEmail" name="email" autocomplete="email" required>
+                     <input type="email" id="contactEmail" name="email" autocomplete="email" placeholder="your@email.com" required>
                   </div>
                   <div class="contact-field contact-field--wide">
                      <label for="contactSubject">Subject</label>
-                     <input type="text" id="contactSubject" name="subject">
+                     <input type="text" id="contactSubject" name="subject" placeholder="What&rsquo;s this about?">
                   </div>
                   <div class="contact-field contact-field--wide">
                      <label for="contactMessage">Message <span class="required">*</span></label>
-                     <textarea rows="5" id="contactMessage" name="message" required></textarea>
+                     <textarea rows="5" id="contactMessage" name="message" placeholder="Tell me more..." required></textarea>
                   </div>
                </div>
 
                <div class="contact-actions">
-                  <input id="thai_submit" type="submit" value="Send message" name="sendButton">
+                  <button id="thai_submit" type="submit" name="sendButton">
+                     <i class="fa fa-location-arrow" aria-hidden="true"></i>
+                     <span data-submit-label>Send message</span>
+                     <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
+                  </button>
+                  <span class="contact-card__note">I&rsquo;ll get back to you soon.</span>
                   <span id="image-loader" aria-live="polite"><img alt="Sending" src="assets/images/loader.gif"></span>
                </div>
             </fieldset>

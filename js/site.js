@@ -1,13 +1,35 @@
 export function initializeSite($) {
+  const home = document.querySelector('#home');
+  const portrait = document.querySelector('.home-portrait-frame');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
   const updateHomeState = () => {
-    const home = document.querySelector('#home');
     document.body.classList.toggle('home-in-view', Boolean(home && home.getBoundingClientRect().bottom > 80));
   };
   updateHomeState();
   $(window).on('scroll resize', updateHomeState);
 
+  let portraitLightFrame = 0;
+  const updatePortraitLight = () => {
+    portraitLightFrame = 0;
+    if (!home || !portrait) return;
+    if (reduceMotion.matches) {
+      portrait.style.setProperty('--portrait-light-angle', '0deg');
+      return;
+    }
+
+    const scrollRange = Math.max(home.offsetHeight * .85, 1);
+    const progress = Math.max(0, Math.min(1, -home.getBoundingClientRect().top / scrollRange));
+    portrait.style.setProperty('--portrait-light-angle', `${(progress * 220).toFixed(2)}deg`);
+  };
+  const requestPortraitLight = () => {
+    if (!portraitLightFrame) portraitLightFrame = window.requestAnimationFrame(updatePortraitLight);
+  };
+  updatePortraitLight();
+  $(window).on('scroll resize', requestPortraitLight);
+  reduceMotion.addEventListener?.('change', requestPortraitLight);
+
   const about = document.querySelector('#about');
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   let aboutParallaxFrame = 0;
   const updateAboutParallax = () => {
     aboutParallaxFrame = 0;
