@@ -8,13 +8,11 @@
       <a class="home-monogram smoothscroll" href="#home" aria-label="Thai Nghiem home">
          <svg viewBox="0 0 72 52" fill="none" aria-hidden="true">
             <defs>
-               <linearGradient id="tn-gold-metal" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0" stop-color="#bb8b64" />
-                  <stop offset=".38" stop-color="#d2a47d" />
-                  <stop offset=".62" stop-color="#e8c096" />
-                  <stop offset=".82" stop-color="#d2a47d" />
-                  <stop offset="1" stop-color="#bb8b64" />
-               </linearGradient>
+               <radialGradient id="tn-gold-metal" cx="100%" cy="0%" r="110%">
+                  <stop offset="0" stop-color="var(--gold-highlight)" />
+                  <stop offset=".55" stop-color="var(--accent-gold)" />
+                  <stop offset="1" stop-color="var(--gold-edge)" />
+               </radialGradient>
             </defs>
             <path d="M8 10H36M22 10V42" stroke="#eef9ff" stroke-width="3" stroke-linecap="square" />
             <path d="M37 42V10L62 42V10" stroke="url(#tn-gold-metal)" stroke-width="3" stroke-linejoin="round" />

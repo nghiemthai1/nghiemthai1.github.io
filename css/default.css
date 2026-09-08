@@ -34,17 +34,18 @@ e. Others
    --bg-deep-slate: #0f172a;
    --panel-slate: #1e293b;
    --primary-off-white: #f8fafc;
-   --accent-gold: #d2a47d;
-   --gold-edge: #bb8b64;
-   --gold-highlight: #e8c096;
-   --gold-ink: #805c3f;
-   --gold-rgb: 210, 164, 125;
-   --gold-shade-rgb: 187, 139, 100;
-   --gold-text-on-light: linear-gradient(90deg, #765236 0%, #805c3f 25%, #8b6343 50%, #805c3f 75%, #765236 100%);
-   /* A broad vertical light falls across the words, with soft champagne-gold edges. */
-   --gold-text-metal: linear-gradient(90deg, #bb8b64 0%, #d2a47d 25%, #e8c096 50%, #d2a47d 75%, #bb8b64 100%);
+   --accent-gold: #d2b676;
+   --gold-edge: #b79a5d;
+   --gold-highlight: #ead29a;
+   --gold-ink: #7b6330;
+   --gold-rgb: 210, 182, 118;
+   --gold-shade-rgb: 183, 154, 93;
+   --gold-text-on-light: linear-gradient(90deg, #705925 0%, #7b6330 25%, #87703b 50%, #7b6330 75%, #705925 100%);
+   /* A broad vertical light falls across the words, with warm yellow-gold edges. */
+   --gold-text-metal: linear-gradient(90deg, var(--gold-edge) 0%, var(--accent-gold) 25%, var(--gold-highlight) 50%, var(--accent-gold) 75%, var(--gold-edge) 100%);
    /* Buttons and icons catch the same vertical light just right of center. */
    --gold-surface-metal: linear-gradient(90deg, var(--gold-edge) 0%, var(--accent-gold) 38%, var(--gold-highlight) 62%, var(--accent-gold) 82%, var(--gold-edge) 100%);
+   --gold-button-surface: radial-gradient(ellipse at 100% 0%, var(--gold-highlight) 0%, transparent 65%), linear-gradient(135deg, var(--gold-edge), var(--accent-gold));
    --glow-gold: rgba(var(--gold-rgb), .45);
    --glow-gold-soft: rgba(var(--gold-rgb), .2);
 }

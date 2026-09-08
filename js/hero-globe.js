@@ -24,7 +24,7 @@ const atmosphereFragmentShader = `
   void main() {
     float rim = pow(1.0 - abs(dot(normalize(vViewNormal), normalize(vViewDirection))), 3.5);
     float key = max(dot(normalize(vViewNormal), normalize(vec3(-.45, .85, .2))), 0.0);
-    gl_FragColor = vec4(0.824, 0.643, 0.490, rim * (.006 + .10 * pow(key, 2.0)));
+    gl_FragColor = vec4(0.824, 0.714, 0.463, rim * (.006 + .10 * pow(key, 2.0)));
   }
 `;
 
@@ -43,7 +43,7 @@ const headFragmentShader = `
     float glow = 1.0 - smoothstep(0.06, 0.5, distanceFromCenter);
     float core = 1.0 - smoothstep(0.02, 0.16, distanceFromCenter);
     if (glow < 0.01) discard;
-    gl_FragColor = vec4(0.824, 0.643, 0.490, (glow * .62 + core * .38) * uOpacity * .78);
+    gl_FragColor = vec4(0.824, 0.714, 0.463, (glow * .62 + core * .38) * uOpacity * .78);
   }
 `;
 
@@ -112,7 +112,7 @@ function createFlights() {
       .lerp(end, t).normalize().multiplyScalar(GLOBE_RADIUS * (1.006 + Math.sin(t * Math.PI) * (.012 + start.angleTo(end) * .035)));
     const lineGeometry = new THREE.BufferGeometry().setFromPoints(curve.getPoints(88));
     const lineMaterial = new THREE.LineBasicMaterial({
-      color: 0xd2a47d,
+      color: 0xd2b676,
       transparent: true,
       opacity: 0.09,
       depthTest: true,
@@ -228,7 +228,7 @@ export function initializeHeroGlobe() {
         earthMap: { value: earthTexture },
         lightsMap: { value: lightsTexture },
         oceanMap: { value: oceanTexture },
-        goldColor: { value: new THREE.Color(0xd2a47d) },
+        goldColor: { value: new THREE.Color(0xd2b676) },
       },
       vertexShader: `
         varying vec2 vUv;
@@ -288,7 +288,7 @@ export function initializeHeroGlobe() {
           float lines = smoothstep(.491, .499, max(grid.x, grid.y));
           color += lines * vec3(.001, .004, .008);
           float rim = pow(1.0 - max(dot(n, view), 0.0), 4.5);
-          color += rim * vec3(.50, .38, .28) * (.015 + pow(light, 2.0) * .20);
+          color += rim * vec3(.50, .43, .28) * (.015 + pow(light, 2.0) * .20);
           color += rim * vec3(.045, .070, .12) * (.10 + light * .55);
           // Let the lower hemisphere fall into shadow while the upper limb catches the key light.
           float falloff = smoothstep(-.65, .65, n.y);

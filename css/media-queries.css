@@ -306,9 +306,12 @@
    #testimonials .testimonials-count { display: none; }
    #testimonials .testimonials-slider { margin: 0; text-align: left; }
    #testimonials .testimonial-card { min-height: calc(100svh - 250px); padding: 18px; border-radius: 22px; }
-   #testimonials .testimonial-card > p { margin-bottom: 14px; font-size: clamp(14px, 1.8svh, 16px); line-height: 1.45; }
+   #testimonials .testimonial-proof-points { gap: 6px; margin-bottom: 14px; }
+   #testimonials .testimonial-proof-points li { padding: 6px 9px; }
+   #testimonials .testimonial-card > p { margin-bottom: 14px; font-size: 16px; line-height: 1.45; }
    #testimonials .testimonial-quote-mark { height: 24px; margin-bottom: 6px; font-size: 42px; }
-   #testimonials .testimonial-person { align-items: flex-start; }
+   #testimonials .testimonial-person { grid-template-columns: 1fr; align-items: flex-start; gap: 8px; }
+   #testimonials .testimonial-context-link { padding: 4px 0 0 58px; }
    #testimonials .flex-control-nav { margin-left: 0; justify-content: flex-start; }
 
    @media (max-height: 740px) {
@@ -447,11 +450,6 @@
       width: auto;
       margin: 0 24px;
    }
-   #contact .contact-shell::before { display: none; }
-   #contact .contact-shell::after {
-      top: -40px;
-      right: 0;
-   }
    #contact::after {
       top: 4%;
       right: -42%;
@@ -467,7 +465,6 @@
    #contact .contact-card { padding: 20px; }
    #contact .contact-card__head { margin-bottom: 12px; }
    #contact .contact-card__head h3 { font-size: 19px; }
-   #contact .contact-card__head p { font-size: 7px; }
    #contact .contact-fields { grid-template-columns: 1fr; gap: 8px; }
    #contact .contact-field--wide { grid-column: auto; }
    #contact .contact-field label { margin-bottom: 3px; }
@@ -486,8 +483,6 @@
    #contact #message-warning,
    #contact #message-success { width: 100%; margin-left: 0; }
 }
-
-
 
 
 

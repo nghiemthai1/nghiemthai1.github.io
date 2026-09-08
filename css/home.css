@@ -12,10 +12,10 @@
    top: 0;
    height: 100svh;
    overflow: hidden;
+   /* A soft city-light glow near the horizon fades into the cool night sky. */
    background:
-      radial-gradient(ellipse at 82% 36%, rgba(80,108,151,.38), transparent 48%),
-      radial-gradient(ellipse at 4% 0%, rgba(206,224,244,.78) 0%, rgba(130,161,198,.34) 22%, transparent 50%),
-      linear-gradient(115deg, #1b2d45, #122035 52%, #20354e);
+      radial-gradient(ellipse at 68% 58%, rgba(194,148,104,.32) 0%, rgba(147,119,98,.16) 26%, transparent 58%),
+      linear-gradient(180deg, #142034 0%, #263245 45%, #172438 75%, #0d1827 100%);
    pointer-events: none;
 }
 .home-about-backdrop::after {
@@ -47,7 +47,7 @@ header#home::after { content: none; }
    bottom: 0;
    height: clamp(180px, 34vh, 380px);
    opacity: .66;
-   background: url('../assets/images/home-atmosphere.svg?v=20260908-5') center bottom / 100% 100% no-repeat;
+   background: url('../assets/images/home-atmosphere.svg?v=20260908-6') center bottom / 100% 100% no-repeat;
    pointer-events: none;
 }
 .home-monogram {
@@ -146,9 +146,9 @@ header#home .banner-text h1 .home-greeting {
 .home-intro strong { font: inherit; font-family: 'opensans-semibold', sans-serif; color: var(--accent-gold); }
 .home-actions { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 32px; }
 header#home .home-button { display: inline-flex; align-items: center; justify-content: center; gap: 22px; min-height: 56px; padding: 0 34px; border-radius: 40px; font: 16px/1.4 'opensans-semibold', sans-serif; border: 1px solid #b4dff4; }
-header#home .home-button-primary { color: #041927; background: var(--gold-surface-metal); border-color: var(--accent-gold); box-shadow: 0 0 18px rgba(var(--gold-rgb), .24), 0 10px 28px rgba(0, 8, 20, .18); }
+header#home .home-button-primary { color: #041927; background: var(--gold-button-surface); border-color: var(--accent-gold); box-shadow: inset 0 1px 0 rgba(255, 245, 216, .3), 0 10px 28px rgba(0, 8, 20, .18); }
 header#home .home-button-secondary { color: #fff; background: rgba(3, 18, 32, .65); }
-header#home .home-button:hover { background: var(--gold-highlight); color: #041927; }
+header#home .home-button:hover { background: var(--gold-button-surface); color: #041927; }
 header#home .social { display: flex; flex-wrap: wrap; gap: 12px; margin: 18px 0 0; padding-top: 14px; border-top: 1px solid rgba(115, 178, 210, .35); font-size: 18px; }
 header#home .social li { margin: 0; }
 header#home .social a { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 24px; border: 0; background: transparent; }
@@ -580,7 +580,7 @@ header#home .scrolldown a:focus-visible {
    letter-spacing: .5px;
    text-transform: uppercase;
 }
-#about .about-footer { display: flex; gap: 24px; align-items: flex-end; justify-content: space-between; padding-top: clamp(16px, 3vh, 32px); }
+#about .about-footer { display: flex; gap: 24px; align-items: flex-end; padding-top: clamp(16px, 3vh, 32px); }
 #about .about-actions { display: flex; gap: 12px; margin: 0; }
 #about .about-action,
 #about .about-action:visited {
@@ -602,19 +602,9 @@ header#home .scrolldown a:focus-visible {
    letter-spacing: 0;
 }
 #about .about-action--primary,
-#about .about-action--primary:visited { border-color: var(--accent-gold); background: var(--gold-surface-metal); color: #021725; }
+#about .about-action--primary:visited { border-color: var(--accent-gold); background: var(--gold-button-surface); color: #021725; }
 #about .about-action:hover,
-#about .about-action:focus-visible { background: var(--gold-highlight); color: #031524; }
-#about .about-closing {
-   min-width: 115px;
-   margin: 0;
-   color: #b9ced9;
-   font: 8px/1.7 'opensans-regular', sans-serif;
-   letter-spacing: 1.8px;
-   text-transform: uppercase;
-}
-#about .about-closing::before { display: block; width: 18px; height: 1px; margin-bottom: 9px; background: #c4dfeb; content: ''; }
-
+#about .about-action:focus-visible { background: var(--gold-button-surface); color: #031524; }
 @media (max-width: 1050px) {
    #about .about-shell { grid-template-columns: 185px minmax(0, 1fr); gap: 28px; width: 92%; }
    #about .about-capabilities { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -662,7 +652,6 @@ header#home .scrolldown a:focus-visible {
    #about .about-footer { order: 7; align-items: flex-start; flex-direction: column; }
    #about .about-actions { width: 100%; flex-direction: column; }
    #about .about-action, #about .about-action:visited { width: 100%; min-height: 48px; }
-   #about .about-closing { align-self: flex-end; }
 }
 
 @media (min-width: 768px) and (max-height: 720px) {
@@ -879,7 +868,6 @@ header#home .scrolldown a:focus-visible {
    font: 8px/1.3 'opensans-regular', sans-serif;
 }
 #about .about-footer { padding-top: 12px; }
-#about .about-closing { color: #fff; }
 
 @media (max-width: 1050px) {
    #about .about-shell { width: 100%; max-width: 860px; }
@@ -921,7 +909,6 @@ header#home .scrolldown a:focus-visible {
    #about .about-footer { align-items: flex-start; padding-top: 22px; }
    #about .about-actions { width: 100%; flex-direction: column; }
    #about .about-action, #about .about-action:visited { width: 100%; min-height: 48px; }
-   #about .about-closing { align-self: flex-end; }
 }
 
 @media (min-width: 768px) and (max-height: 720px) {
@@ -949,7 +936,6 @@ header#home .scrolldown a:focus-visible {
    #about .about-credential-list small { font-size: 7.5px; }
    #about .about-footer { padding-top: 6px; }
    #about .about-action, #about .about-action:visited { min-height: 34px; }
-   #about .about-closing { margin-right: 120px; }
 }
 
 /* One vertical wash of light across each text block. */
@@ -975,7 +961,7 @@ header#home .banner-text h1 > span:not(.home-greeting),
 #about .about-capability > i::before,
 #about .about-metrics i::before,
 #about .about-card__icon i::before {
-   background-image: var(--gold-surface-metal);
+   background-image: var(--gold-button-surface);
 }
 
 /* Share the headline's light field across wrapped lines. */
@@ -999,6 +985,6 @@ header#home .banner-text h1 > span:not(.home-greeting) {
 #about .about-action--primary,
 #about .about-action--primary:visited {
    border-color: var(--accent-gold);
-   background: var(--gold-surface-metal);
-   box-shadow: 0 0 18px rgba(var(--gold-rgb), .24);
+   background: var(--gold-button-surface);
+   box-shadow: inset 0 1px 0 rgba(255, 245, 216, .3), 0 6px 16px rgba(0, 8, 20, .16);
 }

@@ -109,6 +109,9 @@
 
 .works-panel {
   --category-accent: var(--accent-gold);
+  --category-night-angle: 180deg;
+  --category-light-position: 68% 58%;
+  --category-light-size: 85% 90%;
   isolation: isolate;
   position: relative;
   flex: 0 0 var(--works-panel-width);
@@ -121,25 +124,40 @@
   opacity: 0.56;
   transform: scale(0.965);
   transition: opacity 280ms ease, transform 400ms cubic-bezier(0.22, 1, 0.36, 1);
-  background: linear-gradient(135deg, #0a3044, #061b2b 68%, #071827);
+  background: linear-gradient(var(--category-night-angle), #142034 0%, #263245 45%, #172438 75%, #0d1827 100%);
 }
 
-.works-panel:nth-child(2),
-.works-panel:nth-child(3),
-.works-panel:nth-child(4),
-.works-panel:nth-child(5) { --category-accent: var(--accent-gold); }
+/* Home's night-light palette, with a different light direction for each category. */
+.works-panel:nth-child(2) {
+  --category-night-angle: 135deg;
+  --category-light-position: 18% 30%;
+  --category-light-size: 70% 95%;
+}
+
+.works-panel:nth-child(3) {
+  --category-night-angle: 225deg;
+  --category-light-position: 85% 24%;
+  --category-light-size: 70% 90%;
+}
+
+.works-panel:nth-child(4) {
+  --category-night-angle: 180deg;
+  --category-light-position: 48% 85%;
+  --category-light-size: 100% 60%;
+}
+
+.works-panel:nth-child(5) {
+  --category-night-angle: 35deg;
+  --category-light-position: 15% 76%;
+  --category-light-size: 80% 75%;
+}
 
 .works-panel::before {
   position: absolute;
   z-index: 0;
-  top: -35%;
-  right: -8%;
-  width: 58%;
-  height: 140%;
-  border-radius: 50%;
-  background: radial-gradient(circle, color-mix(in srgb, var(--category-accent) 34%, transparent), transparent 68%);
+  inset: -10%;
+  background: radial-gradient(ellipse var(--category-light-size) at var(--category-light-position), rgba(194,148,104,.32) 0%, rgba(147,119,98,.16) 26%, transparent 58%);
   content: '';
-  opacity: 0.7;
   transform: translate3d(var(--parallax-x, 0), 0, 0);
   will-change: transform;
 }
@@ -156,7 +174,7 @@
 
 .works-panel__scrim {
   z-index: 1;
-  background: linear-gradient(100deg, rgba(4, 18, 30, 0.24), rgba(4, 18, 30, 0.62));
+  background: linear-gradient(100deg, rgba(4, 8, 14, 0.12), rgba(4, 8, 14, 0.25));
 }
 
 .works-panel__content {
@@ -1074,10 +1092,6 @@
   color: transparent;
   -webkit-text-fill-color: transparent;
   text-shadow: none;
-}
-
-.works-panel::before {
-  filter: drop-shadow(0 0 22px var(--glow-gold-soft));
 }
 
 .works-category-nav button.is-active,

@@ -1,18 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 400" preserveAspectRatio="none" fill="none">
   <defs>
     <linearGradient id="ribbon" x1="0" y1="170" x2="1600" y2="280" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#d2a47d" stop-opacity=".52"/>
-      <stop offset=".2" stop-color="#d2a47d" stop-opacity=".7"/>
-      <stop offset=".46" stop-color="#e8c096" stop-opacity=".28"/>
-      <stop offset=".7" stop-color="#d2a47d" stop-opacity=".32"/>
-      <stop offset="1" stop-color="#bb8b64" stop-opacity=".08"/>
+      <stop stop-color="#d2b676" stop-opacity=".52"/>
+      <stop offset=".2" stop-color="#d2b676" stop-opacity=".7"/>
+      <stop offset=".46" stop-color="#ead29a" stop-opacity=".28"/>
+      <stop offset=".7" stop-color="#d2b676" stop-opacity=".32"/>
+      <stop offset="1" stop-color="#b79a5d" stop-opacity=".08"/>
     </linearGradient>
     <linearGradient id="crest" x1="0" y1="180" x2="1250" y2="275" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#d2a47d" stop-opacity=".55"/>
-      <stop offset=".26" stop-color="#bb8b64" stop-opacity=".28"/>
-      <stop offset=".52" stop-color="#e8c096" stop-opacity=".04"/>
-      <stop offset=".72" stop-color="#d2a47d" stop-opacity=".18"/>
-      <stop offset="1" stop-color="#bb8b64" stop-opacity="0"/>
+      <stop stop-color="#d2b676" stop-opacity=".55"/>
+      <stop offset=".26" stop-color="#b79a5d" stop-opacity=".28"/>
+      <stop offset=".52" stop-color="#ead29a" stop-opacity=".04"/>
+      <stop offset=".72" stop-color="#d2b676" stop-opacity=".18"/>
+      <stop offset="1" stop-color="#b79a5d" stop-opacity="0"/>
     </linearGradient>
     <filter id="haze" x="-20%" y="-100%" width="140%" height="300%"><feGaussianBlur stdDeviation="24"/></filter>
     <filter id="soft" x="-10%" y="-100%" width="120%" height="300%"><feGaussianBlur stdDeviation="8"/></filter>

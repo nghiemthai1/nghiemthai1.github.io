@@ -86,7 +86,7 @@ export function initializeSite($) {
   updateNavigationSurface();
   $(window).on('scroll', updateNavigationSurface);
 
-  $('.item-wrap a').magnificPopup({
+  $('.item-wrap a, .testimonial-context-link').magnificPopup({
     type: 'inline',
     fixedContentPos: false,
     removalDelay: 200,

@@ -69,7 +69,7 @@
    height: 38px;
    place-items: center;
    border-radius: 50%;
-   background: var(--gold-surface-metal);
+   background: var(--gold-button-surface);
    box-shadow: none;
    color: #041927;
    font: 11px/1 'opensans-bold', sans-serif;
@@ -260,7 +260,7 @@
 .digital-twin__primary-button,
 .digital-twin__send {
    border: 1px solid var(--twin-accent);
-   background: var(--gold-surface-metal);
+   background: var(--gold-button-surface);
    color: #17110d;
 }
 
@@ -269,7 +269,7 @@
 .digital-twin__send:hover,
 .digital-twin__send:focus-visible {
    border-color: var(--gold-highlight);
-   background: var(--gold-highlight);
+   background: var(--gold-button-surface);
 }
 
 .digital-twin__secondary-button,
