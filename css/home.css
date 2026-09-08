@@ -140,7 +140,7 @@ header#home .banner-text h1 .home-greeting {
 }
 .home-intro { margin: 0; color: #d4e5f0; font-size: clamp(16px, 1.3vw, 19px); line-height: 1.65; }
 .home-career-path { margin: 20px 0 0; font-size: 9px; line-height: 1.9; letter-spacing: 2px; text-transform: uppercase; color: #9ac9e2; }
-.home-career-path::before { content: none; }
+.home-career-path::before { display: none; content: none; }
 .home-intro strong { font: inherit; font-family: 'opensans-semibold', sans-serif; color: #49e5fa; }
 .home-actions { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 32px; }
 header#home .home-button { display: inline-flex; align-items: center; justify-content: center; gap: 22px; min-height: 56px; padding: 0 34px; border-radius: 40px; font: 16px/1.4 'opensans-semibold', sans-serif; border: 1px solid #b4dff4; }
@@ -578,7 +578,7 @@ header#home .scrolldown a:focus-visible {
    letter-spacing: .5px;
    text-transform: uppercase;
 }
-#about .about-footer { display: flex; gap: 24px; align-items: flex-end; justify-content: space-between; padding-top: 18px; }
+#about .about-footer { display: flex; gap: 24px; align-items: flex-end; justify-content: space-between; padding-top: clamp(16px, 3vh, 32px); }
 #about .about-actions { display: flex; gap: 12px; margin: 0; }
 #about .about-action,
 #about .about-action:visited {
