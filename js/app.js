@@ -5,7 +5,7 @@ import { initializeDigitalTwin } from './digital-twin.js?v=20260905-3';
 import { initializeHeroGlobe } from './hero-globe.js?v=20260907-27';
 
 const partialNames = ['header', 'about', 'portfolio', 'testimonials', 'contact', 'footer', 'digital-twin'];
-const PARTIAL_REVISION = '20260907-41';
+const PARTIAL_REVISION = '20260907-42';
 
 function createHomeAboutScene() {
   const home = document.querySelector('#home');
