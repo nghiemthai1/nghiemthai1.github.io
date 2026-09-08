@@ -75,6 +75,16 @@
    letter-spacing: 0.08em;
 }
 
+.digital-twin__launcher-mark svg {
+   width: 23px;
+   height: 23px;
+   fill: none;
+   stroke: currentColor;
+   stroke-linecap: round;
+   stroke-linejoin: round;
+   stroke-width: 1.8;
+}
+
 .digital-twin__launcher-accent {
    color: var(--twin-accent);
    font-family: 'opensans-bold', sans-serif;
