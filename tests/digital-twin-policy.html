@@ -12,7 +12,7 @@
 
     const data = await (await fetch('../assets/data/experience.json')).json();
     const records = buildKnowledgeRecords(data);
-    const aiOriginAnswer = 'I might have over-engineered the website, but I trully had fun! ;)';
+    const aiOriginAnswer = 'I used AI as a development tool while designing, coding, testing, and refining this portfolio. I reviewed the work and made the final product decisions.';
     const cases = [
       ['AI-made website question', 'Is this website made by AI?', 'reply', aiOriginAnswer],
       ['AI assistant mention', 'Was this built by an AI-assisent?', 'reply', aiOriginAnswer],

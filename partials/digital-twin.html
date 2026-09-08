@@ -1,4 +1,4 @@
-<div class="digital-twin" data-digital-twin>
+<div class="digital-twin" data-digital-twin data-scene-state="idle">
    <button
       class="digital-twin__launcher"
       type="button"
@@ -8,72 +8,119 @@
    >
       <span class="digital-twin__launcher-mark" aria-hidden="true">
          <svg viewBox="0 0 24 24" focusable="false">
-            <path d="M12 5.5a3 3 0 0 0-5.92.69A3.5 3.5 0 0 0 4 9.4c0 1.1.5 2.08 1.29 2.72A3.5 3.5 0 0 0 9 17v1a3 3 0 0 0 3 3V5.5Z" />
-            <path d="M12 5.5a3 3 0 0 1 5.92.69A3.5 3.5 0 0 1 20 9.4c0 1.1-.5 2.08-1.29 2.72A3.5 3.5 0 0 1 15 17v1a3 3 0 0 1-3 3V5.5Z" />
-            <path d="M6.1 6.2c.45.2.86.5 1.18.88M5.3 12.1c.58-.46 1.3-.73 2.06-.73M9 17c0-1.05.45-2 1.17-2.66M17.9 6.2c-.45.2-.86.5-1.18.88M18.7 12.1a3.27 3.27 0 0 0-2.06-.73M15 17c0-1.05-.45-2-1.17-2.66" />
+            <path d="M6.5 17.5 4 20l.7-3.8A7.8 7.8 0 0 1 3 11.4C3 7.3 7 4 12 4s9 3.3 9 7.4-4 7.4-9 7.4a11 11 0 0 1-5.5-1.3Z" />
+            <path d="m9.1 12.6 1.8-3.4.7 2.2 1.4-2.8 1.9 3.9" />
          </svg>
       </span>
-      <span class="digital-twin__launcher-label">Ask Th[<span class="digital-twin__launcher-accent">AI</span>]</span>
+      <span class="digital-twin__launcher-copy">
+         <span class="digital-twin__launcher-kicker">Professional Q&amp;A</span>
+         <span class="digital-twin__launcher-label">Ask Thai</span>
+      </span>
+      <span class="digital-twin__launcher-arrow" aria-hidden="true">&nearr;</span>
    </button>
+
+   <button
+      class="digital-twin__backdrop"
+      type="button"
+      aria-label="Close Thai's Professional AI Assistant"
+      data-twin-backdrop
+      hidden
+      tabindex="-1"
+   ></button>
 
    <section
       class="digital-twin__panel"
       id="digital-twin-panel"
       role="dialog"
-      aria-modal="false"
+      aria-modal="true"
       aria-labelledby="digital-twin-title"
       aria-describedby="digital-twin-disclosure"
       data-twin-panel
+      tabindex="-1"
       hidden
    >
       <header class="digital-twin__header">
-         <div>
-            <p class="digital-twin__eyebrow">Public career Q&amp;A</p>
-            <h2 id="digital-twin-title">Thai's Professional AI Assistant</h2>
+         <div class="digital-twin__identity">
+            <span class="digital-twin__presence" aria-hidden="true"></span>
+            <div>
+               <p class="digital-twin__eyebrow">Public career Q&amp;A</p>
+               <h2 id="digital-twin-title">A conversation with Thai</h2>
+            </div>
          </div>
-         <button class="digital-twin__icon-button" type="button" aria-label="Close chat" data-twin-close>&times;</button>
+         <button class="digital-twin__icon-button" type="button" aria-label="Close conversation" data-twin-close>
+            <span aria-hidden="true">&times;</span>
+         </button>
       </header>
 
-      <p class="digital-twin__disclosure" id="digital-twin-disclosure">
-         Answers from Thai Nghiem's public professional profile · Processed by Cloudflare.
-      </p>
+      <div class="digital-twin__workspace">
+         <section class="digital-twin__conversation" aria-label="Professional conversation">
+            <div class="digital-twin__conversation-intro">
+               <p>Ask about my experience, projects, or how I approach complex problems.</p>
+            </div>
 
-      <div class="digital-twin__setup">
-         <p class="digital-twin__status" role="status" aria-live="polite" data-twin-status>Loading experience profile...</p>
-         <div class="digital-twin__verification" data-twin-turnstile aria-label="Human verification" tabindex="-1"></div>
+            <div class="digital-twin__setup">
+               <p class="digital-twin__status" role="status" aria-live="polite" data-twin-status>Loading experience profile...</p>
+               <div class="digital-twin__verification" data-twin-turnstile aria-label="Human verification" tabindex="-1"></div>
+            </div>
+
+            <section class="digital-twin__suggestions" aria-labelledby="digital-twin-suggestions-title" data-twin-suggestions>
+               <p id="digital-twin-suggestions-title">Good places to start</p>
+               <div>
+                  <button type="button" data-number="01" data-twin-suggestion>What impact have you delivered at EY?</button>
+                  <button type="button" data-number="02" data-twin-suggestion>How did your role evolve at American Water?</button>
+                  <button type="button" data-number="03" data-twin-suggestion>Which machine-learning projects have you built?</button>
+                  <button type="button" data-number="04" data-twin-suggestion>What technologies do you use?</button>
+               </div>
+            </section>
+
+            <ol class="digital-twin__messages" aria-live="polite" aria-label="Conversation" data-twin-messages></ol>
+         </section>
+
+         <aside class="digital-twin__stage" aria-label="Animated illustration of Thai working at a laptop">
+            <div class="digital-twin__scene" data-twin-scene data-scene-status="waiting" aria-hidden="true">
+               <img
+                  class="digital-twin__scene-poster"
+                  src="assets/images/profilepic.jpg"
+                  alt=""
+                  width="400"
+                  height="400"
+                  data-twin-scene-poster
+               />
+            </div>
+            <div class="digital-twin__scene-caption" aria-hidden="true">
+               <span data-twin-scene-label>Ready when you are</span>
+               <span class="digital-twin__scene-pulse"></span>
+            </div>
+         </aside>
       </div>
 
-      <section class="digital-twin__suggestions" aria-labelledby="digital-twin-suggestions-title" data-twin-suggestions>
-         <p id="digital-twin-suggestions-title">Suggested questions</p>
-         <div>
-            <button type="button" data-twin-suggestion>What impact have you delivered at EY?</button>
-            <button type="button" data-twin-suggestion>How did your role evolve at American Water?</button>
-            <button type="button" data-twin-suggestion>Which machine-learning projects have you built?</button>
-            <button type="button" data-twin-suggestion>What technologies do you use?</button>
-         </div>
-      </section>
+      <div class="digital-twin__composer-shell">
+         <form class="digital-twin__composer" data-twin-form>
+            <label class="sr-only" for="digital-twin-input">Question about Thai's professional experience</label>
+            <span class="digital-twin__composer-mark" aria-hidden="true">&#10022;</span>
+            <textarea
+               id="digital-twin-input"
+               rows="1"
+               maxlength="500"
+               placeholder="Ask anything about Thai's professional work..."
+               autocomplete="off"
+               data-twin-input
+               disabled
+            ></textarea>
+            <button class="digital-twin__send" type="submit" data-twin-send disabled>
+               <span>Send</span>
+               <span aria-hidden="true">&nearr;</span>
+            </button>
+            <button class="digital-twin__cancel" type="button" data-twin-cancel hidden>Stop</button>
+         </form>
 
-      <ol class="digital-twin__messages" aria-live="polite" aria-label="Conversation" data-twin-messages></ol>
-
-      <form class="digital-twin__composer" data-twin-form>
-         <label class="sr-only" for="digital-twin-input">Question about Thai's professional experience</label>
-         <textarea
-            id="digital-twin-input"
-            rows="1"
-            maxlength="500"
-            placeholder="Ask about my experience..."
-            autocomplete="off"
-            data-twin-input
-            disabled
-         ></textarea>
-         <button class="digital-twin__send" type="submit" data-twin-send disabled>Send</button>
-         <button class="digital-twin__cancel" type="button" data-twin-cancel hidden>Stop</button>
-      </form>
-
-      <div class="digital-twin__footer">
-         <span>English only</span>
-         <span class="digital-twin__disclaimer">AI-generated responses might not be true.</span>
-         <button type="button" data-twin-clear>Clear conversation</button>
+         <footer class="digital-twin__footer">
+            <p class="digital-twin__disclosure" id="digital-twin-disclosure">
+               Answers use Thai Nghiem's public professional profile and are processed by Cloudflare.
+               <span class="digital-twin__disclaimer">AI-generated responses might not be true.</span>
+            </p>
+            <button type="button" data-twin-clear>Clear conversation</button>
+         </footer>
       </div>
    </section>
 </div>

@@ -311,6 +311,7 @@ export function initializeHeroGlobe() {
   let lastTime = performance.now();
   let frameId = 0;
   let destroyed = false;
+  let digitalTwinOpen = false;
 
   const render = () => renderer.render(scene, camera);
 
@@ -357,7 +358,7 @@ export function initializeHeroGlobe() {
   };
 
   const startAnimation = () => {
-    if (frameId || destroyed || document.hidden || motionQuery.matches) return;
+    if (frameId || destroyed || document.hidden || motionQuery.matches || digitalTwinOpen) return;
     lastTime = performance.now();
     frameId = requestAnimationFrame(tick);
   };
@@ -390,6 +391,14 @@ export function initializeHeroGlobe() {
       startAnimation();
     }
   };
+  const handleDigitalTwinOpen = () => {
+    digitalTwinOpen = true;
+    stopAnimation();
+  };
+  const handleDigitalTwinClose = () => {
+    digitalTwinOpen = false;
+    startAnimation();
+  };
 
   const resizeObserver = 'ResizeObserver' in window ? new ResizeObserver(resize) : null;
   const header = mount.closest('header');
@@ -399,6 +408,8 @@ export function initializeHeroGlobe() {
   header?.addEventListener('pointerleave', handlePointerLeave);
   document.addEventListener('visibilitychange', handleVisibility);
   motionQuery.addEventListener?.('change', handleMotionPreference);
+  window.addEventListener('digital-twin:open', handleDigitalTwinOpen);
+  window.addEventListener('digital-twin:close', handleDigitalTwinClose);
 
   globe.rotation.y = -1.12;
   globe.rotation.x = .12;
@@ -416,6 +427,8 @@ export function initializeHeroGlobe() {
     header?.removeEventListener('pointerleave', handlePointerLeave);
     document.removeEventListener('visibilitychange', handleVisibility);
     motionQuery.removeEventListener?.('change', handleMotionPreference);
+    window.removeEventListener('digital-twin:open', handleDigitalTwinOpen);
+    window.removeEventListener('digital-twin:close', handleDigitalTwinClose);
     scene.traverse((object) => {
       object.geometry?.dispose();
       if (Array.isArray(object.material)) {

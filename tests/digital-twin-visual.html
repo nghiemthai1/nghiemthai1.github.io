@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Animated assistant visual fixture</title>
+  <link rel="stylesheet" href="../css/default.css">
+  <link rel="stylesheet" href="../css/digital-twin.css?v=visual-test">
+  <style>
+    html, body { min-height: 100%; margin: 0; background: #07131f; }
+    .visual-test-controls { position: fixed; z-index: 11000; top: 8px; left: 8px; display: flex; gap: 4px; }
+    .visual-test-controls button { padding: 5px 8px; border: 1px solid #d2b676; background: #07131f; color: #fff; }
+    @media (max-width: 600px) { .visual-test-controls { display: none; } }
+  </style>
+</head>
+<body>
+  <div class="visual-test-controls" aria-label="Scene state controls">
+    <button type="button" data-test-state="idle">Idle</button>
+    <button type="button" data-test-state="reading">Reading</button>
+    <button type="button" data-test-state="typing">Typing</button>
+    <button type="button" data-test-state="complete">Complete</button>
+  </div>
+  <main id="fixture"></main>
+  <script type="module">
+    const fixture = document.querySelector('#fixture');
+    fixture.innerHTML = await fetch('../partials/digital-twin.html').then((response) => response.text());
+    const root = document.querySelector('[data-digital-twin]');
+    const panel = document.querySelector('[data-twin-panel]');
+    const backdrop = document.querySelector('[data-twin-backdrop]');
+    const sceneMount = document.querySelector('[data-twin-scene]');
+    const sceneLabel = document.querySelector('[data-twin-scene-label]');
+    panel.hidden = false;
+    backdrop.hidden = false;
+    root.dataset.open = 'true';
+    root.dataset.modelReady = 'true';
+    root.dataset.verified = 'true';
+    document.querySelector('[data-twin-status]').textContent = 'AI ready · Cloudflare hosted.';
+    document.querySelector('[data-twin-status]').dataset.state = 'ready';
+    document.querySelector('[data-twin-turnstile]').hidden = true;
+    document.querySelector('[data-twin-input]').disabled = false;
+    document.querySelector('[data-twin-send]').disabled = false;
+    document.body.dataset.viewport = `${window.innerWidth}x${window.innerHeight}`;
+    const { initializeCharacterScene } = await import('../js/digital-twin-scene.js?v=visual-test');
+    const controller = initializeCharacterScene(sceneMount, {
+      onStateLabel(label) { sceneLabel.textContent = label; },
+    });
+    const requestedView = window.location.hash.slice(1) || 'idle';
+    const requestedState = requestedView === 'conversation' ? 'complete' : requestedView;
+    root.dataset.sceneState = requestedState;
+    controller.setState(requestedState);
+    if (requestedView === 'conversation') {
+      document.querySelector('[data-twin-suggestions]').hidden = true;
+      document.querySelector('[data-twin-messages]').innerHTML = `
+        <li class="digital-twin__message digital-twin__message--user">
+          <span class="digital-twin__message-label">You</span>
+          <p>How do you balance business strategy with technical delivery?</p>
+        </li>
+        <li class="digital-twin__message digital-twin__message--assistant">
+          <span class="digital-twin__message-label">Thai AI</span>
+          <p>I start with the business outcome, then work backward into a practical architecture. That keeps discovery, prototyping, and delivery connected to measurable value.</p>
+        </li>`;
+    }
+    for (const button of document.querySelectorAll('[data-test-state]')) {
+      button.addEventListener('click', () => {
+        root.dataset.sceneState = button.dataset.testState;
+        controller.setState(button.dataset.testState);
+      });
+    }
+    document.body.dataset.status = 'ready';
+  </script>
+</body>
+</html>

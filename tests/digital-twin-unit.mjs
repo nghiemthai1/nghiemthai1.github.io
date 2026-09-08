@@ -3,7 +3,7 @@ import { buildKnowledgeRecords, evaluateQuestion, humanizeResponse } from '../js
 
 const data = JSON.parse(fs.readFileSync(new URL('../assets/data/experience.json', import.meta.url), 'utf8'));
 const records = buildKnowledgeRecords(data);
-const aiOriginAnswer = 'I might have over-engineered the website, but I trully had fun! ;)';
+const aiOriginAnswer = 'I used AI as a development tool while designing, coding, testing, and refining this portfolio. I reviewed the work and made the final product decisions.';
 const checks = [
   ['AI-made website reply', evaluateQuestion('Is this website made by AI?', records).answer === aiOriginAnswer],
   ['AI assistant reply', evaluateQuestion('Was this built by an AI-assisent?', records).answer === aiOriginAnswer],

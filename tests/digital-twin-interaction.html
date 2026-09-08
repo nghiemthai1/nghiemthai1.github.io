@@ -10,8 +10,33 @@
   <ul id="results"></ul>
   <div id="fixture"></div>
   <script type="module">
+    window.addEventListener('error', (event) => {
+      document.body.dataset.status = 'failed';
+      document.title = `Interaction test error: ${event.message}`;
+    });
+    window.addEventListener('unhandledrejection', (event) => {
+      document.body.dataset.status = 'failed';
+      document.title = `Interaction test rejection: ${event.reason?.message || event.reason}`;
+    });
     const fixture = document.querySelector('#fixture');
     fixture.innerHTML = await fetch('../partials/digital-twin.html').then((response) => response.text());
+    const profileData = {
+      identity: { name: 'Thai Nghiem', title: 'AI Product Manager', summary: 'AI, automation, and software delivery.' },
+      experience: [
+        { id: 'experience-ey-senior-technology-consultant', organization: 'EY', title: 'Senior Technology Consultant', summary: 'Delivered AI and automation programs.' },
+        { id: 'experience-american-water-full-stack-developer', organization: 'American Water', title: 'Full-Stack Developer', summary: 'Built business applications.' },
+        { id: 'experience-american-water-intelligent-automation-engineer', organization: 'American Water', title: 'Intelligent Automation Engineer', summary: 'Delivered automation solutions.' },
+        { id: 'experience-ellenby-engineering-intern', organization: 'Ellenby Technologies', title: 'Engineering Intern', summary: 'Built hardware and software prototypes.' },
+      ],
+      education: [
+        { id: 'education-temple-ms', credential: 'M.S. Business Analytics', institution: 'Temple University', dates: '2020-2023', gpa: '4.0', summary: 'Graduate degree.' },
+        { id: 'education-rowan-bs', credential: 'B.S. Electrical & Computer Engineering', institution: 'Rowan University', dates: '2015-2019', gpa: '3.98', summary: 'Undergraduate degree.' },
+      ],
+      certifications: [],
+      projects: [
+        { id: 'project-face-identification', name: 'Face identification', summary: 'MATLAB machine-learning project.' },
+      ],
+    };
 
     let turnstileOptions;
     let turnstileResets = 0;
@@ -56,9 +81,9 @@
         },
       }));
     };
-    const { initializeDigitalTwin } = await import('../js/digital-twin.js?v=interaction-test-5');
-    const { countWords, dedupeNumberedItems, endsWithSentence, finalizeResponse } = await import('../js/digital-twin-response.js?v=interaction-test-4');
-    await initializeDigitalTwin();
+    const { initializeDigitalTwin } = await import('../js/digital-twin.js');
+    const { countWords, dedupeNumberedItems, endsWithSentence, finalizeResponse } = await import('../js/digital-twin-response.js');
+    await initializeDigitalTwin({ profileData, disableScene: true });
 
     const results = document.querySelector('#results');
     let failures = 0;
@@ -77,8 +102,8 @@
     check('Cloudflare AI is ready without a model download', !document.querySelector('[data-twin-download]') && !document.querySelector('[data-twin-input]').disabled);
     check('Cloudflare processing is disclosed', document.querySelector('#digital-twin-disclosure').textContent.includes('Cloudflare'));
     check(
-      'feature is named Professional AI Assistant',
-      document.querySelector('#digital-twin-title').textContent === "Thai's Professional AI Assistant",
+      'feature has a professional conversational title',
+      document.querySelector('#digital-twin-title').textContent === 'A conversation with Thai',
     );
     check(
       'original suggested questions are restored',
@@ -86,6 +111,22 @@
         === 'What impact have you delivered at EY?|How did your role evolve at American Water?|Which machine-learning projects have you built?|What technologies do you use?',
     );
     check('managed human verification completed', document.querySelector('[data-digital-twin]').dataset.verified === 'true');
+
+    const root = document.querySelector('[data-digital-twin]');
+    const launcher = document.querySelector('[data-twin-launcher]');
+    const startingScroll = window.scrollY;
+    launcher.focus();
+    launcher.click();
+    await new Promise((resolve) => setTimeout(resolve, 450));
+    check('launcher opens a modal conversation overlay', !document.querySelector('[data-twin-panel]').hidden
+      && document.querySelector('[data-twin-panel]').getAttribute('aria-modal') === 'true'
+      && !document.querySelector('[data-twin-backdrop]').hidden);
+    check('opening the overlay preserves scroll position', window.scrollY === startingScroll);
+    check('character scene reaches an animated or fallback state', ['ready', 'fallback'].includes(document.querySelector('[data-twin-scene]').dataset.sceneStatus));
+    root.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));
+    check('Escape closes the overlay and restores launcher focus', document.querySelector('[data-twin-panel]').hidden
+      && document.activeElement === launcher);
+    launcher.click();
 
     const input = document.querySelector('[data-twin-input]');
     input.value = 'What did you do at EY?';
@@ -102,8 +143,10 @@
       'thinking indicator appears before the first token',
       document.querySelector('.digital-twin__thinking')?.textContent === '...',
     );
+    check('character enters typing state while an answer streams', root.dataset.sceneState === 'typing');
     await new Promise((resolve) => setTimeout(resolve, 25));
     check('first answer completes', !document.querySelector('.digital-twin__thinking'));
+    check('character settles when an answer completes', root.dataset.sceneState === 'complete');
     check('human verification is not repeated after the first request', turnstileResets === 0 && !input.disabled);
 
     input.value = 'Can you tell me more';
@@ -180,7 +223,7 @@
       'AI-origin question receives the exact deterministic reply without an API request',
       outboundBodies.length === outboundCountBeforeAiOriginQuestion
         && [...document.querySelectorAll('.digital-twin__message--assistant p')].at(-1)?.textContent
-          === 'I might have over-engineered the website, but I trully had fun! ;)',
+          === 'I used AI as a development tool while designing, coding, testing, and refining this portfolio. I reviewed the work and made the final product decisions.',
     );
 
     const verbose = Array.from(

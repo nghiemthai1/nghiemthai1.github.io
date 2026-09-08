@@ -2,6 +2,18 @@
 
 The Professional AI Assistant uses `assets/data/experience.json` as a compact, public-only companion to the website and resume. It is prompt context, not model training data, so updates do not require retraining or replacing the model.
 
+The visible assistant is a cinematic overlay with a procedural Three.js character.
+Three.js renders the character, desk, laptop, and ambient office scene, while accessible HTML renders the conversation and controls.
+The character reads a submitted question and types while the response stream is active.
+No voice or mouth animation is used.
+
+## Version 1 rollback
+
+The original portfolio immediately before the animated assistant is preserved by the Git tag `portfolio-v1` at commit `164a0bd8910c92b00e9103ffdf10e982f6b37e1d`.
+The tag is also published to the GitHub remote.
+To restore Version 1 without rewriting shared history, create a new rollback branch from `portfolio-v1`, verify it locally, and merge that branch through the normal workflow.
+Do not reset the shared `master` branch or force-push it.
+
 ## Publishing checklist
 
 1. Update the portfolio HTML and/or `assets/documents/resumes/Resume.pdf`.

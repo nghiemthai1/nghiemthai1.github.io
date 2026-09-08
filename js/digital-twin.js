@@ -1,4 +1,4 @@
-import { finalizeResponse } from './digital-twin-response.js?v=20260904-3';
+import { finalizeResponse } from './digital-twin-response.js';
 
 const MAX_HISTORY_MESSAGES = 8;
 const MAX_QUESTION_LENGTH = 500;
@@ -7,7 +7,7 @@ const TURNSTILE_SITE_KEY = '0x4AAAAAAEmC_OLXbTSMNe92';
 const TURNSTILE_ACTION = 'digital_twin_chat';
 const LEGACY_UNKNOWN = 'That detail is not included in my public experience profile.';
 const UNKNOWN = "Thanks for asking. That detail is not included in my public experience profile, so I don't want to guess.";
-const AI_ORIGIN_ANSWER = 'I might have over-engineered the website, but I trully had fun! ;)';
+const AI_ORIGIN_ANSWER = 'I used AI as a development tool while designing, coding, testing, and refining this portfolio. I reviewed the work and made the final product decisions.';
 const AI_ORIGIN_PATTERN = /\bai[\s-]+(?:assistant|assisted|assistent|assisent|assitant|slop)\b|\b(?:is|was)\b.{0,40}\b(?:this|the|your)\s+(?:web\s*site|website|site|portfolio)\b.{0,40}\b(?:made|built|created|designed|generated|written|coded)?\s*(?:by|with|using)?\s*(?:ai|artificial intelligence|chatgpt|copilot|codex)\b|\b(?:did|does)\b.{0,20}\b(?:ai|artificial intelligence|chatgpt|copilot|codex)\b.{0,40}\b(?:make|build|create|design|generate|write|code)\b.{0,40}\b(?:this|the|your)\s+(?:web\s*site|website|site|portfolio)\b/i;
 const STOP_WORDS = new Set([
   'a', 'an', 'and', 'are', 'as', 'at', 'be', 'did', 'do', 'for', 'from', 'have', 'how', 'i',
@@ -383,12 +383,13 @@ function renderAnswer(container, answer) {
   }
 }
 
-export async function initializeDigitalTwin() {
+export async function initializeDigitalTwin(options = {}) {
   const root = document.querySelector('[data-digital-twin]');
   if (!root) return;
 
   const elements = {
     launcher: root.querySelector('[data-twin-launcher]'),
+    backdrop: root.querySelector('[data-twin-backdrop]'),
     panel: root.querySelector('[data-twin-panel]'),
     close: root.querySelector('[data-twin-close]'),
     status: root.querySelector('[data-twin-status]'),
@@ -401,6 +402,8 @@ export async function initializeDigitalTwin() {
     send: root.querySelector('[data-twin-send]'),
     cancel: root.querySelector('[data-twin-cancel]'),
     clear: root.querySelector('[data-twin-clear]'),
+    scene: root.querySelector('[data-twin-scene]'),
+    sceneLabel: root.querySelector('[data-twin-scene-label]'),
   };
 
   let records = [];
@@ -413,6 +416,12 @@ export async function initializeDigitalTwin() {
   let activeAnswer = null;
   let history = [];
   let lastRecordIds = [];
+  let sceneController = null;
+  let scenePromise = null;
+  let previouslyFocused = null;
+  let inertSiblings = [];
+  let previousBodyOverflow = '';
+  let previousBodyPaddingRight = '';
 
   function setStatus(message, state = 'idle') {
     elements.status.textContent = message;
@@ -458,21 +467,108 @@ export async function initializeDigitalTwin() {
     answer.textContent = '';
   }
 
+  function updateSceneState(state) {
+    root.dataset.sceneState = state;
+    sceneController?.setState(state);
+  }
+
+  function ensureScene() {
+    if (sceneController) return Promise.resolve(sceneController);
+    if (scenePromise) return scenePromise;
+    if (options.disableScene) {
+      elements.scene.dataset.sceneStatus = 'fallback';
+      elements.sceneLabel.textContent = 'Portrait view';
+      return Promise.resolve(null);
+    }
+    elements.scene.dataset.sceneStatus = 'loading';
+    elements.sceneLabel.textContent = 'Preparing Thai\'s workspace';
+    scenePromise = import('./digital-twin-scene.js?v=20260908-1')
+      .then(({ initializeCharacterScene }) => {
+        sceneController = initializeCharacterScene(elements.scene, {
+          onStateLabel(label) {
+            elements.sceneLabel.textContent = label;
+          },
+          onError() {
+            elements.scene.dataset.sceneStatus = 'fallback';
+            elements.sceneLabel.textContent = 'Portrait view';
+          },
+        });
+        return sceneController;
+      })
+      .catch((error) => {
+        console.warn('The animated character is unavailable; using the portrait fallback.', error);
+        elements.scene.dataset.sceneStatus = 'fallback';
+        elements.sceneLabel.textContent = 'Portrait view';
+        scenePromise = null;
+        return null;
+      });
+    return scenePromise;
+  }
+
+  function lockBackground() {
+    const scrollbarWidth = Math.max(0, window.innerWidth - document.documentElement.clientWidth);
+    previousBodyOverflow = document.body.style.overflow;
+    previousBodyPaddingRight = document.body.style.paddingRight;
+    document.body.classList.add('digital-twin-open');
+    document.body.style.overflow = 'hidden';
+    if (scrollbarWidth) document.body.style.paddingRight = `${scrollbarWidth}px`;
+    inertSiblings = [...(root.parentElement?.children || [])]
+      .filter((element) => element !== root)
+      .map((element) => ({ element, wasInert: element.inert }));
+    inertSiblings.forEach(({ element }) => { element.inert = true; });
+  }
+
+  function unlockBackground() {
+    document.body.classList.remove('digital-twin-open');
+    document.body.style.overflow = previousBodyOverflow;
+    document.body.style.paddingRight = previousBodyPaddingRight;
+    inertSiblings.forEach(({ element, wasInert }) => { element.inert = wasInert; });
+    inertSiblings = [];
+  }
+
+  function focusableElements() {
+    return [...elements.panel.querySelectorAll(
+      'button:not([disabled]):not([hidden]), textarea:not([disabled]), [href], [tabindex]:not([tabindex="-1"])',
+    )].filter((element) => !element.closest('[hidden]'));
+  }
+
   function openPanel() {
+    if (!elements.panel.hidden) return;
+    previouslyFocused = document.activeElement;
     elements.panel.hidden = false;
+    elements.backdrop.hidden = false;
+    root.dataset.open = 'true';
     elements.launcher.setAttribute('aria-expanded', 'true');
+    lockBackground();
+    window.dispatchEvent(new CustomEvent('digital-twin:open'));
+    updateSceneState('opening');
+    ensureScene().then((controller) => {
+      if (elements.panel.hidden || !controller) return;
+      controller.resume();
+      window.setTimeout(() => {
+        if (!elements.panel.hidden) updateSceneState(activeRequest ? 'typing' : 'idle');
+      }, 420);
+    });
     requestAnimationFrame(() => {
-      (isReady() ? elements.input : elements.verification).focus?.();
+      (isReady() ? elements.input : elements.panel).focus?.();
     });
   }
 
   function closePanel() {
+    if (elements.panel.hidden) return;
     elements.panel.hidden = true;
+    elements.backdrop.hidden = true;
+    root.dataset.open = 'false';
     elements.launcher.setAttribute('aria-expanded', 'false');
-    elements.launcher.focus();
+    sceneController?.pause();
+    unlockBackground();
+    window.dispatchEvent(new CustomEvent('digital-twin:close'));
+    const focusTarget = previouslyFocused?.isConnected ? previouslyFocused : elements.launcher;
+    focusTarget.focus?.();
+    previouslyFocused = null;
   }
 
-  function finishGeneration(cancelled = false) {
+  function finishGeneration(cancelled = false, failed = false) {
     elements.cancel.hidden = true;
     elements.send.hidden = false;
     clearThinkingState();
@@ -480,6 +576,7 @@ export async function initializeDigitalTwin() {
     activeRequest = null;
     activeController = null;
     activeAnswer = null;
+    updateSceneState(failed ? 'error' : cancelled ? 'idle' : 'complete');
     if (profileReady && !sessionToken && !turnstileToken) resetVerification();
     else showReadyState();
   }
@@ -542,10 +639,14 @@ export async function initializeDigitalTwin() {
   }
 
   function addImmediateReply(answer) {
+    updateSceneState('typing');
     const response = createMessage(elements.messages, 'assistant');
     renderAnswer(response, answer);
     history.push({ role: 'assistant', content: answer });
     history = history.slice(-MAX_HISTORY_MESSAGES);
+    window.setTimeout(() => {
+      if (!activeRequest) updateSceneState('complete');
+    }, 180);
   }
 
   async function submitQuestion(question) {
@@ -553,6 +654,7 @@ export async function initializeDigitalTwin() {
     if (evaluation.action === 'ignore') return;
 
     createMessage(elements.messages, 'user', question);
+    updateSceneState('reading');
     elements.input.value = '';
     elements.input.style.height = 'auto';
     elements.suggestions.hidden = true;
@@ -578,6 +680,7 @@ export async function initializeDigitalTwin() {
     elements.cancel.hidden = false;
     setComposerEnabled(false);
     setStatus('Thai AI is answering through Cloudflare.', 'loading');
+    updateSceneState('typing');
     const verificationToken = turnstileToken;
     turnstileToken = '';
 
@@ -615,7 +718,7 @@ export async function initializeDigitalTwin() {
       if (error.status === 403) sessionToken = '';
       clearThinkingState();
       if (activeAnswer) activeAnswer.textContent = error.message || 'I could not finish that response. Please try again.';
-      finishGeneration();
+      finishGeneration(false, true);
     }
   }
 
@@ -624,6 +727,7 @@ export async function initializeDigitalTwin() {
     else closePanel();
   });
   elements.close.addEventListener('click', closePanel);
+  elements.backdrop.addEventListener('click', closePanel);
   elements.cancel.addEventListener('click', () => {
     if (activeController) activeController.abort();
   });
@@ -634,6 +738,7 @@ export async function initializeDigitalTwin() {
     lastRecordIds = [];
     elements.messages.replaceChildren();
     elements.suggestions.hidden = false;
+    updateSceneState('idle');
     if (wasGenerating) {
       finishGeneration(true);
     } else {
@@ -668,14 +773,38 @@ export async function initializeDigitalTwin() {
     });
   }
   root.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && !elements.panel.hidden) closePanel();
+    if (event.key === 'Escape' && !elements.panel.hidden) {
+      event.preventDefault();
+      closePanel();
+      return;
+    }
+    if (event.key !== 'Tab' || elements.panel.hidden) return;
+    const focusable = focusableElements();
+    if (!focusable.length) {
+      event.preventDefault();
+      elements.panel.focus();
+      return;
+    }
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && (document.activeElement === first || document.activeElement === elements.panel)) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && (document.activeElement === last || document.activeElement === elements.panel)) {
+      event.preventDefault();
+      first.focus();
+    }
   });
 
   const profilePromise = (async () => {
-    const dataUrl = new URL('../assets/data/experience.json', import.meta.url);
-    const response = await fetch(dataUrl, { cache: 'no-store' });
-    if (!response.ok) throw new Error(`Unable to load experience data (${response.status})`);
-    records = buildKnowledgeRecords(await response.json());
+    let profileData = options.profileData;
+    if (!profileData) {
+      const dataUrl = new URL('../assets/data/experience.json', import.meta.url);
+      const response = await fetch(dataUrl, { cache: 'no-store' });
+      if (!response.ok) throw new Error(`Unable to load experience data (${response.status})`);
+      profileData = await response.json();
+    }
+    records = buildKnowledgeRecords(profileData);
     profileReady = true;
     root.dataset.modelReady = 'true';
     showReadyState();
