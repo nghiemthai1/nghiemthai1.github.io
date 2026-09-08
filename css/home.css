@@ -441,6 +441,7 @@ header#home .scrolldown a:focus-visible {
    content: '';
 }
 #about .about-quote { margin: 18px 0 0; padding: 0; border: 0; }
+#about .about-quote::before { content: none; }
 #about .about-quote::after {
    display: block;
    width: 18px;
