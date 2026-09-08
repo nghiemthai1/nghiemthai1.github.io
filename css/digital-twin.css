@@ -75,6 +75,12 @@
    letter-spacing: 0.08em;
 }
 
+.digital-twin__launcher-accent {
+   color: var(--twin-accent);
+   font-family: 'opensans-bold', sans-serif;
+   text-shadow: 0 0 10px rgba(32, 207, 233, 0.28);
+}
+
 .digital-twin__panel {
    position: absolute;
    right: 0;
