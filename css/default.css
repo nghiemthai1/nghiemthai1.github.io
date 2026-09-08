@@ -30,6 +30,25 @@ e. Others
 @import url("fontello/css/fontello.css");
 @import url("font-awesome/css/font-awesome.min.css");
 
+:root {
+   --bg-deep-slate: #0f172a;
+   --panel-slate: #1e293b;
+   --primary-off-white: #f8fafc;
+   --accent-gold: #d2a47d;
+   --gold-edge: #bb8b64;
+   --gold-highlight: #e8c096;
+   --gold-ink: #805c3f;
+   --gold-rgb: 210, 164, 125;
+   --gold-shade-rgb: 187, 139, 100;
+   --gold-text-on-light: linear-gradient(90deg, #765236 0%, #805c3f 25%, #8b6343 50%, #805c3f 75%, #765236 100%);
+   /* A broad vertical light falls across the words, with soft champagne-gold edges. */
+   --gold-text-metal: linear-gradient(90deg, #bb8b64 0%, #d2a47d 25%, #e8c096 50%, #d2a47d 75%, #bb8b64 100%);
+   /* Buttons and icons catch the same vertical light just right of center. */
+   --gold-surface-metal: linear-gradient(90deg, var(--gold-edge) 0%, var(--accent-gold) 38%, var(--gold-highlight) 62%, var(--accent-gold) 82%, var(--gold-edge) 100%);
+   --glow-gold: rgba(var(--gold-rgb), .45);
+   --glow-gold-soft: rgba(var(--gold-rgb), .2);
+}
+
 /* ------------------------------------------------------------------
 /* b. Reset
       Adapted from:
@@ -288,7 +307,7 @@ hr { border: solid #E3E3E3; border-width: 1px 0 0; clear: both; margin: 11px 0 3
 a, a:visited {
    text-decoration: none;
    outline: 0;
-   color: #11ABB0;
+   color: var(--gold-ink);
 
    -webkit-transition: color .3s ease-in-out;
    -moz-transition: color .3s ease-in-out;
@@ -349,7 +368,7 @@ li p { }
    color: #313131;
 }
 .stats-tabs li a:hover {
-   color:#11ABB0;
+   color:var(--gold-ink);
 }
 .stats-tabs li a b {
 	display: block;
@@ -361,7 +380,7 @@ li p { }
 
 /* definition list */
 dl { margin: 12px 0; }
-dt { margin: 0; color:#11ABB0; }
+dt { margin: 0; color:var(--gold-ink); }
 dd { margin: 0 0 0 20px; }
 
 /* Lining Definition Style Markup */
@@ -436,7 +455,7 @@ dd { margin: 0 0 0 20px; }
 }
 .pagination .current,
 .pagination .current:hover {
-   background-color: #11ABB0;
+   background-color: var(--gold-ink);
    color: #fff;
 }
 .pagination .inactive,
@@ -464,7 +483,7 @@ input[type="submit"],
 input[type="reset"],
 input[type="button"] {
    font: 16px/30px 'opensans-bold', sans-serif;
-   background: #11ABB0;
+   background: var(--gold-ink);
    display: inline-block;
 	text-decoration: none;
    letter-spacing: 0;
@@ -802,5 +821,3 @@ properly.
 	margin-right: auto !important;
 	text-align: center !important;
 }
-
-

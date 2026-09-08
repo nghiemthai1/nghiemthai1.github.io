@@ -104,7 +104,8 @@ export function initializeSite($) {
     animation: 'slide',
     controlNav: true,
     directionNav: false,
-    smoothHeight: true,
+    // Let the tallest quote set the height so resizing cannot clip a slide.
+    smoothHeight: false,
     slideshowSpeed: 7000,
     animationSpeed: 600,
     randomize: false,

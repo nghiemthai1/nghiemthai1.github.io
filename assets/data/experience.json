@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "lastUpdated": "2026-09-04",
+  "lastUpdated": "2026-09-07",
   "identity": {
     "name": "Thai Nghiem",
     "title": "Senior Consultant | GenAI & Agentic AI | AI Solution Architecture | Engineering Leadership",
@@ -47,7 +47,7 @@
         "Created practical AI decision tools aligned with NIST principles.",
         "Provided technical direction across APIs, data design, debugging, and deployment."
       ],
-      "skills": ["Agentic AI", "Generative AI", "AI governance", "AI solution architecture", "Python", "FastAPI", "React", "GCP", "Gemini", "Google ADK"],
+      "skills": ["Agentic AI", "Generative AI", "AI governance", "AI solution architecture", "stakeholder management", "requirements discovery", "workshop facilitation", "technical leadership", "business-to-technical translation", "Python", "FastAPI", "React", "GCP", "Gemini", "Google ADK"],
       "source": "assets/documents/resumes/Thai_Nghiem_Public_CV_2026.docx"
     },
     {
@@ -67,7 +67,7 @@
         "Eliminated more than 3,500 manual hours annually through NLP and Intelligent Document Processing solutions.",
         "Delivered solutions spanning 13 departments and trained more than 150 practitioners and leaders."
       ],
-      "skills": ["Azure AI", "UiPath", "intelligent automation", "NLP", "Intelligent Document Processing", "Agentic AI", "solution architecture", "team leadership"],
+      "skills": ["Azure AI", "UiPath", "intelligent automation", "NLP", "Intelligent Document Processing", "Agentic AI", "solution architecture", "stakeholder management", "requirements discovery", "workshop facilitation", "technical leadership", "team leadership"],
       "source": "assets/documents/resumes/Thai_Nghiem_Public_CV_2026.docx"
     },
     {
@@ -85,7 +85,7 @@
         "Built reusable governance and delivery practices for automation work.",
         "Connected automation delivery with enterprise application and infrastructure requirements."
       ],
-      "skills": ["UiPath", "intelligent automation", "Center of Excellence", "automation governance", "solution architecture", "process improvement"],
+      "skills": ["UiPath", "intelligent automation", "Center of Excellence", "automation governance", "solution architecture", "process improvement", "stakeholder management", "technical leadership", "business-to-technical translation"],
       "source": "assets/documents/resumes/Thai_Nghiem_Public_CV_2026.docx"
     },
     {
@@ -104,7 +104,7 @@
         "Supported the collection and management of approximately 6,000 bacteria samples each month.",
         "Automated reporting, scheduling, field-result entry, and sample monitoring, saving about four to eight hours per user each week."
       ],
-      "skills": ["Java", "Spring Boot", "JavaScript", "PostgreSQL", "AWS microservices", "APIs", "Agile", "Scrum"],
+      "skills": ["Java", "Spring Boot", "JavaScript", "PostgreSQL", "AWS microservices", "APIs", "solution architecture", "technical leadership", "business-to-technical translation", "Agile", "Scrum"],
       "source": "assets/documents/resumes/Thai_Nghiem_Public_CV_2026.docx"
     },
     {
@@ -120,7 +120,7 @@
         "Collected and analyzed scan data in MATLAB to optimize scan speed, light intensity, receiver gain, and board position.",
         "Worked across hardware, firmware, PCB design, experimentation, and test analysis."
       ],
-      "skills": ["C++", "MATLAB", "PCB design", "optical sensors", "product development"],
+      "skills": ["C++", "embedded development", "firmware", "MATLAB", "PCB design", "optical sensing", "experimentation", "product development"],
       "source": "index.html#modal-02"
     },
     {

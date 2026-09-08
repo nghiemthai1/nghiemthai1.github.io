@@ -12,7 +12,12 @@
 
     const data = await (await fetch('../assets/data/experience.json')).json();
     const records = buildKnowledgeRecords(data);
+    const aiOriginAnswer = 'I might have over-engineered the website, but I trully had fun! ;)';
     const cases = [
+      ['AI-made website question', 'Is this website made by AI?', 'reply', aiOriginAnswer],
+      ['AI assistant mention', 'Was this built by an AI-assisent?', 'reply', aiOriginAnswer],
+      ['AI slop mention', 'This looks like AI Slop.', 'reply', aiOriginAnswer],
+      ['AI-as-subject website question', 'Did ChatGPT make this portfolio?', 'reply', aiOriginAnswer],
       ['specific employer', 'What did you do at EY?', 'generate'],
       ['known employer question', 'Did you work at American Water?', 'generate'],
       ['known employer short name', 'Did you work at FPT?', 'generate'],

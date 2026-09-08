@@ -3,7 +3,12 @@ import { buildKnowledgeRecords, evaluateQuestion, humanizeResponse } from '../js
 
 const data = JSON.parse(fs.readFileSync(new URL('../assets/data/experience.json', import.meta.url), 'utf8'));
 const records = buildKnowledgeRecords(data);
+const aiOriginAnswer = 'I might have over-engineered the website, but I trully had fun! ;)';
 const checks = [
+  ['AI-made website reply', evaluateQuestion('Is this website made by AI?', records).answer === aiOriginAnswer],
+  ['AI assistant reply', evaluateQuestion('Was this built by an AI-assisent?', records).answer === aiOriginAnswer],
+  ['AI slop reply', evaluateQuestion('This looks like AI Slop.', records).answer === aiOriginAnswer],
+  ['AI-as-subject website reply', evaluateQuestion('Did ChatGPT make this portfolio?', records).answer === aiOriginAnswer],
   [
     'weather fallback',
     evaluateQuestion('What is the weather today?', records).answer

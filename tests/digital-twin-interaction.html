@@ -172,6 +172,17 @@
         && !degreeAnswer.textContent.includes('**'),
     );
 
+    const outboundCountBeforeAiOriginQuestion = outboundBodies.length;
+    input.value = 'Is this website made by AI?';
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    check(
+      'AI-origin question receives the exact deterministic reply without an API request',
+      outboundBodies.length === outboundCountBeforeAiOriginQuestion
+        && [...document.querySelectorAll('.digital-twin__message--assistant p')].at(-1)?.textContent
+          === 'I might have over-engineered the website, but I trully had fun! ;)',
+    );
+
     const verbose = Array.from(
       { length: 28 },
       () => 'I delivered a focused automation solution with measurable operational results for the client team.',

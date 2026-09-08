@@ -24,7 +24,7 @@ const atmosphereFragmentShader = `
   void main() {
     float rim = pow(1.0 - abs(dot(normalize(vViewNormal), normalize(vViewDirection))), 3.5);
     float key = max(dot(normalize(vViewNormal), normalize(vec3(-.45, .85, .2))), 0.0);
-    gl_FragColor = vec4(0.06, 0.48, 0.95, rim * (.012 + .26 * pow(key, 2.0)));
+    gl_FragColor = vec4(0.824, 0.643, 0.490, rim * (.006 + .10 * pow(key, 2.0)));
   }
 `;
 
@@ -40,9 +40,10 @@ const headFragmentShader = `
   uniform float uOpacity;
   void main() {
     float distanceFromCenter = length(gl_PointCoord - vec2(0.5));
-    float glow = 1.0 - smoothstep(0.08, 0.5, distanceFromCenter);
+    float glow = 1.0 - smoothstep(0.06, 0.5, distanceFromCenter);
+    float core = 1.0 - smoothstep(0.02, 0.16, distanceFromCenter);
     if (glow < 0.01) discard;
-    gl_FragColor = vec4(0.48, 0.88, 1.0, glow * uOpacity * .65);
+    gl_FragColor = vec4(0.824, 0.643, 0.490, (glow * .62 + core * .38) * uOpacity * .78);
   }
 `;
 
@@ -108,12 +109,12 @@ function createFlights() {
     // Lift an interpolated great-circle direction above the opaque surface.
     const curve = new THREE.Curve();
     curve.getPoint = (t, target = new THREE.Vector3()) => target.copy(start)
-      .lerp(end, t).normalize().multiplyScalar(GLOBE_RADIUS * (1.006 + Math.sin(t * Math.PI) * (.035 + start.angleTo(end) * .10)));
+      .lerp(end, t).normalize().multiplyScalar(GLOBE_RADIUS * (1.006 + Math.sin(t * Math.PI) * (.012 + start.angleTo(end) * .035)));
     const lineGeometry = new THREE.BufferGeometry().setFromPoints(curve.getPoints(88));
     const lineMaterial = new THREE.LineBasicMaterial({
-      color: 0x8be5ff,
+      color: 0xd2a47d,
       transparent: true,
-      opacity: 0.085,
+      opacity: 0.09,
       depthTest: true,
       depthWrite: false,
       blending: THREE.AdditiveBlending,
@@ -227,6 +228,7 @@ export function initializeHeroGlobe() {
         earthMap: { value: earthTexture },
         lightsMap: { value: lightsTexture },
         oceanMap: { value: oceanTexture },
+        goldColor: { value: new THREE.Color(0xd2a47d) },
       },
       vertexShader: `
         varying vec2 vUv;
@@ -244,6 +246,7 @@ export function initializeHeroGlobe() {
         uniform sampler2D earthMap;
         uniform sampler2D lightsMap;
         uniform sampler2D oceanMap;
+        uniform vec3 goldColor;
         varying vec2 vUv;
         varying vec3 vNormal;
         varying vec3 vView;
@@ -257,34 +260,36 @@ export function initializeHeroGlobe() {
           vec3 view = normalize(vView);
           vec3 keyDirection = normalize(vec3(-.45, .85, .3));
           float light = max(dot(n, keyDirection), 0.0);
-          vec3 sea = vec3(.004, .017, .033);
-          vec3 continent = vec3(.018, .065, .11) + detail * vec3(.035, .10, .16);
-          vec3 color = mix(sea, continent, land) * (.52 + light * .85) * .24;
+          vec3 sea = vec3(.002, .004, .009);
+          vec3 continent = vec3(.012, .019, .030) + detail * vec3(.028, .044, .068);
+          vec3 color = mix(sea, continent, land) * (.34 + light * .85) * .48;
           // Restrained sky reflection and a small ocean highlight preserve surface detail.
           vec3 halfDirection = normalize(keyDirection + view);
           float reflection = max(dot(n, halfDirection), 0.0);
           float oceanGlint = pow(reflection, 100.0) * ocean;
           float skyReflection = pow(reflection, 12.0);
-          color += vec3(.012, .05, .10) * skyReflection * mix(.12, .23, ocean);
-          color += vec3(.18, .38, .60) * oceanGlint * .09;
+          color += vec3(.028, .042, .070) * skyReflection * mix(.20, .36, ocean);
+          color += vec3(.24, .32, .46) * oceanGlint * .17;
           float bounce = max(dot(n, normalize(vec3(-.8, -.35, .6))), 0.0);
           color += vec3(.002, .007, .014) * bounce;
-          // Real night-light geography, recolored cyan rather than a uniform dot grid.
+          // Real night-light geography, recolored warm gold rather than a uniform dot grid.
           vec3 night = texture2D(lightsMap, vUv).rgb;
-          float cities = smoothstep(.10, .72, max(night.r, night.g));
-          color += pow(cities, 1.2) * vec3(.012, .065, .14) * land;
+          float cities = smoothstep(.055, .65, max(night.r, night.g));
+          // THREE.Color converts the approved gold from sRGB into the shader's linear space.
+          color += pow(cities, 1.2) * goldColor * land * .55;
           vec2 texel = vec2(1.0 / 2048.0, 1.0 / 1024.0);
           float nearby = texture2D(lightsMap, vUv + texel).r
             + texture2D(lightsMap, vUv - texel).r
             + texture2D(lightsMap, vUv + vec2(texel.x, -texel.y)).r
             + texture2D(lightsMap, vUv + vec2(-texel.x, texel.y)).r;
-          color += smoothstep(.45, 1.9, nearby) * vec3(.0015, .009, .018) * land;
+          color += smoothstep(.45, 1.9, nearby) * goldColor * .06 * land;
           // Faint geographic graticule leaves the continents visually dominant.
           vec2 grid = abs(fract(vUv * vec2(24., 12.)) - .5);
           float lines = smoothstep(.491, .499, max(grid.x, grid.y));
           color += lines * vec3(.001, .004, .008);
           float rim = pow(1.0 - max(dot(n, view), 0.0), 4.5);
-          color += rim * vec3(.035, .29, .62) * (.035 + pow(light, 2.0) * .85);
+          color += rim * vec3(.50, .38, .28) * (.015 + pow(light, 2.0) * .20);
+          color += rim * vec3(.045, .070, .12) * (.10 + light * .55);
           // Let the lower hemisphere fall into shadow while the upper limb catches the key light.
           float falloff = smoothstep(-.65, .65, n.y);
           color *= .28 + .72 * falloff;
@@ -317,9 +322,11 @@ export function initializeHeroGlobe() {
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
     const viewHeight = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.position.z;
-    // Keep the Earth spherical; crop its center beyond the right edge for a slender limb.
-    globe.position.x = viewHeight * camera.aspect * (width < 768 ? .85 : .46);
-    globe.scale.setScalar(width < 768 ? .76 : 1.08);
+    // Keep the globe cropped beyond the right edge as a quiet ambient backdrop.
+    const isMobile = width < 768;
+    const viewWidth = viewHeight * camera.aspect;
+    globe.position.x = viewWidth * (isMobile ? .85 : .46);
+    globe.scale.setScalar(isMobile ? .76 : 1.08);
     globe.position.y = -1.65;
     render();
   };

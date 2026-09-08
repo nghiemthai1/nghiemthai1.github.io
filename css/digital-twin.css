@@ -21,11 +21,11 @@
 .digital-twin {
    --twin-ink: #f4f7f8;
    --twin-muted: #aeb9be;
-   --twin-panel: #121a20;
-   --twin-surface: #1b272f;
+   --twin-panel: var(--panel-slate);
+   --twin-surface: #273449;
    --twin-line: rgba(255, 255, 255, 0.12);
-   --twin-accent: #20cfe9;
-   --twin-teal: #20cfe9;
+   --twin-accent: var(--accent-gold);
+   --twin-gold: var(--gold-edge);
    position: fixed;
    right: 24px;
    bottom: 24px;
@@ -46,10 +46,10 @@
    min-height: 54px;
    margin: 0;
    padding: 8px 18px 8px 8px;
-   border: 1px solid rgba(32, 207, 233, 0.4);
+   border: 1px solid rgba(var(--gold-rgb), 0.4);
    border-radius: 999px;
-   background: #071b2a;
-   box-shadow: 0 16px 44px rgba(3, 25, 40, 0.32), 0 0 0 1px rgba(32, 207, 233, 0.08);
+   background: var(--bg-deep-slate);
+   box-shadow: 0 16px 44px rgba(3, 25, 40, 0.32), 0 0 16px rgba(var(--gold-rgb), .18);
    color: #fff;
    font-family: 'opensans-semibold', sans-serif;
    font-size: 13px;
@@ -69,7 +69,8 @@
    height: 38px;
    place-items: center;
    border-radius: 50%;
-   background: linear-gradient(145deg, #37e0f5, #0798b3);
+   background: var(--gold-surface-metal);
+   box-shadow: none;
    color: #041927;
    font: 11px/1 'opensans-bold', sans-serif;
    letter-spacing: 0.08em;
@@ -86,9 +87,13 @@
 }
 
 .digital-twin__launcher-accent {
-   color: var(--twin-accent);
+   background-image: var(--gold-text-metal);
+   background-clip: text;
+   -webkit-background-clip: text;
+   color: transparent;
    font-family: 'opensans-bold', sans-serif;
-   text-shadow: 0 0 10px rgba(32, 207, 233, 0.28);
+   -webkit-text-fill-color: transparent;
+   text-shadow: none;
 }
 
 .digital-twin__panel {
@@ -124,10 +129,15 @@
 
 .digital-twin__eyebrow {
    margin: 0 0 3px;
-   color: var(--twin-accent);
+   background-image: var(--gold-text-metal);
+   background-clip: text;
+   -webkit-background-clip: text;
+   color: transparent;
    font: 10px/1.4 'opensans-bold', sans-serif;
    letter-spacing: 0.18em;
    text-transform: uppercase;
+   -webkit-text-fill-color: transparent;
+   text-shadow: none;
 }
 
 .digital-twin__header h2 {
@@ -163,7 +173,7 @@
 .digital-twin__disclosure {
    margin: 0;
    padding: 8px 20px;
-   background: rgba(17, 171, 176, 0.08);
+   background: rgba(var(--gold-shade-rgb), 0.08);
    color: #c7d4d7;
    font-size: 10px;
    line-height: 1.4;
@@ -194,7 +204,8 @@
    width: 0;
    height: 100%;
    border-radius: inherit;
-   background: linear-gradient(90deg, var(--twin-teal), var(--twin-accent));
+   background: var(--gold-surface-metal);
+   box-shadow: 0 0 12px var(--glow-gold);
    transition: width 180ms ease;
 }
 
@@ -249,7 +260,7 @@
 .digital-twin__primary-button,
 .digital-twin__send {
    border: 1px solid var(--twin-accent);
-   background: var(--twin-accent);
+   background: var(--gold-surface-metal);
    color: #17110d;
 }
 
@@ -257,8 +268,8 @@
 .digital-twin__primary-button:focus-visible,
 .digital-twin__send:hover,
 .digital-twin__send:focus-visible {
-   border-color: #ffa76f;
-   background: #ffa76f;
+   border-color: var(--gold-highlight);
+   background: var(--gold-highlight);
 }
 
 .digital-twin__secondary-button,
@@ -272,8 +283,8 @@
 .digital-twin__secondary-button:focus-visible,
 .digital-twin__cancel:hover,
 .digital-twin__cancel:focus-visible {
-   border-color: var(--twin-teal);
-   background: rgba(17, 171, 176, 0.1);
+   border-color: var(--twin-gold);
+   background: rgba(var(--gold-shade-rgb), 0.1);
 }
 
 .digital-twin__cache-note {
@@ -304,9 +315,9 @@
    min-height: 32px;
    margin: 0;
    padding: 7px 10px;
-   border: 1px solid rgba(17, 171, 176, 0.35);
+   border: 1px solid rgba(var(--gold-shade-rgb), 0.35);
    border-radius: 999px;
-   background: rgba(17, 171, 176, 0.08);
+   background: rgba(var(--gold-shade-rgb), 0.08);
    color: #cde5e6;
    font: 10px/1.35 'opensans-regular', sans-serif;
    letter-spacing: 0;
@@ -316,8 +327,8 @@
 
 .digital-twin__suggestions button:hover,
 .digital-twin__suggestions button:focus-visible {
-   border-color: var(--twin-teal);
-   background: rgba(17, 171, 176, 0.16);
+   border-color: var(--twin-gold);
+   background: rgba(var(--gold-shade-rgb), 0.16);
    color: #fff;
 }
 
@@ -385,7 +396,7 @@
    display: inline-block;
    width: 1.45em;
    margin-left: -1.45em;
-   color: var(--twin-teal);
+   color: var(--twin-gold);
    font-weight: 700;
 }
 
@@ -393,7 +404,7 @@
    display: inline-block;
    width: 1.45em;
    margin-left: -1.45em;
-   color: var(--twin-teal);
+   color: var(--twin-gold);
    font-weight: 700;
 }
 
@@ -446,8 +457,8 @@
 }
 
 .digital-twin__composer textarea:focus {
-   border-color: var(--twin-teal);
-   box-shadow: 0 0 0 3px rgba(17, 171, 176, 0.12);
+   border-color: var(--twin-gold);
+   box-shadow: 0 0 0 3px rgba(var(--gold-shade-rgb), 0.12);
 }
 
 .digital-twin__composer textarea:disabled {
@@ -517,7 +528,7 @@
       max-width: calc(100vw - 28px);
       min-height: 52px;
       padding: 6px 16px 6px 6px;
-      box-shadow: 0 14px 36px rgba(3, 25, 40, 0.35), 0 0 0 1px rgba(32, 207, 233, 0.12);
+      box-shadow: 0 14px 36px rgba(3, 25, 40, 0.35), 0 0 0 1px rgba(var(--gold-rgb), 0.12);
    }
 
    .digital-twin__launcher > span:last-child {

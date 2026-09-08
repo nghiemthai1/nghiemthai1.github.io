@@ -1,8 +1,35 @@
 const clamp = (value, minimum, maximum) => Math.min(Math.max(value, minimum), maximum);
 
+function enhancePopupMedia() {
+  document.querySelectorAll('.works-modals .popup-modal > img').forEach((image) => {
+    const modal = image.parentElement;
+    const media = document.createElement('div');
+    const backdrop = image.cloneNode(false);
+    const description = modal.querySelector(':scope > .description-box');
+    const scroller = document.createElement('div');
+
+    media.className = 'popup-modal__media';
+    backdrop.className = 'popup-modal__media-backdrop';
+    scroller.className = 'popup-modal__scroll';
+    backdrop.alt = '';
+    backdrop.setAttribute('aria-hidden', 'true');
+    image.classList.add('popup-modal__image');
+
+    image.before(media);
+    media.append(backdrop, image);
+
+    if (description) {
+      media.before(scroller);
+      scroller.append(media, description);
+    }
+  });
+}
+
 export function initializeWorksShowcase() {
   const scene = document.querySelector('[data-works-scene]');
   if (!scene) return;
+
+  enhancePopupMedia();
 
   const viewport = scene.querySelector('[data-works-viewport]');
   const track = scene.querySelector('[data-works-track]');
@@ -21,11 +48,6 @@ export function initializeWorksShowcase() {
     if (panel) track.append(panel);
   });
   const panels = [...track.querySelectorAll('[data-work-panel]')];
-  const previousButton = scene.querySelector('[data-works-previous]');
-  const nextButton = scene.querySelector('[data-works-next]');
-  const currentLabel = scene.querySelector('[data-works-current]');
-  const titleLabel = scene.querySelector('[data-works-title]');
-  const progressBar = scene.querySelector('[data-works-progress]');
   const categoryButtons = [...scene.querySelectorAll('[data-works-jump]')];
   const mobileQuery = window.matchMedia('(max-width: 900px)');
   const stackedQuery = window.matchMedia('(max-width: 700px)');
@@ -58,13 +80,9 @@ export function initializeWorksShowcase() {
       }
     });
 
-    currentLabel.textContent = String(activeIndex + 1).padStart(2, '0');
-    titleLabel.textContent = panels[activeIndex].dataset.category;
-    previousButton.disabled = activeIndex === 0;
-    nextButton.disabled = activeIndex === panels.length - 1;
   }
 
-  function findClosestPanel(scrollPosition, nativeScroll = false) {
+  function findClosestPanel(scrollPosition) {
     const viewportCenter = viewport.clientWidth / 2;
     let closestIndex = 0;
     let closestDistance = Number.POSITIVE_INFINITY;
@@ -85,10 +103,6 @@ export function initializeWorksShowcase() {
 
     setActivePanel(closestIndex);
 
-    const availableTravel = nativeScroll
-      ? Math.max(track.scrollWidth - track.clientWidth, 1)
-      : Math.max(horizontalTravel, 1);
-    progressBar.style.transform = `scaleX(${clamp(scrollPosition / availableTravel, 0, 1)})`;
   }
 
   function renderDesktop() {
@@ -109,7 +123,6 @@ export function initializeWorksShowcase() {
       });
 
       setActivePanel(closestIndex);
-      progressBar.style.transform = `scaleX(${closestIndex / Math.max(panels.length - 1, 1)})`;
       return;
     }
     if (isNativeScroll() || isReduced()) return;
@@ -131,7 +144,7 @@ export function initializeWorksShowcase() {
 
   function renderNativeScroll() {
     if (!isNativeScroll()) return;
-    findClosestPanel(track.scrollLeft, true);
+    findClosestPanel(track.scrollLeft);
   }
 
   function measure() {
@@ -140,7 +153,6 @@ export function initializeWorksShowcase() {
 
     if (isReduced()) {
       panels.forEach((panel) => panel.style.removeProperty('--parallax-x'));
-      progressBar.style.transform = 'scaleX(1)';
       setActivePanel(0);
       return;
     }
@@ -198,8 +210,6 @@ export function initializeWorksShowcase() {
     window.scrollTo({ top: targetY, behavior });
   }
 
-  previousButton.addEventListener('click', () => scrollToPanel(activeIndex - 1));
-  nextButton.addEventListener('click', () => scrollToPanel(activeIndex + 1));
   categoryButtons.forEach((button) => {
     button.addEventListener('click', () => scrollToPanel(Number(button.dataset.worksJump)));
   });

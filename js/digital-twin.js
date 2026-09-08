@@ -7,6 +7,8 @@ const TURNSTILE_SITE_KEY = '0x4AAAAAAEmC_OLXbTSMNe92';
 const TURNSTILE_ACTION = 'digital_twin_chat';
 const LEGACY_UNKNOWN = 'That detail is not included in my public experience profile.';
 const UNKNOWN = "Thanks for asking. That detail is not included in my public experience profile, so I don't want to guess.";
+const AI_ORIGIN_ANSWER = 'I might have over-engineered the website, but I trully had fun! ;)';
+const AI_ORIGIN_PATTERN = /\bai[\s-]+(?:assistant|assisted|assistent|assisent|assitant|slop)\b|\b(?:is|was)\b.{0,40}\b(?:this|the|your)\s+(?:web\s*site|website|site|portfolio)\b.{0,40}\b(?:made|built|created|designed|generated|written|coded)?\s*(?:by|with|using)?\s*(?:ai|artificial intelligence|chatgpt|copilot|codex)\b|\b(?:did|does)\b.{0,20}\b(?:ai|artificial intelligence|chatgpt|copilot|codex)\b.{0,40}\b(?:make|build|create|design|generate|write|code)\b.{0,40}\b(?:this|the|your)\s+(?:web\s*site|website|site|portfolio)\b/i;
 const STOP_WORDS = new Set([
   'a', 'an', 'and', 'are', 'as', 'at', 'be', 'did', 'do', 'for', 'from', 'have', 'how', 'i',
   'in', 'is', 'it', 'me', 'my', 'of', 'on', 'or', 'the', 'to', 'was', 'what', 'when', 'where',
@@ -272,6 +274,7 @@ export function evaluateQuestion(question, records, previousRecordIds = []) {
   if (trimmed.length > MAX_QUESTION_LENGTH) {
     return { action: 'reply', answer: 'Please shorten your question to 500 characters or fewer.' };
   }
+  if (AI_ORIGIN_PATTERN.test(trimmed)) return { action: 'reply', answer: AI_ORIGIN_ANSWER };
   if (BLOCKED_PATTERNS.some((pattern) => pattern.test(trimmed))) {
     return { action: 'reply', answer: buildScopeFallback(trimmed) };
   }

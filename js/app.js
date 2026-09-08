@@ -1,11 +1,11 @@
 import { initializeContactForm } from './contact-form.js?v=20260907-19';
-import { initializeSite } from './site.js?v=20260907-31';
-import { initializeWorksShowcase } from './works-showcase.js?v=20260905-1';
-import { initializeDigitalTwin } from './digital-twin.js?v=20260905-3';
-import { initializeHeroGlobe } from './hero-globe.js?v=20260907-27';
+import { initializeSite } from './site.js?v=20260908-32';
+import { initializeWorksShowcase } from './works-showcase.js?v=20260907-4';
+import { initializeDigitalTwin } from './digital-twin.js?v=20260908-4';
+import { initializeHeroGlobe } from './hero-globe.js?v=20260908-36';
 
 const partialNames = ['header', 'about', 'portfolio', 'testimonials', 'contact', 'footer', 'digital-twin'];
-const PARTIAL_REVISION = '20260907-42';
+const PARTIAL_REVISION = '20260908-62';
 
 function createHomeAboutScene() {
   const home = document.querySelector('#home');
