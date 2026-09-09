@@ -6,6 +6,7 @@
   <title>Animated assistant visual fixture</title>
   <link rel="stylesheet" href="../css/default.css">
   <link rel="stylesheet" href="../css/digital-twin.css?v=visual-test">
+  <link rel="stylesheet" href="../css/digital-twin-responsive.css?v=visual-test">
   <style>
     html, body { min-height: 100%; margin: 0; background: #07131f; }
     .visual-test-controls { position: fixed; z-index: 11000; top: 8px; left: 8px; display: flex; gap: 4px; }
@@ -29,6 +30,9 @@
     const backdrop = document.querySelector('[data-twin-backdrop]');
     const sceneMount = document.querySelector('[data-twin-scene]');
     const sceneLabel = document.querySelector('[data-twin-scene-label]');
+    const scenePoster = sceneMount.querySelector('[data-twin-scene-poster]');
+    scenePoster.src = '../assets/images/digital-twin-studio.jpg';
+    await scenePoster.decode().catch(() => {});
     panel.hidden = false;
     backdrop.hidden = false;
     root.dataset.open = 'true';
@@ -40,14 +44,9 @@
     document.querySelector('[data-twin-input]').disabled = false;
     document.querySelector('[data-twin-send]').disabled = false;
     document.body.dataset.viewport = `${window.innerWidth}x${window.innerHeight}`;
-    const { initializeCharacterScene } = await import('../js/digital-twin-scene.js?v=visual-test');
-    const controller = initializeCharacterScene(sceneMount, {
-      onStateLabel(label) { sceneLabel.textContent = label; },
-    });
     const requestedView = window.location.hash.slice(1) || 'idle';
     const requestedState = requestedView === 'conversation' ? 'complete' : requestedView;
     root.dataset.sceneState = requestedState;
-    controller.setState(requestedState);
     if (requestedView === 'conversation') {
       document.querySelector('[data-twin-suggestions]').hidden = true;
       document.querySelector('[data-twin-messages]').innerHTML = `
@@ -60,6 +59,11 @@
           <p>I start with the business outcome, then work backward into a practical architecture. That keeps discovery, prototyping, and delivery connected to measurable value.</p>
         </li>`;
     }
+    const { initializeCharacterScene } = await import('../js/digital-twin-scene.js?v=visual-test');
+    const controller = initializeCharacterScene(sceneMount, {
+      onStateLabel(label) { sceneLabel.textContent = label; },
+    });
+    controller.setState(requestedState);
     for (const button of document.querySelectorAll('[data-test-state]')) {
       button.addEventListener('click', () => {
         root.dataset.sceneState = button.dataset.testState;

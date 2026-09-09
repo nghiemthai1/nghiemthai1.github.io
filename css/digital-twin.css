@@ -19,14 +19,12 @@
 }
 
 .digital-twin {
-   --twin-ink: #f5f8fb;
-   --twin-muted: #a8b9c9;
-   --twin-panel: #061423;
-   --twin-surface: #10243a;
-   --twin-surface-raised: #16304a;
-   --twin-line: rgba(151, 197, 234, 0.2);
-   --twin-accent: #f3bb57;
-   --twin-gold: #d2b676;
+   --twin-ink: #f8fafc;
+   --twin-muted: #b8c8d5;
+   --twin-night: #061321;
+   --twin-navy: #0b2238;
+   --twin-accent: #f4bd5f;
+   --twin-accent-soft: #ffe0a0;
    position: fixed;
    right: 24px;
    bottom: 24px;
@@ -48,38 +46,35 @@
    position: relative;
    z-index: 3;
    display: grid;
-   grid-template-columns: 44px auto 28px;
-   min-width: 190px;
-   min-height: 62px;
+   min-width: 184px;
+   min-height: 58px;
    margin: 0;
-   padding: 8px 10px 8px 8px;
+   padding: 7px 10px 7px 7px;
+   grid-template-columns: 42px auto 26px;
    align-items: center;
    gap: 10px;
    overflow: hidden;
-   border: 1px solid rgba(243, 187, 87, 0.58);
-   border-radius: 18px 5px 18px 18px;
-   background: linear-gradient(135deg, rgba(16, 43, 68, 0.98), rgba(5, 18, 31, 0.98));
-   box-shadow: 0 18px 54px rgba(0, 0, 0, 0.42), 6px 6px 0 rgba(3, 13, 23, 0.5);
+   border: 0;
+   border-radius: 18px;
+   background: rgba(5, 20, 34, 0.9);
+   box-shadow:
+      0 18px 48px rgba(0, 0, 0, 0.38),
+      inset 0 1px 0 rgba(255, 255, 255, 0.13),
+      inset 0 0 0 1px rgba(244, 189, 95, 0.32);
    color: #fff;
    text-align: left;
    text-transform: none;
-   transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease, opacity 150ms ease;
-}
-
-.digital-twin__launcher::after {
-   content: '';
-   position: absolute;
-   inset: 0;
-   opacity: 0.18;
-   background-image: radial-gradient(circle, rgba(255, 255, 255, 0.7) 0 1px, transparent 1.25px);
-   background-size: 7px 7px;
-   pointer-events: none;
+   backdrop-filter: blur(16px) saturate(1.1);
+   transition: transform 180ms ease, box-shadow 180ms ease, opacity 150ms ease;
 }
 
 .digital-twin__launcher:hover,
 .digital-twin__launcher:focus-visible {
-   border-color: var(--twin-accent);
-   box-shadow: 0 20px 64px rgba(0, 0, 0, 0.48), 6px 6px 0 rgba(243, 187, 87, 0.18);
+   box-shadow:
+      0 22px 58px rgba(0, 0, 0, 0.46),
+      inset 0 1px 0 rgba(255, 255, 255, 0.18),
+      inset 0 0 0 1px rgba(244, 189, 95, 0.7);
+   outline: none;
    transform: translateY(-3px);
 }
 
@@ -91,21 +86,19 @@
 
 .digital-twin__launcher-mark {
    position: relative;
-   z-index: 1;
    display: grid;
-   width: 44px;
-   height: 44px;
+   width: 42px;
+   height: 42px;
    place-items: center;
-   border: 1px solid rgba(255, 231, 171, 0.7);
-   border-radius: 13px 4px 13px 13px;
-   background: linear-gradient(145deg, #ffd275, #d99632);
-   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
-   color: #061423;
+   border-radius: 14px;
+   background: linear-gradient(145deg, #ffd681, #d89534);
+   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+   color: #071522;
 }
 
 .digital-twin__launcher-mark svg {
-   width: 27px;
-   height: 27px;
+   width: 26px;
+   height: 26px;
    fill: none;
    stroke: currentColor;
    stroke-linecap: round;
@@ -114,17 +107,15 @@
 }
 
 .digital-twin__launcher-copy {
-   position: relative;
-   z-index: 1;
    display: flex;
    flex-direction: column;
-   gap: 2px;
+   gap: 1px;
 }
 
 .digital-twin__launcher-kicker {
-   color: #99b3c8;
+   color: #a9bdcb;
    font: 9px/1.2 'opensans-bold', sans-serif;
-   letter-spacing: 0.14em;
+   letter-spacing: 0.13em;
    text-transform: uppercase;
 }
 
@@ -134,14 +125,12 @@
 }
 
 .digital-twin__launcher-arrow {
-   position: relative;
-   z-index: 1;
    display: grid;
-   width: 27px;
-   height: 27px;
+   width: 26px;
+   height: 26px;
    place-items: center;
-   border: 1px solid rgba(255, 255, 255, 0.14);
    border-radius: 50%;
+   background: rgba(255, 255, 255, 0.07);
    color: var(--twin-accent);
    font-size: 16px;
 }
@@ -156,71 +145,110 @@
    padding: 0;
    border: 0;
    border-radius: 0;
-   background: rgba(0, 8, 17, 0.78);
-   backdrop-filter: blur(8px) saturate(0.8);
+   background: rgba(0, 8, 15, 0.72);
+   backdrop-filter: blur(7px) saturate(0.85);
    cursor: default;
 }
 
 .digital-twin__panel {
    position: fixed;
    z-index: 2;
-   top: 50%;
-   left: 50%;
+   inset: 0;
    display: grid;
-   width: min(1120px, calc(100vw - 48px));
-   height: min(760px, calc(100dvh - 48px));
+   width: 100vw;
+   height: 100dvh;
    grid-template-rows: auto minmax(0, 1fr) auto;
    overflow: hidden;
-   border: 1px solid rgba(151, 197, 234, 0.24);
-   border-radius: 24px 8px 24px 24px;
+   border: 0;
+   border-radius: 0;
    outline: none;
-   background:
-      linear-gradient(90deg, rgba(10, 30, 49, 0.96) 0 44%, rgba(5, 20, 35, 0.92) 44%),
-      var(--twin-panel);
-   box-shadow: 0 36px 120px rgba(0, 0, 0, 0.68), 12px 12px 0 rgba(2, 10, 18, 0.42);
-   transform: translate(-50%, -50%);
-   animation: digital-twin-panel-in 360ms cubic-bezier(.2, .75, .25, 1) both;
+   background: var(--twin-night);
+   box-shadow: none;
+   isolation: isolate;
+   animation: digital-twin-world-in 520ms cubic-bezier(.2, .76, .24, 1) both;
 }
 
-.digital-twin__panel::before {
-   content: '';
-   position: absolute;
-   z-index: 0;
-   inset: 0;
-   opacity: 0.075;
-   background-image: radial-gradient(circle, #fff 0 1px, transparent 1.4px);
-   background-size: 8px 8px;
-   pointer-events: none;
-}
-
+.digital-twin__panel::before,
 .digital-twin__panel::after {
    content: '';
    position: absolute;
-   z-index: 0;
-   top: 0;
-   bottom: 0;
-   left: 44%;
-   width: 1px;
-   background: linear-gradient(transparent, rgba(243, 187, 87, 0.42), transparent);
    pointer-events: none;
 }
 
-@keyframes digital-twin-panel-in {
-   from { opacity: 0; transform: translate(-50%, calc(-50% + 24px)) scale(0.975); }
-   to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+.digital-twin__panel::before {
+   z-index: 1;
+   inset: 0;
+   background:
+      linear-gradient(90deg, rgba(3, 14, 26, 0.92) 0%, rgba(3, 15, 27, 0.7) 28%, rgba(3, 15, 27, 0.12) 58%, transparent 78%),
+      linear-gradient(0deg, rgba(2, 10, 19, 0.74) 0%, transparent 30%),
+      linear-gradient(180deg, rgba(2, 10, 19, 0.48) 0%, transparent 20%);
+}
+
+.digital-twin__panel::after {
+   z-index: 2;
+   inset: 0;
+   opacity: 0.13;
+   background-image: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0 0.65px, transparent 0.8px);
+   background-size: 5px 5px;
+   mix-blend-mode: soft-light;
+}
+
+@keyframes digital-twin-world-in {
+   from { opacity: 0; transform: scale(1.025); }
+   to { opacity: 1; transform: scale(1); }
+}
+
+.digital-twin__stage,
+.digital-twin__scene,
+.digital-twin__scene-poster,
+.digital-twin__scene canvas {
+   position: absolute;
+   inset: 0;
+   width: 100%;
+   height: 100%;
+}
+
+.digital-twin__stage {
+   z-index: 0;
+   overflow: hidden;
+   background: #07192b url('../assets/images/digital-twin-studio.jpg') center / cover no-repeat;
+}
+
+.digital-twin__scene {
+   transform: scale(1.012);
+}
+
+.digital-twin__scene-poster {
+   z-index: 1;
+   object-fit: cover;
+   object-position: center;
+   filter: saturate(1.03) contrast(1.03);
+   transition: opacity 400ms ease;
+}
+
+.digital-twin__scene canvas {
+   z-index: 2;
+   display: block;
+   filter: saturate(1.03) contrast(1.03);
+}
+
+.digital-twin__scene[data-scene-status='ready'] .digital-twin__scene-poster {
+   opacity: 1;
+}
+
+.digital-twin__scene[data-scene-status='fallback'] canvas {
+   display: none;
 }
 
 .digital-twin__header {
    position: relative;
-   z-index: 2;
+   z-index: 5;
    display: flex;
-   min-height: 78px;
+   min-height: 82px;
    align-items: center;
    justify-content: space-between;
-   padding: 15px 20px 14px 22px;
-   border-bottom: 1px solid var(--twin-line);
-   background: rgba(4, 15, 27, 0.76);
-   backdrop-filter: blur(16px);
+   padding: 16px clamp(22px, 4vw, 64px);
+   background: linear-gradient(180deg, rgba(2, 11, 21, 0.7), transparent);
 }
 
 .digital-twin__identity {
@@ -233,9 +261,9 @@
    position: relative;
    width: 38px;
    height: 38px;
-   border: 1px solid rgba(243, 187, 87, 0.6);
-   border-radius: 12px 3px 12px 12px;
-   background: linear-gradient(145deg, #f1c875, #b87628);
+   border-radius: 13px;
+   background: linear-gradient(145deg, #f3c66c, #b97427);
+   box-shadow: 0 8px 28px rgba(2, 10, 18, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
 .digital-twin__presence::before,
@@ -243,7 +271,6 @@
    content: '';
    position: absolute;
    left: 50%;
-   border-radius: 50%;
    background: #081827;
    transform: translateX(-50%);
 }
@@ -252,6 +279,7 @@
    top: 8px;
    width: 9px;
    height: 9px;
+   border-radius: 50%;
 }
 
 .digital-twin__presence::after {
@@ -262,10 +290,11 @@
 }
 
 .digital-twin__eyebrow {
-   margin: 0 0 3px;
+   margin: 0 0 2px;
    color: var(--twin-accent);
    font: 10px/1.25 'opensans-bold', sans-serif;
    letter-spacing: 0.17em;
+   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.7);
    text-transform: uppercase;
 }
 
@@ -273,76 +302,119 @@
    margin: 0;
    color: #fff;
    font: clamp(18px, 2vw, 23px)/1.2 'opensans-semibold', sans-serif;
+   text-shadow: 0 2px 18px rgba(0, 0, 0, 0.8);
 }
 
 .digital-twin__icon-button {
    display: grid;
-   width: 42px;
-   min-width: 42px;
-   height: 42px;
+   width: 44px;
+   min-width: 44px;
+   height: 44px;
    margin: 0;
    padding: 0;
    place-items: center;
-   border: 1px solid var(--twin-line);
+   border: 0;
    border-radius: 50%;
-   background: rgba(255, 255, 255, 0.035);
-   color: #cad7e0;
-   font-size: 28px;
+   background: rgba(4, 17, 29, 0.5);
+   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 8px 26px rgba(0, 0, 0, 0.24);
+   color: #eef5fa;
+   font-size: 27px;
    line-height: 1;
    text-transform: none;
+   backdrop-filter: blur(12px);
 }
 
 .digital-twin__icon-button:hover,
 .digital-twin__icon-button:focus-visible {
-   border-color: var(--twin-accent);
-   background: rgba(243, 187, 87, 0.1);
-   color: #fff;
+   outline: 2px solid var(--twin-accent);
+   outline-offset: 2px;
+   background: rgba(17, 43, 65, 0.8);
 }
 
 .digital-twin__workspace {
    position: relative;
-   z-index: 1;
+   z-index: 4;
    display: grid;
    min-height: 0;
-   grid-template-columns: minmax(390px, 44%) minmax(0, 1fr);
+   padding: 4px clamp(22px, 5vw, 78px) 8px;
+   grid-template-columns: minmax(340px, 42vw) minmax(0, 1fr);
 }
 
 .digital-twin__conversation {
    display: flex;
+   min-width: 0;
    min-height: 0;
+   max-width: 560px;
    flex-direction: column;
-   padding: 22px 22px 12px;
+   justify-content: center;
+   padding: 8px 0;
+}
+
+.digital-twin__conversation-intro {
+   position: relative;
+   flex: 0 0 auto;
+   max-width: 430px;
+   margin: 0 0 13px;
+   padding: 18px 21px 19px;
+   border-radius: 7px 22px 22px 22px;
+   background: rgba(249, 245, 235, 0.97);
+   box-shadow: 0 15px 38px rgba(0, 7, 14, 0.28), inset 0 1px 0 #fff;
+   color: #102d48;
+}
+
+.digital-twin__conversation-intro::after {
+   content: '';
+   position: absolute;
+   right: -13px;
+   bottom: 14px;
+   width: 22px;
+   height: 22px;
+   background: rgba(249, 245, 235, 0.97);
+   clip-path: polygon(0 0, 100% 50%, 0 100%);
+}
+
+.digital-twin__conversation-intro span {
+   position: absolute;
+   top: -12px;
+   left: 14px;
+   padding: 5px 13px;
+   border-radius: 999px;
+   background: #0b2136;
+   box-shadow: 0 7px 18px rgba(0, 0, 0, 0.24);
+   color: var(--twin-accent);
+   font: 11px/1 'opensans-bold', sans-serif;
+   letter-spacing: 0.08em;
 }
 
 .digital-twin__conversation-intro p {
-   max-width: 39ch;
    margin: 0;
-   color: #dce7ee;
-   font: 16px/1.55 'opensans-regular', sans-serif;
+   color: inherit;
+   font: clamp(17px, 1.7vw, 21px)/1.4 'opensans-semibold', sans-serif;
 }
 
 .digital-twin__setup {
    flex: 0 0 auto;
-   min-height: 32px;
-   margin: 12px 0 4px;
+   min-height: 24px;
+   margin: 0 0 8px;
 }
 
 .digital-twin__status {
    min-height: 20px;
    margin: 0;
    color: var(--twin-muted);
-   font-size: 13px;
+   font-size: 12px;
    line-height: 1.5;
+   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
 }
 
-.digital-twin__status[data-state='ready'] { color: #8ad9bc; }
-.digital-twin__status[data-state='warning'] { color: #ffd28c; }
-.digital-twin__status[data-state='error'] { color: #ffaaa0; }
+.digital-twin__status[data-state='ready'] { color: #a6ead0; }
+.digital-twin__status[data-state='warning'] { color: #ffe09f; }
+.digital-twin__status[data-state='error'] { color: #ffb8ae; }
 
 .digital-twin__verification {
    display: flex;
    min-height: 65px;
-   margin-top: 8px;
+   margin-top: 7px;
    justify-content: flex-start;
 }
 
@@ -352,19 +424,21 @@
 
 .digital-twin[data-model-ready='true'][data-verified='true'] .digital-twin__setup {
    min-height: 20px;
-   margin-bottom: 0;
+   margin-bottom: 3px;
 }
 
 .digital-twin__suggestions {
    flex: 0 0 auto;
-   margin-top: 8px;
+   max-width: 470px;
+   margin-top: 2px;
 }
 
 .digital-twin__suggestions > p {
-   margin: 0 0 9px;
-   color: #7f9bb0;
+   margin: 0 0 8px 4px;
+   color: #aec2d1;
    font: 10px/1.3 'opensans-bold', sans-serif;
    letter-spacing: 0.14em;
+   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
    text-transform: uppercase;
 }
 
@@ -376,56 +450,60 @@
 .digital-twin__suggestions button {
    position: relative;
    display: grid;
-   min-height: 42px;
+   min-height: 43px;
    margin: 0;
-   padding: 9px 12px 9px 47px;
+   padding: 9px 14px 9px 50px;
    align-items: center;
-   border: 1px solid rgba(126, 183, 226, 0.32);
-   border-radius: 5px 14px 14px;
-   background: linear-gradient(90deg, rgba(27, 65, 96, 0.48), rgba(14, 39, 62, 0.34));
-   color: #e5eff6;
-   font: 14px/1.4 'opensans-regular', sans-serif;
+   overflow: hidden;
+   border: 0;
+   border-radius: 13px;
+   background: linear-gradient(90deg, rgba(6, 27, 46, 0.88), rgba(9, 35, 57, 0.63));
+   box-shadow:
+      0 9px 25px rgba(0, 5, 12, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      inset 3px 0 0 rgba(244, 189, 95, 0.72);
+   color: #edf5fa;
+   font: 14px/1.35 'opensans-regular', sans-serif;
    letter-spacing: 0;
    text-align: left;
    text-transform: none;
-   transition: border-color 150ms ease, transform 150ms ease, background 150ms ease;
+   backdrop-filter: blur(12px) saturate(1.08);
+   transition: background 150ms ease, transform 150ms ease, box-shadow 150ms ease;
 }
 
 .digital-twin__suggestions button::before {
    content: attr(data-number);
    position: absolute;
-   left: 12px;
-   display: grid;
-   width: 25px;
-   height: 25px;
-   place-items: center;
-   border: 1px solid rgba(243, 187, 87, 0.48);
-   border-radius: 8px 2px 8px 8px;
+   left: 15px;
    color: var(--twin-accent);
-   font: 9px/1 'opensans-bold', sans-serif;
+   font: 10px/1 'opensans-bold', sans-serif;
+   letter-spacing: 0.08em;
 }
 
 .digital-twin__suggestions button:hover,
 .digital-twin__suggestions button:focus-visible {
-   border-color: var(--twin-accent);
-   background: linear-gradient(90deg, rgba(39, 82, 116, 0.64), rgba(18, 46, 72, 0.5));
-   color: #fff;
-   transform: translateX(3px);
+   outline: none;
+   background: linear-gradient(90deg, rgba(14, 48, 75, 0.95), rgba(15, 52, 81, 0.76));
+   box-shadow:
+      0 12px 30px rgba(0, 5, 12, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.17),
+      inset 3px 0 0 var(--twin-accent);
+   transform: translateX(4px);
 }
 
 .digital-twin__messages {
    flex: 1 1 auto;
-   min-height: 116px;
-   margin: 12px -7px 0 0;
-   padding: 0 9px 10px 0;
+   min-height: 110px;
+   margin: 4px -8px 0 0;
+   padding: 8px 12px 12px 0;
    overflow-y: auto;
    list-style: none;
-   scrollbar-color: rgba(151, 197, 234, 0.35) transparent;
+   scrollbar-color: rgba(195, 216, 231, 0.38) transparent;
    scrollbar-width: thin;
 }
 
 .digital-twin__message {
-   max-width: 92%;
+   max-width: 94%;
    margin: 0 0 15px;
 }
 
@@ -436,10 +514,11 @@
 
 .digital-twin__message-label {
    display: block;
-   margin: 0 8px 5px;
-   color: #87a0b4;
+   margin: 0 9px 5px;
+   color: #c0d0db;
    font: 10px/1.2 'opensans-bold', sans-serif;
    letter-spacing: 0.11em;
+   text-shadow: 0 2px 9px rgba(0, 0, 0, 0.9);
    text-transform: uppercase;
 }
 
@@ -447,12 +526,12 @@
    position: relative;
    display: inline-block;
    margin: 0;
-   padding: 13px 15px;
-   border: 1px solid rgba(151, 197, 234, 0.38);
-   border-radius: 5px 17px 17px;
-   background: #f6f0e3;
-   box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.18);
-   color: #173451;
+   padding: 14px 16px;
+   border: 0;
+   border-radius: 7px 19px 19px 19px;
+   background: rgba(249, 245, 235, 0.97);
+   box-shadow: 0 14px 35px rgba(0, 5, 12, 0.3), inset 0 1px 0 #fff;
+   color: #153652;
    font-size: 16px;
    line-height: 1.55;
    text-align: left;
@@ -462,29 +541,27 @@
 .digital-twin__message p::after {
    content: '';
    position: absolute;
-   left: -8px;
-   bottom: 10px;
-   width: 15px;
-   height: 15px;
-   border-bottom: 1px solid rgba(151, 197, 234, 0.38);
-   background: #f6f0e3;
-   clip-path: polygon(0 100%, 100% 0, 100% 100%);
+   left: -10px;
+   bottom: 11px;
+   width: 18px;
+   height: 18px;
+   background: rgba(249, 245, 235, 0.97);
+   clip-path: polygon(0 50%, 100% 0, 100% 100%);
 }
 
 .digital-twin__message--user p {
-   border-color: rgba(243, 187, 87, 0.58);
-   border-radius: 17px 5px 17px 17px;
-   background: #122d47;
-   color: #f0f6fa;
+   border-radius: 19px 7px 19px 19px;
+   background: rgba(8, 31, 51, 0.91);
+   box-shadow: 0 13px 32px rgba(0, 5, 12, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+   color: #f2f7fa;
+   backdrop-filter: blur(12px);
 }
 
 .digital-twin__message--user p::after {
-   right: -8px;
+   right: -10px;
    left: auto;
-   border: 0;
-   border-bottom: 1px solid rgba(243, 187, 87, 0.58);
-   background: #122d47;
-   clip-path: polygon(0 0, 100% 100%, 0 100%);
+   background: rgba(8, 31, 51, 0.91);
+   clip-path: polygon(0 0, 100% 50%, 0 100%);
 }
 
 .digital-twin__response-line {
@@ -504,7 +581,7 @@
    display: inline-block;
    width: 1.4em;
    margin-left: -1.4em;
-   color: #9b611c;
+   color: #98601d;
    font-weight: 700;
 }
 
@@ -516,7 +593,7 @@
 
 .digital-twin__thinking {
    min-width: 52px;
-   color: #43617b !important;
+   color: #46637c !important;
    font-weight: 700;
    letter-spacing: 0.25em;
    animation: digital-twin-thinking 700ms steps(2, end) infinite alternate;
@@ -527,146 +604,81 @@
    to { opacity: 1; }
 }
 
-.digital-twin__stage {
-   position: relative;
-   min-width: 0;
-   min-height: 0;
-   overflow: hidden;
-   isolation: isolate;
-   background:
-      radial-gradient(circle at 65% 28%, rgba(255, 187, 83, 0.14), transparent 26%),
-      linear-gradient(145deg, rgba(8, 31, 52, 0.48), rgba(3, 15, 28, 0.12));
-}
-
-.digital-twin__stage::before {
-   content: '';
-   position: absolute;
-   z-index: -1;
-   inset: 0;
-   opacity: 0.16;
-   background-image:
-      linear-gradient(rgba(116, 181, 226, 0.18) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(116, 181, 226, 0.18) 1px, transparent 1px);
-   background-size: 44px 44px;
-   mask-image: linear-gradient(to bottom, #000, transparent 82%);
-}
-
-.digital-twin__scene {
-   position: absolute;
-   inset: 0;
-}
-
-.digital-twin__scene::after {
-   content: '';
-   position: absolute;
-   inset: 0;
-   opacity: 0.13;
-   background-image: radial-gradient(circle, rgba(255, 255, 255, 0.85) 0 1px, transparent 1.2px);
-   background-size: 6px 6px;
-   mix-blend-mode: soft-light;
-   pointer-events: none;
-}
-
-.digital-twin__scene canvas {
-   position: relative;
-   z-index: 2;
-   display: block;
-   width: 100%;
-   height: 100%;
-   filter: saturate(1.04) contrast(1.03);
-}
-
-.digital-twin__scene-poster {
-   position: absolute;
-   z-index: 1;
-   top: 50%;
-   left: 50%;
-   width: min(58%, 330px);
-   height: auto;
-   aspect-ratio: 1;
-   object-fit: cover;
-   border: 2px solid rgba(243, 187, 87, 0.54);
-   border-radius: 48% 48% 12px 12px;
-   box-shadow: 10px 10px 0 rgba(1, 10, 18, 0.55);
-   filter: saturate(0.72) contrast(1.14) sepia(0.08);
-   transform: translate(-50%, -48%);
-   transition: opacity 220ms ease;
-}
-
-.digital-twin__scene[data-scene-status='ready'] .digital-twin__scene-poster {
-   opacity: 0;
-}
-
 .digital-twin__scene-caption {
    position: absolute;
-   z-index: 4;
-   right: 20px;
-   bottom: 20px;
+   z-index: 5;
+   top: 29px;
+   right: clamp(78px, 7vw, 112px);
    display: flex;
    align-items: center;
-   gap: 9px;
-   padding: 8px 11px;
-   border: 1px solid rgba(243, 187, 87, 0.34);
-   border-radius: 12px 3px 12px 12px;
-   background: rgba(4, 18, 31, 0.78);
-   color: #d4e2ea;
+   gap: 8px;
+   color: #e5eef4;
    font: 11px/1.3 'opensans-semibold', sans-serif;
-   letter-spacing: 0.04em;
-   backdrop-filter: blur(8px);
+   letter-spacing: 0.03em;
+   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.9);
 }
 
 .digital-twin__scene-pulse {
    width: 7px;
    height: 7px;
    border-radius: 50%;
-   background: #82d9b7;
-   box-shadow: 0 0 0 4px rgba(130, 217, 183, 0.12);
+   background: #8be2bf;
+   box-shadow: 0 0 0 5px rgba(139, 226, 191, 0.13), 0 0 18px rgba(139, 226, 191, 0.45);
 }
 
 .digital-twin[data-scene-state='typing'] .digital-twin__scene-pulse {
    background: var(--twin-accent);
-   box-shadow: 0 0 0 4px rgba(243, 187, 87, 0.14);
-   animation: digital-twin-pulse 650ms steps(2, end) infinite;
+   box-shadow: 0 0 0 5px rgba(244, 189, 95, 0.13), 0 0 20px rgba(244, 189, 95, 0.5);
+   animation: digital-twin-pulse 650ms ease-in-out infinite;
 }
 
 @keyframes digital-twin-pulse {
-   50% { opacity: 0.35; transform: scale(0.7); }
+   50% { opacity: 0.42; transform: scale(0.72); }
 }
 
 .digital-twin__composer-shell {
    position: relative;
-   z-index: 3;
-   border-top: 1px solid var(--twin-line);
-   background: rgba(4, 15, 27, 0.94);
+   z-index: 5;
+   padding: 9px 0 max(9px, env(safe-area-inset-bottom));
+   background: linear-gradient(0deg, rgba(2, 10, 19, 0.94), rgba(2, 10, 19, 0.68) 64%, transparent);
 }
 
 .digital-twin__composer {
    display: flex;
+   width: min(760px, calc(100% - 48px));
+   min-height: 56px;
+   margin: 0 auto;
+   padding: 6px 7px 6px 17px;
    align-items: flex-end;
    gap: 10px;
-   width: min(900px, calc(100% - 36px));
-   margin: 14px auto 0;
-   padding: 7px 7px 7px 14px;
-   border: 1px solid rgba(151, 197, 234, 0.32);
-   border-radius: 18px 5px 18px 18px;
-   background: #091a2c;
-   box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.25);
+   border: 0;
+   border-radius: 19px;
+   background: rgba(6, 24, 40, 0.82);
+   box-shadow:
+      0 18px 46px rgba(0, 5, 11, 0.36),
+      inset 0 1px 0 rgba(255, 255, 255, 0.16),
+      inset 0 0 0 1px rgba(154, 195, 225, 0.16);
+   backdrop-filter: blur(18px) saturate(1.12);
 }
 
 .digital-twin__composer:focus-within {
-   border-color: var(--twin-accent);
-   box-shadow: 0 0 0 3px rgba(243, 187, 87, 0.1), 5px 5px 0 rgba(0, 0, 0, 0.25);
+   box-shadow:
+      0 18px 46px rgba(0, 5, 11, 0.42),
+      inset 0 1px 0 rgba(255, 255, 255, 0.19),
+      inset 0 0 0 2px rgba(244, 189, 95, 0.76);
 }
 
 .digital-twin__composer-mark {
    flex: 0 0 auto;
    padding-bottom: 10px;
    color: var(--twin-accent);
-   font-size: 19px;
+   font-size: 20px;
+   text-shadow: 0 0 16px rgba(244, 189, 95, 0.45);
 }
 
 .digital-twin__composer textarea {
-   width: 100%;
+   flex: 1 1 auto;
+   width: auto;
    min-width: 0;
    min-height: 44px;
    max-height: 112px;
@@ -682,7 +694,7 @@
 }
 
 .digital-twin__composer textarea::placeholder {
-   color: #8499aa;
+   color: #a0b4c3;
 }
 
 .digital-twin__composer textarea:disabled {
@@ -695,38 +707,44 @@
    flex: 0 0 auto;
    min-height: 44px;
    margin: 0;
-   padding: 8px 15px;
-   border-radius: 13px 3px 13px 13px;
+   border: 0;
    font: 12px/1 'opensans-bold', sans-serif;
-   letter-spacing: 0.04em;
+   letter-spacing: 0.03em;
    text-transform: none;
 }
 
 .digital-twin__send {
    display: flex;
+   min-width: 86px;
+   padding: 8px 15px;
    align-items: center;
+   justify-content: center;
    gap: 8px;
-   border: 1px solid #ffd37b;
-   background: linear-gradient(145deg, #ffd275, #d89431);
+   border-radius: 14px;
+   background: linear-gradient(145deg, #ffd47d, #e09a38);
+   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 8px 22px rgba(0, 0, 0, 0.24);
    color: #101721;
 }
 
 .digital-twin__send:hover,
 .digital-twin__send:focus-visible {
-   border-color: #fff0c5;
-   background: #ffd982;
+   outline: 2px solid #fff0c6;
+   outline-offset: 2px;
+   background: #ffda88;
 }
 
 .digital-twin__cancel {
-   border: 1px solid rgba(255, 170, 160, 0.55);
-   background: rgba(113, 41, 43, 0.35);
-   color: #ffd1ca;
+   padding: 8px 14px;
+   border-radius: 14px;
+   background: rgba(125, 43, 45, 0.8);
+   color: #ffe1dc;
 }
 
 .digital-twin__cancel:hover,
 .digital-twin__cancel:focus-visible {
-   border-color: #ffaaa0;
-   background: rgba(133, 48, 50, 0.54);
+   outline: 2px solid #ffb0a5;
+   outline-offset: 2px;
+   background: rgba(147, 49, 51, 0.9);
 }
 
 .digital-twin__send:disabled {
@@ -736,8 +754,8 @@
 
 .digital-twin__footer {
    display: flex;
-   width: min(900px, calc(100% - 36px));
-   min-height: 42px;
+   width: min(760px, calc(100% - 48px));
+   min-height: 35px;
    margin: 0 auto;
    align-items: center;
    justify-content: space-between;
@@ -746,24 +764,25 @@
 
 .digital-twin__disclosure {
    margin: 0;
-   color: #8095a5;
-   font-size: 11px;
-   line-height: 1.45;
+   color: #9cafbc;
+   font-size: 10px;
+   line-height: 1.4;
+   text-shadow: 0 2px 9px rgba(0, 0, 0, 0.9);
 }
 
 .digital-twin__disclaimer {
-   color: #a7b7c2;
+   color: #bfccd5;
 }
 
 .digital-twin__footer button {
    flex: 0 0 auto;
-   min-height: 32px;
+   min-height: 30px;
    margin: 0;
-   padding: 5px;
+   padding: 4px;
    border: 0;
    background: transparent;
-   color: #a9bac6;
-   font-size: 11px;
+   color: #c0cdd6;
+   font-size: 10px;
    letter-spacing: 0;
    text-decoration: underline;
    text-transform: none;
@@ -771,198 +790,11 @@
 
 .digital-twin__footer button:hover,
 .digital-twin__footer button:focus-visible {
+   outline: none;
    color: #fff;
+   text-decoration-color: var(--twin-accent);
 }
 
 body.digital-twin-open {
    overflow: hidden;
-}
-
-@media only screen and (max-width: 900px) {
-   .digital-twin__panel {
-      width: min(720px, calc(100vw - 28px));
-      height: min(860px, calc(100dvh - 28px));
-   }
-
-   .digital-twin__panel::after {
-      display: none;
-   }
-
-   .digital-twin__workspace {
-      grid-template-columns: 1fr;
-      grid-template-rows: minmax(210px, 40%) minmax(0, 1fr);
-   }
-
-   .digital-twin__stage {
-      grid-row: 1;
-      border-bottom: 1px solid var(--twin-line);
-   }
-
-   .digital-twin__conversation {
-      grid-row: 2;
-      padding: 16px 18px 8px;
-      overflow: hidden;
-   }
-
-   .digital-twin__conversation-intro {
-      display: none;
-   }
-
-   .digital-twin__setup {
-      margin-top: 0;
-   }
-
-   .digital-twin__suggestions > div {
-      grid-template-columns: 1fr 1fr;
-   }
-
-   .digital-twin__suggestions button {
-      min-height: 48px;
-   }
-}
-
-@media only screen and (max-width: 600px) {
-   .digital-twin {
-      right: max(14px, env(safe-area-inset-right));
-      bottom: calc(14px + env(safe-area-inset-bottom));
-   }
-
-   .digital-twin__launcher {
-      min-width: 174px;
-      min-height: 58px;
-      grid-template-columns: 40px auto 25px;
-   }
-
-   .digital-twin__launcher-mark {
-      width: 40px;
-      height: 40px;
-   }
-
-   .digital-twin__panel {
-      inset: 0;
-      width: 100vw;
-      height: 100dvh;
-      border: 0;
-      border-radius: 0;
-      transform: none;
-      animation-name: digital-twin-panel-in-mobile;
-   }
-
-   @keyframes digital-twin-panel-in-mobile {
-      from { opacity: 0; transform: translateY(18px); }
-      to { opacity: 1; transform: translateY(0); }
-   }
-
-   .digital-twin__header {
-      min-height: 70px;
-      padding: calc(10px + env(safe-area-inset-top)) 14px 10px;
-   }
-
-   .digital-twin__identity {
-      gap: 9px;
-   }
-
-   .digital-twin__presence {
-      width: 34px;
-      height: 34px;
-   }
-
-   .digital-twin__eyebrow {
-      font-size: 9px;
-   }
-
-   .digital-twin__header h2 {
-      font-size: 17px;
-   }
-
-   .digital-twin__workspace {
-      grid-template-rows: minmax(180px, 34%) minmax(0, 1fr);
-   }
-
-   .digital-twin__scene-caption {
-      right: 12px;
-      bottom: 11px;
-   }
-
-   .digital-twin__conversation {
-      padding: 11px 13px 5px;
-   }
-
-   .digital-twin__status {
-      font-size: 12px;
-   }
-
-   .digital-twin__suggestions {
-      margin-top: 4px;
-   }
-
-   .digital-twin__suggestions > div {
-      grid-template-columns: 1fr;
-      gap: 5px;
-   }
-
-   .digital-twin__suggestions button {
-      min-height: 40px;
-      padding-block: 7px;
-      font-size: 13px;
-   }
-
-   .digital-twin__messages {
-      margin-top: 8px;
-   }
-
-   .digital-twin__message p {
-      padding: 11px 13px;
-      font-size: 16px;
-   }
-
-   .digital-twin__composer {
-      width: calc(100% - 20px);
-      margin-top: 9px;
-      padding-left: 11px;
-   }
-
-   .digital-twin__composer-mark {
-      display: none;
-   }
-
-   .digital-twin__send span:first-child {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-   }
-
-   .digital-twin__send {
-      width: 44px;
-      padding: 0;
-      justify-content: center;
-      font-size: 17px;
-   }
-
-   .digital-twin__footer {
-      width: calc(100% - 24px);
-      padding-bottom: env(safe-area-inset-bottom);
-   }
-
-   .digital-twin__disclosure {
-      max-width: 74%;
-      font-size: 10px;
-   }
-}
-
-@media (prefers-reduced-motion: reduce) {
-   .digital-twin__launcher,
-   .digital-twin__panel,
-   .digital-twin__suggestions button,
-   .digital-twin__scene-poster {
-      transition: none;
-      animation: none;
-   }
-
-   .digital-twin__thinking,
-   .digital-twin__scene-pulse {
-      animation: none !important;
-   }
 }

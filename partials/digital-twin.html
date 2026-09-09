@@ -39,6 +39,19 @@
       tabindex="-1"
       hidden
    >
+      <aside class="digital-twin__stage" aria-label="Cinematic illustration of Thai working at a laptop">
+         <div class="digital-twin__scene" data-twin-scene data-scene-status="waiting" aria-hidden="true">
+            <img
+               class="digital-twin__scene-poster"
+               src="assets/images/digital-twin-studio.jpg"
+               alt=""
+               width="1672"
+               height="940"
+               data-twin-scene-poster
+            />
+         </div>
+      </aside>
+
       <header class="digital-twin__header">
          <div class="digital-twin__identity">
             <span class="digital-twin__presence" aria-hidden="true"></span>
@@ -55,7 +68,8 @@
       <div class="digital-twin__workspace">
          <section class="digital-twin__conversation" aria-label="Professional conversation">
             <div class="digital-twin__conversation-intro">
-               <p>Ask about my experience, projects, or how I approach complex problems.</p>
+               <span aria-hidden="true">Thai</span>
+               <p>What would you like to know about my work?</p>
             </div>
 
             <div class="digital-twin__setup">
@@ -64,7 +78,7 @@
             </div>
 
             <section class="digital-twin__suggestions" aria-labelledby="digital-twin-suggestions-title" data-twin-suggestions>
-               <p id="digital-twin-suggestions-title">Good places to start</p>
+               <p id="digital-twin-suggestions-title">Choose a starting point</p>
                <div>
                   <button type="button" data-number="01" data-twin-suggestion>What impact have you delivered at EY?</button>
                   <button type="button" data-number="02" data-twin-suggestion>How did your role evolve at American Water?</button>
@@ -75,23 +89,11 @@
 
             <ol class="digital-twin__messages" aria-live="polite" aria-label="Conversation" data-twin-messages></ol>
          </section>
+      </div>
 
-         <aside class="digital-twin__stage" aria-label="Animated illustration of Thai working at a laptop">
-            <div class="digital-twin__scene" data-twin-scene data-scene-status="waiting" aria-hidden="true">
-               <img
-                  class="digital-twin__scene-poster"
-                  src="assets/images/profilepic.jpg"
-                  alt=""
-                  width="400"
-                  height="400"
-                  data-twin-scene-poster
-               />
-            </div>
-            <div class="digital-twin__scene-caption" aria-hidden="true">
-               <span data-twin-scene-label>Ready when you are</span>
-               <span class="digital-twin__scene-pulse"></span>
-            </div>
-         </aside>
+      <div class="digital-twin__scene-caption" aria-hidden="true">
+         <span class="digital-twin__scene-pulse"></span>
+         <span data-twin-scene-label>Ready when you are</span>
       </div>
 
       <div class="digital-twin__composer-shell">
@@ -102,7 +104,7 @@
                id="digital-twin-input"
                rows="1"
                maxlength="500"
-               placeholder="Ask anything about Thai's professional work..."
+               placeholder="Ask anything about Thai..."
                autocomplete="off"
                data-twin-input
                disabled

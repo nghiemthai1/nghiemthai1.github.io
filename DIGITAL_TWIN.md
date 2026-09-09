@@ -2,9 +2,10 @@
 
 The Professional AI Assistant uses `assets/data/experience.json` as a compact, public-only companion to the website and resume. It is prompt context, not model training data, so updates do not require retraining or replacing the model.
 
-The visible assistant is a cinematic overlay with a procedural Three.js character.
-Three.js renders the character, desk, laptop, and ambient office scene, while accessible HTML renders the conversation and controls.
-The character reads a submitted question and types while the response stream is active.
+The visible assistant is a cinematic overlay built around an original, web-optimized studio illustration.
+The static illustration is always present as a polished fallback, while Three.js adds restrained parallax, ambient particles, city light, and laptop glow.
+Accessible HTML renders every conversation message and control directly inside the scene.
+The visual state shifts while a question is reviewed and while the response stream is active.
 No voice or mouth animation is used.
 
 ## Version 1 rollback

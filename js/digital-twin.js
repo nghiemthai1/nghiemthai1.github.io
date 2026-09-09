@@ -477,12 +477,12 @@ export async function initializeDigitalTwin(options = {}) {
     if (scenePromise) return scenePromise;
     if (options.disableScene) {
       elements.scene.dataset.sceneStatus = 'fallback';
-      elements.sceneLabel.textContent = 'Portrait view';
+      elements.sceneLabel.textContent = 'Studio view';
       return Promise.resolve(null);
     }
     elements.scene.dataset.sceneStatus = 'loading';
     elements.sceneLabel.textContent = 'Preparing Thai\'s workspace';
-    scenePromise = import('./digital-twin-scene.js?v=20260908-1')
+    scenePromise = import('./digital-twin-scene.js?v=20260908-2')
       .then(({ initializeCharacterScene }) => {
         sceneController = initializeCharacterScene(elements.scene, {
           onStateLabel(label) {
@@ -490,15 +490,15 @@ export async function initializeDigitalTwin(options = {}) {
           },
           onError() {
             elements.scene.dataset.sceneStatus = 'fallback';
-            elements.sceneLabel.textContent = 'Portrait view';
+            elements.sceneLabel.textContent = 'Studio view';
           },
         });
         return sceneController;
       })
       .catch((error) => {
-        console.warn('The animated character is unavailable; using the portrait fallback.', error);
+        console.warn('The animated studio is unavailable; using the static artwork fallback.', error);
         elements.scene.dataset.sceneStatus = 'fallback';
-        elements.sceneLabel.textContent = 'Portrait view';
+        elements.sceneLabel.textContent = 'Studio view';
         scenePromise = null;
         return null;
       });
