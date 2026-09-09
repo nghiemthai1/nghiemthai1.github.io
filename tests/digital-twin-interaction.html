@@ -115,6 +115,11 @@
 
     const root = document.querySelector('[data-digital-twin]');
     const launcher = document.querySelector('[data-twin-launcher]');
+    check(
+      'compact Ask Th[AI] launcher is restored',
+      launcher.textContent.replace(/\s/g, '') === 'AskTh[AI]'
+        && launcher.getAttribute('aria-label') === 'Ask Thai, AI portfolio assistant',
+    );
     const startingScroll = window.scrollY;
     launcher.focus();
     launcher.click();
