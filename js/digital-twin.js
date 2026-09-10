@@ -14,6 +14,10 @@ const LEGACY_UNKNOWN = 'That detail is not included in my public experience prof
 const UNKNOWN = "Thanks for asking. That detail is not included in my public experience profile, so I don't want to guess.";
 const REAL_CONVERSATION_ANSWER = "Project approach is better explored in a real conversation than through my digital twin. I'd be happy to have a real-life chat about how I work, collaborate with teams, and adapt to different constraints. Please reach out through the contact section below.";
 const AI_ORIGIN_ANSWER = 'I used AI as a development tool while designing, coding, testing, and refining this portfolio. I reviewed the work and made the final product decisions.';
+const README_URL = 'https://github.com/nghiemthai1/nghiemthai1.github.io#readme';
+const README_LINK = `[GitHub README](${README_URL})`;
+const CREATION_ANSWER = `Thai documented how he created Th[AI], from the character design to the finished portfolio experience. Read the story in the ${README_LINK}.`;
+const CREATION_PATTERN = /\b(?:how|who)\s+(?:were|was|are|is)\s+(?:you|this(?:\s+(?:chat\s*bot|assistant|avatar|digital twin|website|portfolio))?|the\s+(?:chat\s*bot|assistant|avatar|digital twin|website|portfolio))\s+(?:made|built|created|designed|developed|coded)\b|\bwho\s+(?:made|built|created|designed|developed|coded)\s+(?:you|this\s+(?:chat\s*bot|assistant|avatar|digital twin))\b|\bhow\s+did\s+(?:you|thai)\s+(?:make|build|create|design|develop|code)\s+(?:this|the)\s+(?:chat\s*bot|assistant|avatar|digital twin|website|portfolio)\b/i;
 const AI_ORIGIN_PATTERN = /\bai[\s-]+(?:assistant|assisted|assistent|assisent|assitant|slop)\b|\b(?:is|was)\b.{0,40}\b(?:this|the|your)\s+(?:web\s*site|website|site|portfolio)\b.{0,40}\b(?:made|built|created|designed|generated|written|coded)?\s*(?:by|with|using)?\s*(?:ai|artificial intelligence|chatgpt|copilot|codex)\b|\b(?:did|does)\b.{0,20}\b(?:ai|artificial intelligence|chatgpt|copilot|codex)\b.{0,40}\b(?:make|build|create|design|generate|write|code)\b.{0,40}\b(?:this|the|your)\s+(?:web\s*site|website|site|portfolio)\b/i;
 const STOP_WORDS = new Set([
   'a', 'an', 'and', 'are', 'as', 'at', 'be', 'did', 'do', 'for', 'from', 'have', 'how', 'i',
@@ -359,6 +363,7 @@ export function evaluateQuestion(question, records, previousRecordIds = []) {
   if (BLOCKED_PATTERNS.some((pattern) => pattern.test(trimmed))) {
     return { action: 'reply', answer: buildScopeFallback(trimmed), apologetic: true };
   }
+  if (CREATION_PATTERN.test(trimmed)) return { action: 'reply', answer: CREATION_ANSWER };
   if (PROJECT_APPROACH_PATTERN.test(trimmed)) {
     return { action: 'reply', answer: REAL_CONVERSATION_ANSWER };
   }
@@ -431,9 +436,16 @@ function createMessage(container, role, text = '') {
 }
 
 function appendInlineFormatting(container, text) {
-  const parts = text.split(/(\*\*[^*]+\*\*)/g).filter(Boolean);
+  const parts = text.split(/(\*\*[^*]+\*\*|\[GitHub README\]\(https:\/\/github\.com\/nghiemthai1\/nghiemthai1\.github\.io#readme\))/g).filter(Boolean);
   for (const part of parts) {
-    if (part.startsWith('**') && part.endsWith('**')) {
+    if (part === README_LINK) {
+      const link = document.createElement('a');
+      link.href = README_URL;
+      link.textContent = 'GitHub README';
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      container.append(link);
+    } else if (part.startsWith('**') && part.endsWith('**')) {
       const strong = document.createElement('strong');
       strong.textContent = part.slice(2, -2);
       container.append(strong);

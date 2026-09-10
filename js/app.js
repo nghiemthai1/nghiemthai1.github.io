@@ -1,7 +1,7 @@
 import { initializeContactForm } from './contact-form.js?v=20260907-19';
 import { initializeSite } from './site.js?v=20260908-33';
 import { initializeWorksShowcase } from './works-showcase.js?v=20260907-4';
-import { initializeDigitalTwin } from './digital-twin.js?v=20260910-desktop-reactions';
+import { initializeDigitalTwin } from './digital-twin.js?v=20260910-readme';
 import { initializeHeroGlobe } from './hero-globe.js?v=20260908-38';
 
 const partialNames = ['header', 'about', 'portfolio', 'testimonials', 'contact', 'footer', 'digital-twin'];
