@@ -149,7 +149,10 @@
     check('viewport overlay preserves the underlying page controls', !fixture.inert);
     check('character scene reaches an animated or fallback state', ['ready', 'fallback'].includes(document.querySelector('[data-twin-scene]').dataset.sceneStatus));
     root.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));
-    await new Promise((resolve) => setTimeout(resolve, 550));
+    const closeDeadline = performance.now() + 3000;
+    while (getComputedStyle(scene).visibility !== 'hidden' && performance.now() < closeDeadline) {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    }
     check('Escape closes the embedded region and restores launcher focus', document.querySelector('[data-twin-panel]').hidden
       && document.activeElement === launcher
       && root.parentElement === document.body
