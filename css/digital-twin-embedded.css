@@ -548,8 +548,9 @@ body.has-digital-twin .digital-twin__send span:first-child {
    white-space: nowrap;
 }
 
-body.has-digital-twin .digital-twin__send span:last-child {
-   font-size: 18px;
+body.has-digital-twin .digital-twin__send-icon {
+   display: block;
+   flex: 0 0 auto;
 }
 
 body.has-digital-twin .digital-twin__suggestions {
@@ -946,4 +947,16 @@ body.has-digital-twin .digital-twin .digital-twin__name {
 body.has-digital-twin .digital-twin .digital-twin__name > b {
    color: var(--twin-accent);
    font: inherit;
+}
+
+/* Keep each tail behind its bubble text without escaping into the page layers. */
+body.has-digital-twin .digital-twin__conversation-intro,
+body.has-digital-twin .digital-twin__message--assistant p {
+   isolation: isolate;
+}
+
+body.has-digital-twin .digital-twin__conversation-intro::after,
+body.has-digital-twin .digital-twin__message--assistant p::after {
+   z-index: -1;
+   pointer-events: none;
 }
