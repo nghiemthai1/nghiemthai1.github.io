@@ -802,6 +802,76 @@
 .popup-modal .link-box {
   position: relative;
   z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 24px;
+  border-top: 1px solid #294151;
+  background: #0b1d2b;
+}
+
+.popup-modal .link-box a,
+.popup-modal .link-box button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  margin: 0;
+  padding: 10px 16px;
+  border: 1px solid #526575;
+  border-radius: 8px;
+  background: #152d3e;
+  color: #f4f7fa;
+  font: 13px/1.5 'opensans-semibold', sans-serif;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+
+.popup-modal .link-box a:first-child {
+  border-color: var(--accent-gold);
+  background: var(--gold-button-surface);
+  color: #0b1d2b;
+}
+
+.popup-modal .link-box a:hover,
+.popup-modal .link-box button:hover {
+  border-color: var(--accent-gold);
+  background: #294357;
+  color: #fff;
+}
+
+.popup-modal .link-box a:first-child:hover {
+  background: var(--gold-highlight);
+  color: #0b1d2b;
+}
+
+.popup-modal .link-box .popup-modal-dismiss {
+  margin-left: auto;
+  background: transparent;
+}
+
+.popup-modal .link-box :focus-visible {
+  outline: 2px solid var(--gold-highlight);
+  outline-offset: 3px;
+}
+
+@media only screen and (max-width: 480px) {
+  .popup-modal .link-box {
+    gap: 8px;
+    padding: 14px 16px;
+  }
+
+  .popup-modal .link-box a {
+    flex: 1 1 auto;
+  }
+
+  .popup-modal .link-box .popup-modal-dismiss {
+    flex: 1 0 100%;
+  }
 }
 
 @media only screen and (max-height: 600px) {
