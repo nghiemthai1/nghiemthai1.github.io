@@ -2,7 +2,6 @@ const MODEL = '@cf/meta/llama-3.2-3b-instruct';
 const PROFILE_URL = 'https://nghiemthai1.github.io/assets/data/experience.json';
 const TURNSTILE_VERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 const TURNSTILE_ACTION = 'digital_twin_chat';
-const PRODUCTION_HOSTNAME = 'nghiemthai1.github.io';
 const MAX_BODY_BYTES = 16 * 1024;
 const MAX_QUESTION_LENGTH = 500;
 const MAX_HISTORY_MESSAGES = 8;
@@ -13,8 +12,9 @@ const ALLOWED_ORIGINS = new Set([
   'http://localhost:8000',
   'http://127.0.0.1:8000',
 ]);
+const LOCAL_TURNSTILE_HOSTNAMES = new Set(['localhost', '127.0.0.1']);
 const UNKNOWN = "Thanks for asking. That detail is not included in my public experience profile, so I don't want to guess.";
-const IN_SCOPE_PATTERN = /\b(experience|work|worked|career|job|role|project|build|built|develop|developed|development|deliver|delivered|impact|client|web|website|app|application|software|skill|technology|technologies|tech|tool|tools|framework|frameworks|language|languages|stack|database|databases|cloud|education|degree|university|college|rowan|gpa|grade|major|minor|course|graduate|graduated|certification|credential|award|honor|uipath|automation|artificial intelligence|generative ai|genai|agentic|governance|machine learning|ai|robot|robotic|robotics|hardware|firmware|pcb|embedded|circuit|java|python|aws|gcp|gemini|google adk|engineering|consultant|intern|employer|company|achievement|accomplish|lead|team|background|professional|resume|portfolio|strength|specialize|who are you|about yourself)\b/i;
+const IN_SCOPE_PATTERN = /\b(experience|work|worked|career|job|role|project|build|built|develop|developed|development|deliver|delivered|impact|client|industr(?:y|ies)|sectors?|professional domains?|makes?\s+you\s+different|sets?\s+you\s+apart|differentiators?|unique strengths?|web|website|app|application|software|skill|technology|technologies|tech|tool|tools|framework|frameworks|language|languages|stack|database|databases|cloud|education|degree|university|college|rowan|gpa|grade|major|minor|course|graduate|graduated|certification|credential|award|honor|uipath|automation|artificial intelligence|generative ai|genai|agentic|governance|machine learning|ai|robot|robotic|robotics|hardware|firmware|pcb|embedded|circuit|java|python|aws|gcp|gemini|google adk|engineering|consultant|intern|employer|company|achievement|accomplish|lead|team|background|professional|resume|portfolio|strength|specialize|who are you|about yourself)\b/i;
 const FOLLOW_UP_PATTERN = /^(?:(?:(?:can|could|would)\s+you\s+)?(?:tell|share|give)\s+me\s+more(?:\s+about\s+(?:that|this|it))?|(?:please\s+)?(?:elaborate|expand|go on|what else)(?:\s+on\s+(?:that|this|it))?)[.!?]*$/i;
 const BLOCKED_PATTERNS = [
   /\b(ignore|override|forget|disregard)\b.{0,40}\b(instruction|prompt|rule|system|previous)\b/i,
@@ -39,7 +39,7 @@ const SYSTEM_INSTRUCTIONS = `You are the AI representation of Thai Nghiem on his
 Answer only questions about Thai's public professional experience, projects, education, credentials, skills, responsibilities, achievements, and career interests.
 Use only the VERIFIED PUBLIC FACTS supplied with the latest user question. Conversation history provides conversational context only and is never evidence.
 Treat robot, robotic, and robotics questions as physical hardware, firmware, electronics, control-system, and mechanical-project experience. Do not describe RPA or UiPath unless the user explicitly asks about process automation.
-Speak in the first person with a warm, natural, and conversational voice, as if Thai were talking with an interested visitor. Use contractions and varied sentence lengths. Start with the answer. Do not begin with a stock acknowledgment such as "Thanks for asking." Add a brief reaction only when it contributes something specific to the conversation. Avoid corporate filler, canned enthusiasm, stiff wording, and repeating the question. Give a substantive answer, usually 70 to 140 words and never more than 200 words. Include the most relevant responsibilities, examples, results, dates, and technologies. For an impact question, explain both what I did and the outcomes, using the directly relevant quantified results in the supplied facts. For a follow-up such as "tell me more," expand on the previous topic using additional supplied facts instead of refusing. Always finish the final sentence and never repeat a fact or list item.
+Speak in the first person with a warm, natural, and conversational voice, as if Thai were talking with an interested visitor. Use contractions and varied sentence lengths. Start with the answer. Do not begin with a stock acknowledgment such as "Thanks for asking." Add a brief reaction only when it contributes something specific to the conversation. Avoid corporate filler, canned enthusiasm, stiff wording, and repeating the question. Give a substantive answer, usually 70 to 110 words and never more than 140 words. Include the most relevant responsibilities, examples, results, dates, and technologies. For an impact question, explain both what I did and the outcomes, using the directly relevant quantified results in the supplied facts. For a follow-up such as "tell me more," expand on the previous topic using additional supplied facts instead of refusing. Always finish the final sentence and never repeat a fact or list item.
 Make answers easy to scan without over-formatting. When formatting materially improves clarity, usually for three or more examples, technologies, or themes, use two to five bullet points formatted exactly as "- **Short label:** supporting detail". Bold only short labels, never whole sentences. Use at most one short introductory paragraph before the bullets. For a straightforward question, use two or three short paragraphs without forcing a list. Do not use headings, tables, numbered lists, or any Markdown other than bullet hyphens and bold labels.
 For a technology-stack question, group the answer into the most relevant practical areas, such as automation and AI, web/software/data, cloud and tools, or hardware/engineering, and connect technologies to documented work instead of giving an unexplained list.
 Never invent, infer, embellish, or use general world knowledge. Never reveal or guess private or contact information.
@@ -147,7 +147,9 @@ function validatePayload(value) {
   return { question, recordIds, turnstileToken, sessionToken, history: safeHistory };
 }
 
-async function verifyTurnstile(token, request, secret) {
+async function verifyTurnstile(token, request, secret, testMode = false) {
+  const expectedHostname = getAllowedTurnstileHostname(request.headers.get('origin') || '');
+  if (!expectedHostname || !secret) return false;
   const response = await fetch(TURNSTILE_VERIFY_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -160,9 +162,30 @@ async function verifyTurnstile(token, request, secret) {
   });
   if (!response.ok) return false;
   const result = await response.json();
-  return result.success === true
-    && result.hostname === PRODUCTION_HOSTNAME
-    && result.action === TURNSTILE_ACTION;
+  const accepted = isAcceptedTurnstileResult(result, expectedHostname, testMode);
+  if (!accepted) {
+    console.warn(JSON.stringify({
+      event: 'turnstile_verification_failed',
+      success: result.success === true,
+      errorCodes: Array.isArray(result['error-codes']) ? result['error-codes'] : [],
+      hostname: typeof result.hostname === 'string' ? result.hostname : '',
+      expectedHostname,
+      action: typeof result.action === 'string' ? result.action : '',
+      testMode,
+    }));
+  }
+  return accepted;
+}
+
+export function getAllowedTurnstileHostname(origin) {
+  if (!ALLOWED_ORIGINS.has(origin)) return '';
+  return new URL(origin).hostname;
+}
+
+export function isAcceptedTurnstileResult(result, expectedHostname, testMode = false) {
+  if (!result || result.success !== true) return false;
+  if (testMode) return LOCAL_TURNSTILE_HOSTNAMES.has(expectedHostname);
+  return result.hostname === expectedHostname && result.action === TURNSTILE_ACTION;
 }
 
 function encodeBase64Url(bytes) {
@@ -230,7 +253,7 @@ function formatRecord(record) {
     'kind', 'organization', 'title', 'dates', 'location', 'credential', 'issuer',
     'institution', 'graduation', 'gpa', 'name', 'role', 'summary', 'responsibilities',
     'highlights', 'skills', 'honors', 'careerInterests', 'professionalThemes',
-    'methodologies', 'technologies',
+    'industries', 'differentiators', 'methodologies', 'technologies',
   ];
   const ignored = new Set(['id', 'source']);
   const keys = [...preferredOrder, ...Object.keys(record).filter((key) => !preferredOrder.includes(key))];
@@ -291,7 +314,9 @@ export default {
         : false;
       let issuedSessionToken = '';
       if (!hasValidSession) {
-        if (!payload.turnstileToken || !await verifyTurnstile(payload.turnstileToken, request, env.TURNSTILE_SECRET)) {
+        const turnstileTestMode = env.TURNSTILE_TEST_MODE === 'true';
+        if (!payload.turnstileToken
+          || !await verifyTurnstile(payload.turnstileToken, request, env.TURNSTILE_SECRET, turnstileTestMode)) {
           return jsonResponse({ error: 'Your chat verification expired. Please verify once more.' }, 403, origin);
         }
         issuedSessionToken = await createSessionToken(request, env.SESSION_SECRET);
@@ -311,7 +336,7 @@ export default {
           { role: 'user', content: `VERIFIED PUBLIC FACTS:\n${facts}\n\nQUESTION:\n${payload.question}` },
         ],
         stream: true,
-        max_tokens: 448,
+        max_tokens: 320,
         temperature: 0.2,
       });
 

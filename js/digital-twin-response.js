@@ -1,4 +1,4 @@
-export const RESPONSE_WORD_LIMIT = 220;
+export const RESPONSE_WORD_LIMIT = 140;
 
 export function countWords(value) {
   return value.trim() ? value.trim().split(/\s+/).length : 0;

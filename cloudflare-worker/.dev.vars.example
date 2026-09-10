@@ -1,0 +1,6 @@
+# Cloudflare's public always-pass Turnstile test secret for local development only.
+TURNSTILE_SECRET="1x0000000000000000000000000000000AA"
+TURNSTILE_TEST_MODE="true"
+
+# Replace this value with a long, random local-only secret.
+SESSION_SECRET="replace-with-a-long-random-local-development-secret"

@@ -45,35 +45,29 @@
 .digital-twin__launcher {
    position: relative;
    z-index: 3;
-   display: grid;
-   min-width: 190px;
-   min-height: 68px;
+   display: inline-flex;
+   min-height: 54px;
    margin: 0;
-   padding: 7px 17px 7px 7px;
-   grid-template-columns: 52px auto;
+   padding: 8px 18px 8px 8px;
    align-items: center;
-   gap: 11px;
+   gap: 10px;
    overflow: hidden;
-   border: 1px solid rgba(248, 247, 236, 0.92);
+   border: 1px solid rgba(var(--gold-rgb), 0.4);
    border-radius: 999px;
-   background: linear-gradient(120deg, rgba(24, 39, 50, 0.97), rgba(7, 20, 29, 0.97));
-   box-shadow:
-      0 15px 42px rgba(0, 0, 0, 0.42),
-      0 0 0 3px rgba(1, 10, 17, 0.56),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+   background: var(--bg-deep-slate);
+   box-shadow: 0 16px 44px rgba(3, 25, 40, 0.32), 0 0 16px rgba(var(--gold-rgb), .18);
    color: #fff;
    text-align: left;
    text-transform: none;
-   backdrop-filter: blur(18px) saturate(1.05);
+   font-family: 'opensans-semibold', sans-serif;
+   font-size: 13px;
+   letter-spacing: 0.02em;
    transition: transform 180ms ease, box-shadow 180ms ease, opacity 150ms ease;
 }
 
 .digital-twin__launcher:hover {
-   box-shadow:
-      0 19px 48px rgba(0, 0, 0, 0.48),
-      0 0 0 3px rgba(1, 10, 17, 0.62),
-      inset 0 0 0 1px rgba(244, 189, 95, 0.2);
-   transform: translateY(-2px);
+   border-color: var(--accent-gold);
+   background: #1b272f;
 }
 
 .digital-twin__launcher:focus-visible {
@@ -90,35 +84,39 @@
 .digital-twin__launcher-mark {
    position: relative;
    display: grid;
-   width: 52px;
-   height: 52px;
+   width: 38px;
+   height: 38px;
    place-items: center;
    border-radius: 50%;
-   background: linear-gradient(145deg, #f2d489, #d5ac59);
-   box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.55),
-      0 2px 7px rgba(0, 0, 0, 0.2);
-   color: #071522;
+   background: var(--gold-surface-metal);
+   box-shadow: none;
+   color: #041927;
 }
 
 .digital-twin__launcher-mark svg {
-   width: 29px;
-   height: 29px;
+   width: 25px;
+   height: 25px;
    fill: none;
    stroke: currentColor;
    stroke-linecap: round;
    stroke-linejoin: round;
-   stroke-width: 1.65;
+   stroke-width: 1.8;
 }
 
 .digital-twin__launcher-label {
    color: #fff;
-   font: 19px/1 'opensans-semibold', sans-serif;
+   font: 14px/1 'opensans-semibold', sans-serif;
    white-space: nowrap;
 }
 
 .digital-twin__launcher-ai {
-   color: var(--twin-accent);
+   background-image: var(--gold-text-metal);
+   background-clip: text;
+   -webkit-background-clip: text;
+   color: transparent;
+   -webkit-text-fill-color: transparent;
+   font-family: 'opensans-bold', sans-serif;
+   text-shadow: none;
 }
 
 .digital-twin__backdrop {
@@ -197,7 +195,7 @@
 .digital-twin__stage {
    z-index: 0;
    overflow: hidden;
-   background: #07192b url('../assets/images/digital-twin-studio.jpg') center / cover no-repeat;
+   background: #07192b;
 }
 
 .digital-twin__scene {

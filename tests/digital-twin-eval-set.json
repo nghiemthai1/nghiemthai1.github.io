@@ -165,6 +165,54 @@
       }
     },
     {
+      "id": "profile-industries",
+      "category": "profile",
+      "input": { "question": "What industries have you worked in?" },
+      "expected": {
+        "route": "generate",
+        "records": { "match": "exact", "ids": ["identity", "experience-ey-ai-intelligent-automation", "experience-american-water-full-stack-developer", "experience-ellenby-engineering-intern"] },
+        "answerMatch": "semantic",
+        "facts": ["Professional services and enterprise consulting.", "Government and public-sector operations.", "Telecommunications.", "Utilities and water.", "Enterprise software and cloud applications.", "Hardware, firmware, and embedded product development."],
+        "criteria": ["Describe documented industries and working domains without inventing clients or confidential engagements."]
+      }
+    },
+    {
+      "id": "profile-tools",
+      "category": "profile",
+      "input": { "question": "What tools do you use?" },
+      "expected": {
+        "route": "generate",
+        "records": { "match": "exact", "ids": ["identity", "experience-ey-senior-technology-consultant", "experience-american-water-full-stack-developer", "experience-ellenby-engineering-intern"] },
+        "answerMatch": "semantic",
+        "facts": ["Python, FastAPI, React, GCP, Gemini, and Google ADK support AI solution work.", "Java, JavaScript, Spring Boot, PostgreSQL, and AWS support enterprise software work.", "C++, MATLAB, firmware, and PCB design support embedded engineering work."],
+        "criteria": ["Group tools by practical use and connect them to documented work.", "Do not return an unexplained keyword dump."]
+      }
+    },
+    {
+      "id": "profile-project-approach-conversation",
+      "category": "behavioral-boundary",
+      "input": { "question": "How do you approach a new project?" },
+      "expected": {
+        "route": "reply",
+        "answerMatch": "semantic",
+        "facts": ["Thai would be happy to discuss his project approach in a real conversation."],
+        "workerRequests": 0,
+        "criteria": ["Invite the visitor to reach out through the contact section.", "Do not infer a working style or call Workers AI."]
+      }
+    },
+    {
+      "id": "profile-differentiators",
+      "category": "profile",
+      "input": { "question": "What makes you different?" },
+      "expected": {
+        "route": "generate",
+        "records": { "match": "exact", "ids": ["identity", "experience-ey-senior-technology-consultant", "experience-ey-ai-intelligent-automation", "experience-ellenby-engineering-intern"] },
+        "answerMatch": "semantic",
+        "facts": ["Thai connects business strategy and requirements with hands-on solution architecture and engineering.", "His background spans hardware and firmware, full-stack software, intelligent automation, and enterprise GenAI and agentic AI.", "He combines AI governance with delivery and focuses on reusable patterns and measurable outcomes."],
+        "criteria": ["Ground differentiators in documented experience and results rather than generic personality claims."]
+      }
+    },
+    {
       "id": "profile-public-location",
       "category": "profile",
       "input": { "question": "Where are you based?" },

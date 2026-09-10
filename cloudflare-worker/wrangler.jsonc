@@ -2,10 +2,11 @@
   "$schema": "https://unpkg.com/wrangler/config-schema.json",
   "name": "thai-digital-twin-api",
   "main": "index.js",
-  "compatibility_date": "2026-09-03",
+  "compatibility_date": "2026-09-08",
   "compatibility_flags": ["nodejs_compat"],
   "ai": {
-    "binding": "AI"
+    "binding": "AI",
+    "remote": true
   },
   "ratelimits": [
     {

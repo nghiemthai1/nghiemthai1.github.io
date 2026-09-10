@@ -3,12 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <base href="../">
   <title>Animated assistant visual fixture</title>
   <link rel="stylesheet" href="../css/default.css">
   <link rel="stylesheet" href="../css/digital-twin.css?v=visual-test">
   <link rel="stylesheet" href="../css/digital-twin-responsive.css?v=visual-test">
+  <link rel="stylesheet" href="../css/digital-twin-embedded.css?v=visual-test-name-1">
   <style>
     html, body { min-height: 100%; margin: 0; background: #07131f; }
+    #home { position: relative; min-height: 100vh; overflow: hidden; }
+    #fixture { min-height: 100vh; }
     .visual-test-controls { position: fixed; z-index: 11000; top: 8px; left: 8px; display: flex; gap: 4px; }
     .visual-test-controls button { padding: 5px 8px; border: 1px solid #d2b676; background: #07131f; color: #fff; }
     @media (max-width: 600px) { .visual-test-controls { display: none; } }
@@ -21,24 +25,22 @@
     <button type="button" data-test-state="typing">Typing</button>
     <button type="button" data-test-state="complete">Complete</button>
   </div>
-  <main id="fixture"></main>
+  <header id="home"><div class="banner" id="fixture"></div></header>
   <script type="module">
     const fixture = document.querySelector('#fixture');
-    fixture.innerHTML = await fetch('../partials/digital-twin.html').then((response) => response.text());
+    fixture.innerHTML = await fetch('../partials/digital-twin.html', { cache: 'no-store' }).then((response) => response.text());
     const root = document.querySelector('[data-digital-twin]');
+    document.body.classList.add('has-digital-twin');
     const panel = document.querySelector('[data-twin-panel]');
-    const backdrop = document.querySelector('[data-twin-backdrop]');
     const sceneMount = document.querySelector('[data-twin-scene]');
     const sceneLabel = document.querySelector('[data-twin-scene-label]');
     const scenePoster = sceneMount.querySelector('[data-twin-scene-poster]');
-    scenePoster.src = '../assets/images/digital-twin-studio.jpg';
     await scenePoster.decode().catch(() => {});
     panel.hidden = false;
-    backdrop.hidden = false;
     root.dataset.open = 'true';
     root.dataset.modelReady = 'true';
     root.dataset.verified = 'true';
-    document.querySelector('[data-twin-status]').textContent = 'AI ready · Cloudflare hosted.';
+    document.querySelector('[data-twin-status]').textContent = 'Ready when you are.';
     document.querySelector('[data-twin-status]').dataset.state = 'ready';
     document.querySelector('[data-twin-turnstile]').hidden = true;
     document.querySelector('[data-twin-input]').disabled = false;
@@ -48,19 +50,37 @@
     const requestedState = requestedView === 'conversation' ? 'complete' : requestedView;
     root.dataset.sceneState = requestedState;
     if (requestedView === 'conversation') {
-      document.querySelector('[data-twin-suggestions]').hidden = true;
+      root.dataset.exchange = 'active';
       document.querySelector('[data-twin-messages]').innerHTML = `
         <li class="digital-twin__message digital-twin__message--user">
-          <span class="digital-twin__message-label">You</span>
-          <p>How do you balance business strategy with technical delivery?</p>
+          <span class="digital-twin__message-label">You asked</span>
+          <p>How did your role evolve at American Water?</p>
         </li>
         <li class="digital-twin__message digital-twin__message--assistant">
-          <span class="digital-twin__message-label">Thai AI</span>
-          <p>I start with the business outcome, then work backward into a practical architecture. That keeps discovery, prototyping, and delivery connected to measurable value.</p>
+          <span class="digital-twin__message-label digital-twin__name">Th<b>[AI]</b></span>
+          <p>My role evolved significantly as I progressed from a Full-Stack Java Software Engineer I to a Full-Stack Java Software Engineer II. Initially, I focused on developing enterprise web and notification applications, supporting water-quality operations and communications to about 14 million customers. As I took on more responsibilities, I led a distributed team delivering an enterprise notification application and designed backend and cloud integrations with Java Spring Boot, PostgreSQL, and AWS microservices. Later, I transitioned into intelligent automation, connecting business strategy with practical technical delivery.</p>
         </li>`;
     }
-    const { initializeCharacterScene } = await import('../js/digital-twin-scene.js?v=visual-test');
+    const { initializeCharacterScene } = await import('../js/digital-twin-scene.js?v=visual-test-shared-5');
+    // Freeze an idle pose for repeatable visual inspection, e.g. ?sceneTime=13.12.
+    const sceneTime = new URLSearchParams(window.location.search).get('sceneTime');
+    if (sceneTime !== null && Number.isFinite(Number(sceneTime)) && Number(sceneTime) >= 0) {
+      const epoch = performance.now();
+      const frameTime = epoch + Number(sceneTime) * 1000;
+      const requestFrame = window.requestAnimationFrame.bind(window);
+      performance.now = () => epoch;
+      window.requestAnimationFrame = (callback) => requestFrame(() => callback(frameTime));
+    }
+    const { getSpeechPointerPlacement } = await import('../js/digital-twin.js');
     const controller = initializeCharacterScene(sceneMount, {
+      onHeadPosition(head) {
+        for (const bubble of document.querySelectorAll('[data-twin-intro], .digital-twin__message--assistant p')) {
+          const p = getSpeechPointerPlacement(head, bubble.getBoundingClientRect(), innerWidth <= 700 ? 'bottom' : 'right');
+          if (p.pointerX !== undefined) bubble.style.setProperty('--twin-pointer-x', `${p.pointerX}px`);
+          bubble.style.setProperty('--twin-pointer-y', `${p.pointerY}px`);
+          bubble.style.setProperty('--twin-pointer-angle', `${p.angle}deg`);
+        }
+      },
       onStateLabel(label) { sceneLabel.textContent = label; },
     });
     controller.setState(requestedState);

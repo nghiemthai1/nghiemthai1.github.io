@@ -1,12 +1,18 @@
-import { finalizeResponse } from './digital-twin-response.js';
+import { finalizeResponse } from './digital-twin-response.js?v=20260909-2';
 
 const MAX_HISTORY_MESSAGES = 8;
 const MAX_QUESTION_LENGTH = 500;
-const API_ENDPOINT = 'https://thai-digital-twin-api.nghiemthai1.workers.dev/chat';
-const TURNSTILE_SITE_KEY = '0x4AAAAAAEmC_OLXbTSMNe92';
+const ERROR_EXPRESSION_DURATION_MS = 1500;
+const PRODUCTION_API_ENDPOINT = 'https://thai-digital-twin-api.nghiemthai1.workers.dev/chat';
+const LOCAL_API_ENDPOINT = 'http://localhost:8787/chat';
+const PRODUCTION_TURNSTILE_SITE_KEY = '0x4AAAAAAEmC_OLXbTSMNe92';
+const LOCAL_TURNSTILE_SITE_KEY = '1x00000000000000000000AA';
+const LOCAL_TURNSTILE_TOKEN = 'XXXX.DUMMY.TOKEN.XXXX';
+const LOCAL_HOSTNAMES = new Set(['localhost', '127.0.0.1']);
 const TURNSTILE_ACTION = 'digital_twin_chat';
 const LEGACY_UNKNOWN = 'That detail is not included in my public experience profile.';
 const UNKNOWN = "Thanks for asking. That detail is not included in my public experience profile, so I don't want to guess.";
+const REAL_CONVERSATION_ANSWER = "Project approach is better explored in a real conversation than through my digital twin. I'd be happy to have a real-life chat about how I work, collaborate with teams, and adapt to different constraints. Please reach out through the contact section below.";
 const AI_ORIGIN_ANSWER = 'I used AI as a development tool while designing, coding, testing, and refining this portfolio. I reviewed the work and made the final product decisions.';
 const AI_ORIGIN_PATTERN = /\bai[\s-]+(?:assistant|assisted|assistent|assisent|assitant|slop)\b|\b(?:is|was)\b.{0,40}\b(?:this|the|your)\s+(?:web\s*site|website|site|portfolio)\b.{0,40}\b(?:made|built|created|designed|generated|written|coded)?\s*(?:by|with|using)?\s*(?:ai|artificial intelligence|chatgpt|copilot|codex)\b|\b(?:did|does)\b.{0,20}\b(?:ai|artificial intelligence|chatgpt|copilot|codex)\b.{0,40}\b(?:make|build|create|design|generate|write|code)\b.{0,40}\b(?:this|the|your)\s+(?:web\s*site|website|site|portfolio)\b/i;
 const STOP_WORDS = new Set([
@@ -24,6 +30,9 @@ const EDUCATION_FACT_PATTERN = /\b(education|degrees?|academics?|gpas?|grades?|m
 const IN_SCOPE_PATTERN = /\b(experience|work|career|job|role|project|build|built|develop|developed|development|web|website|app|application|software|skill|technology|technologies|tech|tool|tools|framework|frameworks|language|languages|stack|database|databases|cloud|education|degree|university|college|rowan|gpa|grade|major|minor|course|graduate|graduated|certification|credential|award|honor|uipath|automation|artificial intelligence|generative ai|genai|agentic|governance|ai|robot|robotic|robotics|hardware|firmware|pcb|embedded|circuit|java|python|aws|gcp|gemini|google adk|engineering|consultant|intern|employer|company|achievement|accomplish|lead|team|background|professional|resume|portfolio|strength|specialize|who are you|about yourself)\b/i;
 const FOLLOW_UP_PATTERN = /^(?:(?:can|could|would)\s+you\s+)?(?:tell|share|give)\s+me\s+more(?:\s+about\s+(?:that|this|it))?[.!?]*$|^(?:please\s+)?(?:elaborate|expand|go on|what else)(?:\s+on\s+(?:that|this|it))?[.!?]*$/i;
 const TECHNOLOGY_STACK_PATTERN = /\b(technolog(?:y|ies)|tech\s+stack|tools?|frameworks?|programming\s+languages?|languages?|databases?|cloud\s+(?:platforms?|technologies|services))\b/i;
+const INDUSTRY_EXPERIENCE_PATTERN = /\b(industr(?:y|ies)|sectors?|professional\s+domains?)\b/i;
+const PROJECT_APPROACH_PATTERN = /\b(?:approach|start|begin|kick\s*off)\b.{0,30}\b(?:new\s+)?(?:projects?|engagements?|initiatives?)\b|\b(?:projects?|engagements?|initiatives?)\b.{0,30}\b(?:approach|process|method)\b/i;
+const DIFFERENTIATOR_PATTERN = /\b(?:what|which)\b.{0,30}\b(?:makes?|sets?)\b.{0,20}\byou\b.{0,20}\b(?:different|apart|unique)\b|\b(?:differentiators?|unique\s+(?:strengths?|background|value))\b/i;
 const WEB_DEVELOPMENT_PATTERN = /\b(web\s*(?:app|application|development)|website|full[- ]?stack(?:\s+development)?|software\s+development)\b/i;
 const PHYSICAL_ROBOTICS_PATTERN = /\b(robot|robotic|robotics|hardware|firmware|pcb|embedded)\b/i;
 const CAREER_PROGRESSION_PATTERN = /\b(progress|progression|evolve|evolved|evolution|path|journey|engineering background|from engineering|from hardware)\b/i;
@@ -48,6 +57,45 @@ const OUT_OF_SCOPE_TOPICS = [
   [/\b(ignore|override|forget|disregard|system prompt|developer message|hidden instruction|jailbreak|role[- ]?play|act as|pretend to be)\b/i, 'that request'],
   [/\b(write|generate|debug|fix|review)\b.{0,30}\b(code|program|script|essay|email)\b/i, 'that request'],
 ];
+
+export function getRuntimeConfiguration(hostname = globalThis.location?.hostname || '') {
+  const isLocal = LOCAL_HOSTNAMES.has(hostname.toLowerCase());
+  return {
+    apiEndpoint: isLocal ? LOCAL_API_ENDPOINT : PRODUCTION_API_ENDPOINT,
+    turnstileSiteKey: isLocal ? LOCAL_TURNSTILE_SITE_KEY : PRODUCTION_TURNSTILE_SITE_KEY,
+    turnstileTestMode: isLocal,
+  };
+}
+
+export function getSpeechPointerPlacement(headPoint, bubbleRect, edge = 'right') {
+  const bubbleHeight = Math.max(Number.isFinite(bubbleRect?.height) ? bubbleRect.height : 0, 1);
+  const bubbleTop = Number.isFinite(bubbleRect?.top) ? bubbleRect.top : 0;
+  const bubbleRight = Number.isFinite(bubbleRect?.right) ? bubbleRect.right : 0;
+  const headX = Number.isFinite(headPoint?.x) ? headPoint.x : bubbleRight + 40;
+  const headY = Number.isFinite(headPoint?.y) ? headPoint.y : bubbleTop + bubbleHeight * 0.66;
+  if (edge === 'bottom') {
+    const width = Math.max(bubbleRect?.width || 0, 1);
+    const left = bubbleRect?.left || 0;
+    const inset = Math.min(32, width / 2);
+    const pointerX = Math.max(inset, Math.min(width - inset, headX - left));
+    const deltaX = headX - (left + pointerX);
+    const deltaY = Math.max(20, headY - (bubbleTop + bubbleHeight));
+    const angle = Math.max(-42, Math.min(42, -Math.atan2(deltaX, deltaY) * 180 / Math.PI));
+    return { pointerX, pointerY: bubbleHeight, angle };
+  }
+  const edgeInset = Math.min(16, bubbleHeight * 0.5);
+  const pointerY = Math.max(edgeInset, Math.min(bubbleHeight - edgeInset, headY - bubbleTop));
+  const deltaX = Math.max(20, headX - bubbleRight);
+  const deltaY = headY - (bubbleTop + pointerY);
+  const angle = Math.max(-42, Math.min(42, Math.atan2(deltaY, deltaX) * 180 / Math.PI));
+  return { pointerY, angle };
+}
+
+const {
+  apiEndpoint: API_ENDPOINT,
+  turnstileSiteKey: TURNSTILE_SITE_KEY,
+  turnstileTestMode: TURNSTILE_TEST_MODE,
+} = getRuntimeConfiguration();
 
 export function buildScopeFallback(question) {
   const matchedTopic = OUT_OF_SCOPE_TOPICS.find(([pattern]) => pattern.test(question));
@@ -184,6 +232,39 @@ export function retrieveKnowledge(question, records, limit = 4) {
       supported: true,
     };
   }
+  if (INDUSTRY_EXPERIENCE_PATTERN.test(question)) {
+    return {
+      records: selectRecords([
+        'identity',
+        'experience-ey-ai-intelligent-automation',
+        'experience-american-water-full-stack-developer',
+        'experience-ellenby-engineering-intern',
+      ]),
+      supported: true,
+    };
+  }
+  if (PROJECT_APPROACH_PATTERN.test(question)) {
+    return {
+      records: selectRecords([
+        'identity',
+        'experience-ey-senior-technology-consultant',
+        'experience-american-water-intelligent-automation-engineer',
+        'experience-american-water-full-stack-developer',
+      ]),
+      supported: true,
+    };
+  }
+  if (DIFFERENTIATOR_PATTERN.test(question)) {
+    return {
+      records: selectRecords([
+        'identity',
+        'experience-ey-senior-technology-consultant',
+        'experience-ey-ai-intelligent-automation',
+        'experience-ellenby-engineering-intern',
+      ]),
+      supported: true,
+    };
+  }
   if (CAREER_PROGRESSION_PATTERN.test(question)) {
     if (/\bamerican water\b/i.test(question)) {
       return {
@@ -272,16 +353,19 @@ export function evaluateQuestion(question, records, previousRecordIds = []) {
   const trimmed = question.trim();
   if (!trimmed) return { action: 'ignore' };
   if (trimmed.length > MAX_QUESTION_LENGTH) {
-    return { action: 'reply', answer: 'Please shorten your question to 500 characters or fewer.' };
+    return { action: 'reply', answer: 'Please shorten your question to 500 characters or fewer.', apologetic: true };
   }
   if (AI_ORIGIN_PATTERN.test(trimmed)) return { action: 'reply', answer: AI_ORIGIN_ANSWER };
   if (BLOCKED_PATTERNS.some((pattern) => pattern.test(trimmed))) {
-    return { action: 'reply', answer: buildScopeFallback(trimmed) };
+    return { action: 'reply', answer: buildScopeFallback(trimmed), apologetic: true };
+  }
+  if (PROJECT_APPROACH_PATTERN.test(trimmed)) {
+    return { action: 'reply', answer: REAL_CONVERSATION_ANSWER };
   }
 
   const educationAnswer = buildEducationAnswer(trimmed, records);
   if (educationAnswer) return { action: 'reply', answer: educationAnswer };
-  if (asksAboutUnknownEmployer(trimmed, records)) return { action: 'reply', answer: UNKNOWN };
+  if (asksAboutUnknownEmployer(trimmed, records)) return { action: 'reply', answer: UNKNOWN, apologetic: true };
 
   if (FOLLOW_UP_PATTERN.test(trimmed) && previousRecordIds.length) {
     const recordIds = previousRecordIds.filter((id) => records.some((record) => record.id === id)).slice(0, 4);
@@ -290,9 +374,9 @@ export function evaluateQuestion(question, records, previousRecordIds = []) {
 
   const retrieval = retrieveKnowledge(trimmed, records);
   if (!IN_SCOPE_PATTERN.test(trimmed) && !retrieval.supported) {
-    return { action: 'reply', answer: buildScopeFallback(trimmed) };
+    return { action: 'reply', answer: buildScopeFallback(trimmed), apologetic: true };
   }
-  if (!retrieval.supported) return { action: 'reply', answer: UNKNOWN };
+  if (!retrieval.supported) return { action: 'reply', answer: UNKNOWN, apologetic: true };
   return {
     action: 'generate',
     recordIds: retrieval.records.map((record) => record.id),
@@ -330,7 +414,14 @@ function createMessage(container, role, text = '') {
   item.className = `digital-twin__message digital-twin__message--${role}`;
   const label = document.createElement('span');
   label.className = 'digital-twin__message-label';
-  label.textContent = role === 'user' ? 'You' : 'Thai AI';
+  if (role === 'user') {
+    label.textContent = 'You asked';
+  } else {
+    label.classList.add('digital-twin__name');
+    const highlight = document.createElement('b');
+    highlight.textContent = '[AI]';
+    label.append('Th', highlight);
+  }
   const body = document.createElement('p');
   body.textContent = text;
   item.append(label, body);
@@ -386,10 +477,11 @@ function renderAnswer(container, answer) {
 export async function initializeDigitalTwin(options = {}) {
   const root = document.querySelector('[data-digital-twin]');
   if (!root) return;
+  document.body.classList.add('has-digital-twin');
+  if (root.parentElement !== document.body) document.body.append(root);
 
   const elements = {
     launcher: root.querySelector('[data-twin-launcher]'),
-    backdrop: root.querySelector('[data-twin-backdrop]'),
     panel: root.querySelector('[data-twin-panel]'),
     close: root.querySelector('[data-twin-close]'),
     status: root.querySelector('[data-twin-status]'),
@@ -397,6 +489,8 @@ export async function initializeDigitalTwin(options = {}) {
     suggestions: root.querySelector('[data-twin-suggestions]'),
     suggestionButtons: [...root.querySelectorAll('[data-twin-suggestion]')],
     messages: root.querySelector('[data-twin-messages]'),
+    intro: root.querySelector('[data-twin-intro]'),
+    composerShell: root.querySelector('.digital-twin__composer-shell'),
     form: root.querySelector('[data-twin-form]'),
     input: root.querySelector('[data-twin-input]'),
     send: root.querySelector('[data-twin-send]'),
@@ -419,9 +513,100 @@ export async function initializeDigitalTwin(options = {}) {
   let sceneController = null;
   let scenePromise = null;
   let previouslyFocused = null;
-  let inertSiblings = [];
-  let previousBodyOverflow = '';
-  let previousBodyPaddingRight = '';
+  let viewportLayoutFrame = 0;
+  let composerLayoutFrame = 0;
+  let exchangeFitFrame = 0;
+  let speechPointerFrame = 0;
+  let errorExpressionTimer = 0;
+  let latestHeadPoint = null;
+
+  function updateSpeechPointers() {
+    speechPointerFrame = 0;
+    const headPoint = latestHeadPoint || sceneController?.getHeadScreenPosition?.();
+    if (!headPoint) return;
+    const bubbles = [
+      elements.intro,
+      ...elements.messages.querySelectorAll('.digital-twin__message--assistant p'),
+    ].filter(Boolean);
+    bubbles.forEach((bubble) => {
+      const placement = getSpeechPointerPlacement(headPoint, bubble.getBoundingClientRect(), window.innerWidth <= 700 ? 'bottom' : 'right');
+      if (placement.pointerX !== undefined) bubble.style.setProperty('--twin-pointer-x', `${placement.pointerX.toFixed(2)}px`);
+      bubble.style.setProperty('--twin-pointer-y', `${placement.pointerY.toFixed(2)}px`);
+      bubble.style.setProperty('--twin-pointer-angle', `${placement.angle.toFixed(2)}deg`);
+    });
+  }
+
+  function requestSpeechPointerLayout() {
+    if (!speechPointerFrame) speechPointerFrame = window.requestAnimationFrame(updateSpeechPointers);
+  }
+
+  function updateViewportOverlay() {
+    viewportLayoutFrame = 0;
+    root.style.setProperty('--twin-scene-scroll-y', '0px');
+    root.style.setProperty('--twin-interface-scroll-y', '0px');
+    requestSpeechPointerLayout();
+  }
+
+  function requestViewportOverlayLayout() {
+    if (!viewportLayoutFrame) viewportLayoutFrame = window.requestAnimationFrame(updateViewportOverlay);
+  }
+
+  function updateComposerReserve() {
+    composerLayoutFrame = 0;
+    if (!elements.composerShell || elements.panel.hidden) return;
+    const composerStyles = getComputedStyle(elements.composerShell);
+    const bottomOffset = Number.parseFloat(composerStyles.bottom) || 0;
+    const layoutGap = window.innerWidth <= 700 ? 12 : 18;
+    const reserve = Math.ceil(elements.composerShell.offsetHeight + bottomOffset + layoutGap);
+    root.style.setProperty('--twin-composer-reserve', `${reserve}px`);
+  }
+
+  function requestComposerLayout() {
+    if (!composerLayoutFrame) composerLayoutFrame = window.requestAnimationFrame(() => {
+      updateComposerReserve();
+      requestExchangeFit();
+    });
+  }
+
+  function fitExchangeToViewport() {
+    exchangeFitFrame = 0;
+    elements.messages.style.removeProperty('--twin-response-font-size');
+    const response = elements.messages.querySelector('.digital-twin__message--assistant p');
+    const availableHeight = elements.messages.clientHeight;
+    if (!response || !availableHeight || elements.messages.scrollHeight <= availableHeight) return;
+
+    let fontSize = Number.parseFloat(getComputedStyle(response).fontSize) || 16;
+    for (let pass = 0; pass < 3 && elements.messages.scrollHeight > availableHeight; pass += 1) {
+      const ratio = availableHeight / elements.messages.scrollHeight;
+      const nextSize = Math.max(12, fontSize * ratio * 0.97);
+      if (Math.abs(nextSize - fontSize) < 0.15) break;
+      fontSize = nextSize;
+      elements.messages.style.setProperty('--twin-response-font-size', `${fontSize.toFixed(2)}px`);
+    }
+  }
+
+  function requestExchangeFit() {
+    if (!exchangeFitFrame) exchangeFitFrame = window.requestAnimationFrame(() => {
+      fitExchangeToViewport();
+      requestSpeechPointerLayout();
+    });
+  }
+
+  function handleResize() {
+    requestViewportOverlayLayout();
+    requestComposerLayout();
+  }
+
+  window.addEventListener('scroll', requestViewportOverlayLayout, { passive: true });
+  window.addEventListener('resize', handleResize);
+  const composerResizeObserver = typeof ResizeObserver === 'function'
+    ? new ResizeObserver(requestComposerLayout)
+    : null;
+  if (elements.composerShell) composerResizeObserver?.observe(elements.composerShell);
+  const speechResizeObserver = typeof ResizeObserver === 'function'
+    ? new ResizeObserver(requestSpeechPointerLayout)
+    : null;
+  if (elements.intro) speechResizeObserver?.observe(elements.intro);
 
   function setStatus(message, state = 'idle') {
     elements.status.textContent = message;
@@ -445,7 +630,7 @@ export async function initializeDigitalTwin(options = {}) {
     } else if (!sessionToken && !turnstileToken) {
       setStatus('Complete the quick human check to chat.', 'loading');
     } else {
-      setStatus('AI ready · Cloudflare hosted.', 'ready');
+      setStatus('Ready when you are.', 'ready');
     }
   }
 
@@ -468,8 +653,30 @@ export async function initializeDigitalTwin(options = {}) {
   }
 
   function updateSceneState(state) {
+    if (state !== 'error' && errorExpressionTimer) {
+      window.clearTimeout(errorExpressionTimer);
+      errorExpressionTimer = 0;
+    }
     root.dataset.sceneState = state;
     sceneController?.setState(state);
+  }
+
+  function playErrorExpression() {
+    if (errorExpressionTimer) window.clearTimeout(errorExpressionTimer);
+    updateSceneState('error');
+    errorExpressionTimer = window.setTimeout(() => {
+      errorExpressionTimer = 0;
+      if (!activeRequest && root.dataset.sceneState === 'error') updateSceneState(restingSceneState());
+    }, ERROR_EXPRESSION_DURATION_MS);
+  }
+
+  function restingSceneState() {
+    return root.dataset.exchange === 'active' ? 'complete' : 'idle';
+  }
+
+  function syncComposerSceneState() {
+    if (activeRequest) return;
+    updateSceneState(elements.input.value.trim() ? 'composing' : restingSceneState());
   }
 
   function ensureScene() {
@@ -477,79 +684,65 @@ export async function initializeDigitalTwin(options = {}) {
     if (scenePromise) return scenePromise;
     if (options.disableScene) {
       elements.scene.dataset.sceneStatus = 'fallback';
-      elements.sceneLabel.textContent = 'Studio view';
+      elements.sceneLabel.textContent = 'Portfolio assistant';
       return Promise.resolve(null);
     }
     elements.scene.dataset.sceneStatus = 'loading';
-    elements.sceneLabel.textContent = 'Preparing Thai\'s workspace';
-    scenePromise = import('./digital-twin-scene.js?v=20260908-2')
+    elements.sceneLabel.textContent = 'Preparing the conversation';
+    scenePromise = import('./digital-twin-scene.js?v=20260910-shared-5')
       .then(({ initializeCharacterScene }) => {
         sceneController = initializeCharacterScene(elements.scene, {
+          onHeadPosition(headPoint) {
+            latestHeadPoint = headPoint;
+            requestSpeechPointerLayout();
+          },
           onStateLabel(label) {
             elements.sceneLabel.textContent = label;
           },
           onError() {
             elements.scene.dataset.sceneStatus = 'fallback';
-            elements.sceneLabel.textContent = 'Studio view';
+            elements.sceneLabel.textContent = 'Portfolio assistant';
           },
         });
+        requestSpeechPointerLayout();
         return sceneController;
       })
       .catch((error) => {
         console.warn('The animated studio is unavailable; using the static artwork fallback.', error);
         elements.scene.dataset.sceneStatus = 'fallback';
-        elements.sceneLabel.textContent = 'Studio view';
+        elements.sceneLabel.textContent = 'Portfolio assistant';
         scenePromise = null;
         return null;
       });
     return scenePromise;
   }
 
-  function lockBackground() {
-    const scrollbarWidth = Math.max(0, window.innerWidth - document.documentElement.clientWidth);
-    previousBodyOverflow = document.body.style.overflow;
-    previousBodyPaddingRight = document.body.style.paddingRight;
-    document.body.classList.add('digital-twin-open');
-    document.body.style.overflow = 'hidden';
-    if (scrollbarWidth) document.body.style.paddingRight = `${scrollbarWidth}px`;
-    inertSiblings = [...(root.parentElement?.children || [])]
-      .filter((element) => element !== root)
-      .map((element) => ({ element, wasInert: element.inert }));
-    inertSiblings.forEach(({ element }) => { element.inert = true; });
-  }
-
-  function unlockBackground() {
-    document.body.classList.remove('digital-twin-open');
-    document.body.style.overflow = previousBodyOverflow;
-    document.body.style.paddingRight = previousBodyPaddingRight;
-    inertSiblings.forEach(({ element, wasInert }) => { element.inert = wasInert; });
-    inertSiblings = [];
-  }
-
-  function focusableElements() {
-    return [...elements.panel.querySelectorAll(
-      'button:not([disabled]):not([hidden]), textarea:not([disabled]), [href], [tabindex]:not([tabindex="-1"])',
-    )].filter((element) => !element.closest('[hidden]'));
-  }
-
   function openPanel() {
     if (!elements.panel.hidden) return;
     previouslyFocused = document.activeElement;
     elements.panel.hidden = false;
-    elements.backdrop.hidden = false;
     root.dataset.open = 'true';
+    document.body.classList.add('digital-twin-open');
     elements.launcher.setAttribute('aria-expanded', 'true');
-    lockBackground();
+    updateComposerReserve();
+    updateViewportOverlay();
     window.dispatchEvent(new CustomEvent('digital-twin:open'));
     updateSceneState('opening');
     ensureScene().then((controller) => {
       if (elements.panel.hidden || !controller) return;
       controller.resume();
+      if (activeRequest || elements.input.value.trim()) {
+        updateSceneState(activeRequest ? 'typing' : 'composing');
+        return;
+      }
       window.setTimeout(() => {
-        if (!elements.panel.hidden) updateSceneState(activeRequest ? 'typing' : 'idle');
-      }, 420);
+        if (!elements.panel.hidden) {
+          updateSceneState(activeRequest ? 'typing' : elements.input.value.trim() ? 'composing' : restingSceneState());
+        }
+      }, 620);
     });
     requestAnimationFrame(() => {
+      requestComposerLayout();
       (isReady() ? elements.input : elements.panel).focus?.();
     });
   }
@@ -557,11 +750,11 @@ export async function initializeDigitalTwin(options = {}) {
   function closePanel() {
     if (elements.panel.hidden) return;
     elements.panel.hidden = true;
-    elements.backdrop.hidden = true;
     root.dataset.open = 'false';
+    document.body.classList.remove('digital-twin-open');
     elements.launcher.setAttribute('aria-expanded', 'false');
     sceneController?.pause();
-    unlockBackground();
+    updateViewportOverlay();
     window.dispatchEvent(new CustomEvent('digital-twin:close'));
     const focusTarget = previouslyFocused?.isConnected ? previouslyFocused : elements.launcher;
     focusTarget.focus?.();
@@ -576,7 +769,8 @@ export async function initializeDigitalTwin(options = {}) {
     activeRequest = null;
     activeController = null;
     activeAnswer = null;
-    updateSceneState(failed ? 'error' : cancelled ? 'idle' : 'complete');
+    if (failed) playErrorExpression();
+    else updateSceneState(cancelled ? 'idle' : 'complete');
     if (profileReady && !sessionToken && !turnstileToken) resetVerification();
     else showReadyState();
   }
@@ -638,32 +832,37 @@ export async function initializeDigitalTwin(options = {}) {
     return answer;
   }
 
-  function addImmediateReply(answer) {
-    updateSceneState('typing');
+  function addImmediateReply(answer, apologetic = false) {
+    if (apologetic) playErrorExpression();
+    else updateSceneState('typing');
     const response = createMessage(elements.messages, 'assistant');
     renderAnswer(response, answer);
+    requestExchangeFit();
     history.push({ role: 'assistant', content: answer });
     history = history.slice(-MAX_HISTORY_MESSAGES);
-    window.setTimeout(() => {
-      if (!activeRequest) updateSceneState('complete');
-    }, 180);
+    if (!apologetic) {
+      window.setTimeout(() => {
+        if (!activeRequest) updateSceneState('complete');
+      }, 720);
+    }
   }
 
   async function submitQuestion(question) {
     const evaluation = evaluateQuestion(question, records, lastRecordIds);
     if (evaluation.action === 'ignore') return;
 
+    elements.messages.replaceChildren();
+    root.dataset.exchange = 'active';
     createMessage(elements.messages, 'user', question);
     updateSceneState('reading');
     elements.input.value = '';
     elements.input.style.height = 'auto';
-    elements.suggestions.hidden = true;
     history.push({ role: 'user', content: question });
     history = history.slice(-MAX_HISTORY_MESSAGES);
 
     if (evaluation.action === 'reply') {
       lastRecordIds = [];
-      addImmediateReply(evaluation.answer);
+      addImmediateReply(evaluation.answer, evaluation.apologetic);
       return;
     }
 
@@ -674,12 +873,12 @@ export async function initializeDigitalTwin(options = {}) {
     activeController = new AbortController();
     activeAnswer = createMessage(elements.messages, 'assistant');
     activeAnswer.classList.add('digital-twin__thinking');
-    activeAnswer.setAttribute('aria-label', 'Thai AI is thinking');
+    activeAnswer.setAttribute('aria-label', 'Thai is thinking');
     activeAnswer.textContent = '...';
     elements.send.hidden = true;
     elements.cancel.hidden = false;
     setComposerEnabled(false);
-    setStatus('Thai AI is answering through Cloudflare.', 'loading');
+    setStatus('Thai is thinking.', 'loading');
     updateSceneState('typing');
     const verificationToken = turnstileToken;
     turnstileToken = '';
@@ -695,7 +894,7 @@ export async function initializeDigitalTwin(options = {}) {
         if (activeRequest !== requestId || !activeAnswer) return;
         clearThinkingState();
         activeAnswer.textContent += token;
-        elements.messages.scrollTop = elements.messages.scrollHeight;
+        requestExchangeFit();
       }, (token) => {
         sessionToken = token;
         root.dataset.verified = 'true';
@@ -705,6 +904,7 @@ export async function initializeDigitalTwin(options = {}) {
       clearThinkingState();
       const finalAnswer = humanizeResponse(answer);
       if (activeAnswer) renderAnswer(activeAnswer, finalAnswer);
+      requestExchangeFit();
       history.push({ role: 'assistant', content: finalAnswer });
       history = history.slice(-MAX_HISTORY_MESSAGES);
       finishGeneration();
@@ -727,7 +927,6 @@ export async function initializeDigitalTwin(options = {}) {
     else closePanel();
   });
   elements.close.addEventListener('click', closePanel);
-  elements.backdrop.addEventListener('click', closePanel);
   elements.cancel.addEventListener('click', () => {
     if (activeController) activeController.abort();
   });
@@ -737,6 +936,8 @@ export async function initializeDigitalTwin(options = {}) {
     history = [];
     lastRecordIds = [];
     elements.messages.replaceChildren();
+    elements.messages.style.removeProperty('--twin-response-font-size');
+    root.dataset.exchange = 'empty';
     elements.suggestions.hidden = false;
     updateSceneState('idle');
     if (wasGenerating) {
@@ -754,6 +955,8 @@ export async function initializeDigitalTwin(options = {}) {
   elements.input.addEventListener('input', () => {
     elements.input.style.height = 'auto';
     elements.input.style.height = `${Math.min(elements.input.scrollHeight, 120)}px`;
+    syncComposerSceneState();
+    requestComposerLayout();
   });
   elements.input.addEventListener('keydown', (event) => {
     if (event.key !== 'Enter' || event.shiftKey || event.isComposing) return;
@@ -769,6 +972,7 @@ export async function initializeDigitalTwin(options = {}) {
         return;
       }
       elements.input.value = question;
+      syncComposerSceneState();
       showReadyState();
     });
   }
@@ -776,23 +980,6 @@ export async function initializeDigitalTwin(options = {}) {
     if (event.key === 'Escape' && !elements.panel.hidden) {
       event.preventDefault();
       closePanel();
-      return;
-    }
-    if (event.key !== 'Tab' || elements.panel.hidden) return;
-    const focusable = focusableElements();
-    if (!focusable.length) {
-      event.preventDefault();
-      elements.panel.focus();
-      return;
-    }
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-    if (event.shiftKey && (document.activeElement === first || document.activeElement === elements.panel)) {
-      event.preventDefault();
-      last.focus();
-    } else if (!event.shiftKey && (document.activeElement === last || document.activeElement === elements.panel)) {
-      event.preventDefault();
-      first.focus();
     }
   });
 
@@ -810,7 +997,12 @@ export async function initializeDigitalTwin(options = {}) {
     showReadyState();
   })();
 
-  const verificationPromise = loadTurnstile().then((turnstile) => {
+  const verificationPromise = TURNSTILE_TEST_MODE ? Promise.resolve().then(() => {
+    turnstileToken = LOCAL_TURNSTILE_TOKEN;
+    root.dataset.verified = 'true';
+    elements.verification.hidden = true;
+    showReadyState();
+  }) : loadTurnstile().then((turnstile) => {
     turnstileWidgetId = turnstile.render(elements.verification, {
       sitekey: TURNSTILE_SITE_KEY,
       action: TURNSTILE_ACTION,
@@ -829,7 +1021,8 @@ export async function initializeDigitalTwin(options = {}) {
         elements.verification.hidden = false;
         showReadyState();
       },
-      'error-callback'() {
+      'error-callback'(errorCode) {
+        console.error(JSON.stringify({ event: 'turnstile_error', code: errorCode || 'unknown' }));
         turnstileToken = '';
         if (sessionToken) return;
         root.dataset.verified = 'false';

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "lastUpdated": "2026-09-07",
+  "lastUpdated": "2026-09-09",
   "identity": {
     "name": "Thai Nghiem",
     "title": "Senior Consultant | GenAI & Agentic AI | AI Solution Architecture | Engineering Leadership",
@@ -18,6 +18,20 @@
       "turning ambiguous business opportunities into secure and scalable AI products",
       "connecting AI strategy and governance with hands-on engineering",
       "building reusable architecture patterns and scalable delivery practices"
+    ],
+    "industries": [
+      "professional services and enterprise consulting",
+      "government and public-sector operations",
+      "telecommunications",
+      "utilities and water",
+      "enterprise software and cloud applications",
+      "hardware, firmware, and embedded product development"
+    ],
+    "differentiators": [
+      "I connect business strategy and requirements with hands-on solution architecture and engineering.",
+      "My experience spans hardware and firmware, full-stack software, intelligent automation, and enterprise GenAI and agentic AI.",
+      "I combine AI governance with delivery, from use-case discovery through prototypes, APIs, data design, debugging, and deployment.",
+      "I focus on reusable patterns and measurable outcomes, including large-scale deployments, hours eliminated, and documented financial value."
     ],
     "methodologies": ["Agile", "Scrum", "test-driven development", "AI governance", "AIOps", "FinOps", "Center of Excellence governance", "NIST-aligned decision frameworks"],
     "technologies": [

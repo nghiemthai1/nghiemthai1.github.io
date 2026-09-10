@@ -5,11 +5,12 @@
   <title>Professional AI Assistant interaction checks</title>
   <link rel="stylesheet" href="../css/digital-twin.css?v=interaction-test">
   <link rel="stylesheet" href="../css/digital-twin-responsive.css?v=interaction-test">
+  <link rel="stylesheet" href="../css/digital-twin-embedded.css?v=interaction-test">
 </head>
 <body>
   <h1>Professional AI Assistant interaction checks</h1>
   <ul id="results"></ul>
-  <div id="fixture"></div>
+  <header id="home"><div class="banner" id="fixture"></div></header>
   <script type="module">
     window.addEventListener('error', (event) => {
       document.body.dataset.status = 'failed';
@@ -20,7 +21,7 @@
       document.title = `Interaction test rejection: ${event.reason?.message || event.reason}`;
     });
     const fixture = document.querySelector('#fixture');
-    fixture.innerHTML = await fetch('../partials/digital-twin.html').then((response) => response.text());
+    fixture.innerHTML = await fetch('../partials/digital-twin.html', { cache: 'no-store' }).then((response) => response.text());
     const profileData = {
       identity: { name: 'Thai Nghiem', title: 'AI Product Manager', summary: 'AI, automation, and software delivery.' },
       experience: [
@@ -56,10 +57,18 @@
 
     const realFetch = window.fetch.bind(window);
     const outboundBodies = [];
+    const outboundUrls = [];
+    const expectedApiUrl = ['localhost', '127.0.0.1'].includes(location.hostname)
+      ? 'http://localhost:8787/chat'
+      : 'https://thai-digital-twin-api.nghiemthai1.workers.dev/chat';
     window.fetch = (input, options = {}) => {
-      if (!String(input).includes('thai-digital-twin-api.nghiemthai1.workers.dev')) {
+      const url = String(input);
+      const isDigitalTwinApi = url === 'http://localhost:8787/chat'
+        || url === 'https://thai-digital-twin-api.nghiemthai1.workers.dev/chat';
+      if (!isDigitalTwinApi) {
         return realFetch(input, options);
       }
+      outboundUrls.push(url);
       outboundBodies.push(JSON.parse(options.body));
       const answer = 'I built several machine-learning projects:\n- **Face identification:** A MATLAB system using DCT features and KNN classification.\n- **Early diagnosis:** A digital clock drawing analysis system.';
       const encoder = new TextEncoder();
@@ -97,14 +106,14 @@
 
     check(
       'AI accuracy disclaimer is always present',
-      document.querySelector('.digital-twin__disclaimer')?.textContent === 'AI-generated responses might not be true.',
+      document.querySelector('#digital-twin-disclosure')?.textContent.includes('AI-generated responses may be inaccurate.'),
     );
 
     check('Cloudflare AI is ready without a model download', !document.querySelector('[data-twin-download]') && !document.querySelector('[data-twin-input]').disabled);
     check('Cloudflare processing is disclosed', document.querySelector('#digital-twin-disclosure').textContent.includes('Cloudflare'));
     check(
       'feature has a professional conversational title',
-      document.querySelector('#digital-twin-title').textContent === 'A conversation with Thai',
+      document.querySelector('#digital-twin-title').textContent === 'A conversation with Th[AI]',
     );
     check(
       'original suggested questions are restored',
@@ -115,23 +124,37 @@
 
     const root = document.querySelector('[data-digital-twin]');
     const launcher = document.querySelector('[data-twin-launcher]');
+    const scene = document.querySelector('.digital-twin__stage');
     check(
       'compact Ask Th[AI] launcher is restored',
       launcher.textContent.replace(/\s/g, '') === 'AskTh[AI]'
         && launcher.getAttribute('aria-label') === 'Ask Thai, AI portfolio assistant',
     );
+    check(
+      'static fallback uses the close-likeness transparent scene',
+      document.querySelector('[data-twin-scene-poster]').getAttribute('src') === 'assets/images/digital-twin-shared/chin/frame-05-settled.jpg',
+    );
+    check('character scene stays hidden before launch', getComputedStyle(scene).visibility === 'hidden');
     const startingScroll = window.scrollY;
     launcher.focus();
     launcher.click();
     await new Promise((resolve) => setTimeout(resolve, 450));
-    check('launcher opens a modal conversation overlay', !document.querySelector('[data-twin-panel]').hidden
-      && document.querySelector('[data-twin-panel]').getAttribute('aria-modal') === 'true'
-      && !document.querySelector('[data-twin-backdrop]').hidden);
-    check('opening the overlay preserves scroll position', window.scrollY === startingScroll);
+    check('launcher opens an embedded conversation region', !document.querySelector('[data-twin-panel]').hidden
+      && document.querySelector('[data-twin-panel]').getAttribute('role') === 'region'
+      && !document.querySelector('[data-twin-panel]').hasAttribute('aria-modal')
+      && !document.querySelector('[data-twin-backdrop]')
+      && root.parentElement === document.body
+      && getComputedStyle(scene).visibility === 'visible');
+    check('opening from the hero preserves scroll position', window.scrollY === startingScroll);
+    check('viewport overlay preserves the underlying page controls', !fixture.inert);
     check('character scene reaches an animated or fallback state', ['ready', 'fallback'].includes(document.querySelector('[data-twin-scene]').dataset.sceneStatus));
     root.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));
-    check('Escape closes the overlay and restores launcher focus', document.querySelector('[data-twin-panel]').hidden
-      && document.activeElement === launcher);
+    await new Promise((resolve) => setTimeout(resolve, 550));
+    check('Escape closes the embedded region and restores launcher focus', document.querySelector('[data-twin-panel]').hidden
+      && document.activeElement === launcher
+      && root.parentElement === document.body
+      && !fixture.inert
+      && getComputedStyle(scene).visibility === 'hidden');
     launcher.click();
 
     const input = document.querySelector('[data-twin-input]');
@@ -139,9 +162,11 @@
     input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
     await new Promise((resolve) => setTimeout(resolve, 0));
     check('Enter sends', document.querySelectorAll('.digital-twin__message--user').length === 1);
+    check('the active exchange replaces the opening prompt', root.dataset.exchange === 'active');
+    check('interaction uses the environment-specific Worker endpoint', outboundUrls[0] === expectedApiUrl);
     check(
       'request sends a one-time verification token and record IDs instead of facts',
-      outboundBodies[0]?.turnstileToken === 'test-token-1'
+      (outboundBodies[0]?.turnstileToken === (['localhost', '127.0.0.1'].includes(location.hostname) ? 'XXXX.DUMMY.TOKEN.XXXX' : 'test-token-1'))
         && outboundBodies[0]?.recordIds?.length > 0
         && !Object.hasOwn(outboundBodies[0], 'facts'),
     );
@@ -182,6 +207,11 @@
     check('thinking indicator appears for a later request', document.querySelector('.digital-twin__thinking')?.textContent === '...');
     await new Promise((resolve) => setTimeout(resolve, 25));
     check('thinking indicator is replaced by the answer', !document.querySelector('.digital-twin__thinking'));
+    check(
+      'only the current question and answer remain visible',
+      document.querySelectorAll('.digital-twin__message--user').length === 1
+        && document.querySelectorAll('.digital-twin__message--assistant').length === 1,
+    );
     check('verified session remains active for later requests', turnstileResets === 0 && !input.disabled);
     const formattedAnswer = [...document.querySelectorAll('.digital-twin__message--assistant p')].at(-1);
     check(
@@ -237,7 +267,7 @@
       () => 'I delivered a focused automation solution with measurable operational results for the client team.',
     ).join(' ');
     const limited = finalizeResponse(verbose);
-    check('long answers stay within 220 words', countWords(limited) <= 220 && endsWithSentence(limited));
+    check('long answers stay within 140 words', countWords(limited) <= 140 && endsWithSentence(limited));
 
     const repaired = finalizeResponse('I led automation delivery for clients. I also started an unfinished explanation about');
     check('unfinished trailing text is removed', repaired === 'I led automation delivery for clients.');
