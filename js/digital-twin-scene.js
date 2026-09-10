@@ -22,9 +22,11 @@ const MOBILE_ARTWORK_URLS = Object.freeze({
   errorDowncast: new URL('../assets/images/digital-twin-shared/error-apology/frame-01-downcast.jpg', import.meta.url).href,
   errorHalfBlink: new URL('../assets/images/digital-twin-shared/error-apology/frame-02-half-blink.jpg', import.meta.url).href,
   errorBlink: new URL('../assets/images/digital-twin-shared/error-apology/frame-03-blink.jpg', import.meta.url).href,
+  reactionNotice: new URL('../assets/images/digital-twin-shared/click-reaction/frame-00-notice.jpg', import.meta.url).href,
 });
 const VALID_STATES = new Set(['opening', 'idle', 'composing', 'reading', 'typing', 'complete', 'error']);
 const RESTING_STATES = new Set(['idle', 'composing', 'complete']);
+const CLICK_REACTION_STATES = new Set(['idle', 'complete']);
 const STATE_LABELS = {
   opening: 'Opening the conversation',
   idle: 'Ready when you are',
@@ -102,6 +104,12 @@ const MOBILE_ERROR_POSE_STRIP = Object.freeze([
   [0.42, 'errorBlink'],
   [0.52, 'errorHalfBlink'],
   [0.64, 'errorApology'],
+]);
+
+const CLICK_REACTION_POSE_STRIP = Object.freeze([
+  [0, 'settled'],
+  [0.08, 'reactionNotice'],
+  [0.96, 'settled'],
 ]);
 
 function makeWhiteTexture() {
@@ -202,6 +210,8 @@ export function initializeCharacterScene(mount, options = {}) {
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
   renderer.domElement.setAttribute('aria-hidden', 'true');
+  renderer.domElement.style.pointerEvents = 'auto';
+  renderer.domElement.style.touchAction = 'manipulation';
   mount.append(renderer.domElement);
 
   const scene = new THREE.Scene();
@@ -229,6 +239,9 @@ export function initializeCharacterScene(mount, options = {}) {
   let loaded = false;
   let mobileEpoch = performance.now();
   let actionEpoch = performance.now();
+  let reactionEpoch = performance.now();
+  let reactionActive = false;
+  let reactionTimer = 0;
   let frameId = 0;
   let lastTime = performance.now();
   let lastHeadPositionReport = 0;
@@ -237,11 +250,23 @@ export function initializeCharacterScene(mount, options = {}) {
 
   const textureLoader = new THREE.TextureLoader();
   const mobileFrameTextures = new Map();
+  const mobileFrameHitSamplers = new Map();
   let mobileFramesRequested = false;
+  const hitRaycaster = new THREE.Raycaster();
+  const hitPointer = new THREE.Vector2();
 
   function prepareTexture(texture) {
     texture.colorSpace = THREE.SRGBColorSpace;
     texture.minFilter = THREE.LinearFilter;
+  }
+
+  function createHitSampler(image) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 188;
+    canvas.height = 334;
+    const context = canvas.getContext('2d', { willReadFrequently: true });
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+    return context;
   }
 
   function loadMobileFrames() {
@@ -258,6 +283,7 @@ export function initializeCharacterScene(mount, options = {}) {
           }
           prepareTexture(texture);
           mobileFrameTextures.set(name, texture);
+          mobileFrameHitSamplers.set(name, createHitSampler(texture.image));
           if (!mobileArtworkMaterial.uniforms.frameMap.value || name === 'settled') {
             mobileArtworkMaterial.uniforms.frameMap.value = texture;
           }
@@ -329,6 +355,65 @@ export function initializeCharacterScene(mount, options = {}) {
     };
   }
 
+  function getArtworkUv(clientX, clientY) {
+    const bounds = renderer.domElement.getBoundingClientRect();
+    if (!bounds.width || !bounds.height || clientX < bounds.left || clientX > bounds.right
+      || clientY < bounds.top || clientY > bounds.bottom) return null;
+    hitPointer.set(
+      ((clientX - bounds.left) / bounds.width) * 2 - 1,
+      -((clientY - bounds.top) / bounds.height) * 2 + 1,
+    );
+    mobileArtworkGroup.updateMatrixWorld(true);
+    hitRaycaster.setFromCamera(hitPointer, camera);
+    return hitRaycaster.intersectObject(mobileArtwork, false)[0]?.uv || null;
+  }
+
+  function isCharacterUv(uv, sampleArtwork = true) {
+    if (!uv) return false;
+    const yFromTop = 1 - uv.y;
+    const headX = (uv.x - 0.55) / 0.27;
+    const headY = (yFromTop - 0.37) / 0.23;
+    const torsoX = (uv.x - 0.53) / 0.48;
+    const torsoY = (yFromTop - 0.58) / 0.24;
+    const inHead = headX * headX + headY * headY <= 1;
+    const inUpperBody = torsoX * torsoX + torsoY * torsoY <= 1 && yFromTop <= 0.66;
+    if (!inHead && !inUpperBody) return false;
+    if (!sampleArtwork) return true;
+
+    const sampler = mobileFrameHitSamplers.get(mount.dataset.mobileFrame)
+      || mobileFrameHitSamplers.get('settled');
+    if (!sampler) return true;
+    const x = Math.min(sampler.canvas.width - 1, Math.max(0, Math.floor(uv.x * sampler.canvas.width)));
+    const y = Math.min(sampler.canvas.height - 1, Math.max(0, Math.floor(yFromTop * sampler.canvas.height)));
+    const [red, green, blue] = sampler.getImageData(x, y, 1, 1).data;
+    const strongestOtherChannel = Math.max(red, blue);
+    return green < 150 || green - strongestOtherChannel < 70;
+  }
+
+  function cancelClickReaction() {
+    reactionActive = false;
+    mount.dataset.characterReaction = 'inactive';
+    if (reactionTimer) {
+      window.clearTimeout(reactionTimer);
+      reactionTimer = 0;
+    }
+  }
+
+  function triggerClickReaction() {
+    if (!CLICK_REACTION_STATES.has(state)) return;
+    cancelClickReaction();
+    reactionActive = true;
+    reactionEpoch = performance.now();
+    mount.dataset.characterReaction = 'active';
+    if (motionQuery.matches) {
+      renderOnce();
+      reactionTimer = window.setTimeout(() => {
+        cancelClickReaction();
+        renderOnce();
+      }, 220);
+    }
+  }
+
   function reportHeadScreenPosition(now = performance.now(), force = false) {
     if (!options.onHeadPosition || (!force && now - lastHeadPositionReport < 120)) return;
     lastHeadPositionReport = now;
@@ -338,11 +423,19 @@ export function initializeCharacterScene(mount, options = {}) {
   function updateCharacterPose(now, snap = false) {
     const elapsed = Math.max(0, (now - mobileEpoch) / 1000);
     const actionElapsed = Math.max(0, (now - actionEpoch) / 1000);
-    const showingErrorExpression = compact
-      && state === 'error'
+    const reactionElapsed = Math.max(0, (now - reactionEpoch) / 1000);
+    const showingClickReaction = reactionActive
+      && CLICK_REACTION_STATES.has(state)
+      && reactionElapsed <= CLICK_REACTION_POSE_STRIP.at(-1)[0];
+    if (reactionActive && !showingClickReaction) cancelClickReaction();
+    const showingErrorExpression = state === 'error'
       && (snap || actionElapsed <= MOBILE_ERROR_POSE_STRIP.at(-1)[0]);
     let frameWeights;
-    if (showingErrorExpression) {
+    if (showingClickReaction) {
+      frameWeights = snap
+        ? { reactionNotice: 1 }
+        : samplePoseStrip(reactionElapsed, CLICK_REACTION_POSE_STRIP);
+    } else if (showingErrorExpression) {
       frameWeights = snap
         ? { errorApology: 1 }
         : samplePoseStrip(actionElapsed, MOBILE_ERROR_POSE_STRIP);
@@ -366,12 +459,15 @@ export function initializeCharacterScene(mount, options = {}) {
     }
     const requestedFrame = Object.keys(frameWeights)[0] || 'settled';
     mount.dataset.mobileFrame = requestedFrame;
-    mount.dataset.mobileMode = showingErrorExpression
+    mount.dataset.mobileMode = showingClickReaction
+      ? 'click-reaction'
+      : showingErrorExpression
       ? 'error-apology'
       : state === 'composing' || state === 'reading'
       ? 'screen-focus'
       : state === 'typing' ? 'typing' : 'resting';
     const nextTexture = mobileFrameTextures.get(requestedFrame)
+      || (showingClickReaction ? mobileFrameTextures.get('reactionNotice') : null)
       || (showingErrorExpression ? mobileFrameTextures.get('errorApology') : null)
       || (state === 'typing' ? mobileFrameTextures.get('typingCenter') : null)
       || (state === 'composing' || state === 'reading' ? mobileFrameTextures.get('focus') : null)
@@ -449,6 +545,7 @@ export function initializeCharacterScene(mount, options = {}) {
     if (!VALID_STATES.has(nextState)) return;
     const previousState = state;
     state = nextState;
+    if (!CLICK_REACTION_STATES.has(state)) cancelClickReaction();
     if ((state === 'composing' || state === 'reading' || state === 'typing' || state === 'error') && state !== previousState) {
       actionEpoch = performance.now();
     }
@@ -463,10 +560,22 @@ export function initializeCharacterScene(mount, options = {}) {
       THREE.MathUtils.clamp(((event.clientX - rect.left) / rect.width - 0.5) * 2, -1, 1),
       THREE.MathUtils.clamp(-((event.clientY - rect.top) / rect.height - 0.5) * 2, -1, 1),
     );
+    const uv = getArtworkUv(event.clientX, event.clientY);
+    renderer.domElement.style.cursor = CLICK_REACTION_STATES.has(state) && isCharacterUv(uv, false)
+      ? 'pointer'
+      : 'default';
   }
 
   function handlePointerLeave() {
     targetPointer.set(0, 0);
+    renderer.domElement.style.cursor = 'default';
+  }
+
+  function handleCharacterClick(event) {
+    if (!CLICK_REACTION_STATES.has(state) || !isCharacterUv(getArtworkUv(event.clientX, event.clientY))) return;
+    event.preventDefault();
+    event.stopPropagation();
+    triggerClickReaction();
   }
 
   function handleVisibility() {
@@ -500,6 +609,7 @@ export function initializeCharacterScene(mount, options = {}) {
     pause();
     mount.removeEventListener('pointermove', handlePointerMove);
     mount.removeEventListener('pointerleave', handlePointerLeave);
+    renderer.domElement.removeEventListener('click', handleCharacterClick);
     document.removeEventListener('visibilitychange', handleVisibility);
     renderer.domElement.removeEventListener('webglcontextlost', handleContextLost);
     renderer.domElement.removeEventListener('webglcontextrestored', handleContextRestored);
@@ -519,6 +629,7 @@ export function initializeCharacterScene(mount, options = {}) {
   mount.__sceneController = controller;
   mount.addEventListener('pointermove', handlePointerMove, { passive: true });
   mount.addEventListener('pointerleave', handlePointerLeave, { passive: true });
+  renderer.domElement.addEventListener('click', handleCharacterClick);
   document.addEventListener('visibilitychange', handleVisibility);
   renderer.domElement.addEventListener('webglcontextlost', handleContextLost, false);
   renderer.domElement.addEventListener('webglcontextrestored', handleContextRestored, false);

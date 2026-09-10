@@ -689,7 +689,7 @@ export async function initializeDigitalTwin(options = {}) {
     }
     elements.scene.dataset.sceneStatus = 'loading';
     elements.sceneLabel.textContent = 'Preparing the conversation';
-    scenePromise = import('./digital-twin-scene.js?v=20260910-shared-5')
+    scenePromise = import('./digital-twin-scene.js?v=20260910-desktop-reactions')
       .then(({ initializeCharacterScene }) => {
         sceneController = initializeCharacterScene(elements.scene, {
           onHeadPosition(headPoint) {

@@ -12,8 +12,10 @@ import {
 } from '../cloudflare-worker/index.js';
 
 const data = JSON.parse(fs.readFileSync(new URL('../assets/data/experience.json', import.meta.url), 'utf8'));
-const sceneSource = fs.readFileSync(new URL('../js/digital-twin-scene.js', import.meta.url), 'utf8');
+const sceneSource = fs.readFileSync(new URL('../js/digital-twin-scene.js', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
 const mobileErrorAssets = [...sceneSource.matchAll(/new URL\('([^']*digital-twin-shared\/error-apology[^']+)'/g)]
+  .map(([, path]) => new URL(path, new URL('../js/digital-twin-scene.js', import.meta.url)));
+const clickReactionAssets = [...sceneSource.matchAll(/new URL\('([^']*digital-twin-shared\/click-reaction[^']+)'/g)]
   .map(([, path]) => new URL(path, new URL('../js/digital-twin-scene.js', import.meta.url)));
 const digitalTwinSource = fs.readFileSync(new URL('../js/digital-twin.js', import.meta.url), 'utf8');
 const embeddedStyles = fs.readFileSync(new URL('../css/digital-twin-embedded.css', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
@@ -108,15 +110,30 @@ const checks = [
       && digitalTwinSource.includes('syncComposerSceneState();'),
   ],
   [
-    'mobile scene briefly apologizes for unsupported answers and request errors',
+    'shared scene briefly apologizes on desktop and mobile',
     mobileErrorAssets.length === 4
       && mobileErrorAssets.every((url) => fs.existsSync(url))
       && sceneSource.includes('const MOBILE_ERROR_POSE_STRIP = Object.freeze([')
-      && sceneSource.includes('const showingErrorExpression = compact')
-      && sceneSource.includes("mount.dataset.mobileMode = showingErrorExpression")
+      && sceneSource.includes("const showingErrorExpression = state === 'error'")
+      && sceneSource.includes("showingErrorExpression\n      ? 'error-apology'")
       && digitalTwinSource.includes('const ERROR_EXPRESSION_DURATION_MS = 1500;')
       && digitalTwinSource.includes('function playErrorExpression()')
       && digitalTwinSource.includes('addImmediateReply(evaluation.answer, evaluation.apologetic);'),
+  ],
+  [
+    'clicking the resting character plays a short shared reaction without capturing background clicks',
+    clickReactionAssets.length === 1
+      && !sceneSource.includes('reactionTilt')
+      && !sceneSource.includes('reactionHalfBlink')
+      && clickReactionAssets.every((url) => fs.existsSync(url))
+      && sceneSource.includes('const CLICK_REACTION_POSE_STRIP = Object.freeze([')
+      && sceneSource.includes("const CLICK_REACTION_STATES = new Set(['idle', 'complete']);")
+      && sceneSource.includes('function isCharacterUv(uv, sampleArtwork = true)')
+      && sceneSource.includes("mount.dataset.mobileMode = showingClickReaction")
+      && sceneSource.includes("renderer.domElement.addEventListener('click', handleCharacterClick);")
+      && sceneSource.includes("renderer.domElement.removeEventListener('click', handleCharacterClick);")
+      && sceneSource.includes("mount.dataset.characterReaction = 'active';")
+      && sceneSource.includes("mount.dataset.characterReaction = 'inactive';"),
   ],
   [
     'mobile conversation uses empty space above the unchanged character',
